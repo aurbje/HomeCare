@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - HomeCare</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Forside</a>
+            <a href="/Home/About">Om oss</a>
+            <a href="/Booking">Booking</a>
+            <a href="/Account/SignIn">Logg inn</a>
+            <a href="/Account/SignUp">Registrer deg</a>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <p>&copy; 2025 HomeCare</p>
+    </footer>
+</body>
+</html>
