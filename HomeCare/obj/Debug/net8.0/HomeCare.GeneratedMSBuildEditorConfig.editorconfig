@@ -1,0 +1,35 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = HomeCare
+build_property.RootNamespace = HomeCare
+build_property.ProjectDir = C:\Users\alj\OneDrive\Documents\GitHub\HomeCare\HomeCare\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\alj\OneDrive\Documents\GitHub\HomeCare\HomeCare
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/alj/OneDrive/Documents/GitHub/HomeCare/HomeCare/Views/AboutUs/aboutUs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWJvdXRVc1xhYm91dFVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/alj/OneDrive/Documents/GitHub/HomeCare/HomeCare/Views/Bookings/booking.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va2luZ3NcYm9va2luZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/alj/OneDrive/Documents/GitHub/HomeCare/HomeCare/Views/HomePage/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVBhZ2VcaW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/alj/OneDrive/Documents/GitHub/HomeCare/HomeCare/Views/SignIn/signIn.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2lnbkluXHNpZ25Jbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
