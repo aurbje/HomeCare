@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container text-center mt-5">
+    <h1 class="display-4">Welcome to HomeCare</h1>
+
+    <p class="lead">Your care, your schedule — made simple.</p>
+    <p>Manage appointments, receive reminders, and stay connected with your caregivers — all in one place.</p>
+
+    <img src="~/images/banner.jpg" alt="Homecare Banner" class="img-fluid rounded shadow" />
+
+
+    <!-- ナビゲーションボタン -->
+    <div class="mt-4">
+        <a class="btn btn-outline-secondary m-2" asp-controller="Account" asp-action="SignIn">Sign In</a>
+        <a class="btn btn-outline-secondary m-2" asp-controller="Account" asp-action="SignUp">Sign Up</a>
+    </div>
+</div>
