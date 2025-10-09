@@ -9,49 +9,49 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = HomeCare
 build_property.RootNamespace = HomeCare
-build_property.ProjectDir = /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/
+build_property.ProjectDir = /Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /Users/pertoset/Documents/GitHub/HomeCare/HomeCare
+build_property.MSBuildProjectDirectory = /Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Account/SignIn.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Account/SignIn.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9TaWduSW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Account/SignUp.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Account/SignUp.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9TaWduVXAuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Bookings/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQm9va2luZ3MvSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Home/About.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Home/About.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9BYm91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Home/Index.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Home/Contact.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Db250YWN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Shared/_Layout.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Shared/_ValidationScriptsPartial.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Shared/_ViewImports.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Shared/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WaWV3SW1wb3J0cy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/Shared/_ViewStart.cshtml]
+[/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/Views/Shared/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WaWV3U3RhcnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
