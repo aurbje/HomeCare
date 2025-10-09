@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\wwwroot\\css\\css\\site.css",
+      "PackagePath": "staticwebassets\\css\\css\\site.css"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.HomeCare.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.HomeCare.props",
+      "PackagePath": "build\\HomeCare.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.HomeCare.props",
+      "PackagePath": "buildMultiTargeting\\HomeCare.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.HomeCare.props",
+      "PackagePath": "buildTransitive\\HomeCare.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

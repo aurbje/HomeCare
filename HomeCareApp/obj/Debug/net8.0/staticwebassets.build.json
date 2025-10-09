@@ -1,0 +1,39 @@
+{
+  "Version": 1,
+  "Hash": "wXV0jX01Axpi4g2geQSLcJBFDpM489uYFPqKMDcw9gU=",
+  "Source": "HomeCare",
+  "BasePath": "_content/HomeCare",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "HomeCare\\wwwroot",
+      "Source": "HomeCare",
+      "ContentRoot": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\wwwroot\\",
+      "BasePath": "_content/HomeCare",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\wwwroot\\css\\css\\site.css",
+      "SourceId": "HomeCare",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\wwwroot\\",
+      "BasePath": "_content/HomeCare",
+      "RelativePath": "css/css/site.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\css\\site.css"
+    }
+  ]
+}
