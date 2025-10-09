@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/HomeCare.csproj": {}
+    "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/HomeCare.csproj": {}
   },
   "projects": {
-    "/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/HomeCare.csproj": {
+    "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/HomeCare.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/HomeCare.csproj",
+        "projectUniqueName": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/HomeCare.csproj",
         "projectName": "HomeCare",
-        "projectPath": "/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/HomeCare.csproj",
-        "packagesPath": "/Users/dapabook/.nuget/packages/",
-        "outputPath": "/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/",
+        "projectPath": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/HomeCare.csproj",
+        "packagesPath": "/Users/pertoset/.nuget/packages/",
+        "outputPath": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/dapabook/.nuget/NuGet/NuGet.Config"
+          "/Users/pertoset/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -62,7 +62,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
