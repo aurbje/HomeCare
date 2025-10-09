@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "tsmogGjY0h0=",
+  "dgSpecHash": "jPHgRn38glU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\alj\\OneDrive\\Documents\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/Users/pertoset/HomeCare/HomeCareApp/HomeCare.csproj",
+  "expectedPackageFiles": [
+    "/Users/pertoset/.nuget/packages/microsoft.netcore.app.ref/8.0.20/microsoft.netcore.app.ref.8.0.20.nupkg.sha512",
+    "/Users/pertoset/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.20/microsoft.aspnetcore.app.ref.8.0.20.nupkg.sha512",
+    "/Users/pertoset/.nuget/packages/microsoft.netcore.app.host.osx-x64/8.0.20/microsoft.netcore.app.host.osx-x64.8.0.20.nupkg.sha512"
+  ],
   "logs": []
 }

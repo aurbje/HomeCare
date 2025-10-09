@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alj\\OneDrive\\Documents\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj": {}
+    "/Users/pertoset/HomeCare/HomeCareApp/HomeCare.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alj\\OneDrive\\Documents\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj": {
+    "/Users/pertoset/HomeCare/HomeCareApp/HomeCare.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alj\\OneDrive\\Documents\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj",
+        "projectUniqueName": "/Users/pertoset/HomeCare/HomeCareApp/HomeCare.csproj",
         "projectName": "HomeCare",
-        "projectPath": "C:\\Users\\alj\\OneDrive\\Documents\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj",
-        "packagesPath": "C:\\Users\\alj\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alj\\OneDrive\\Documents\\GitHub\\HomeCare\\HomeCare\\obj\\",
+        "projectPath": "/Users/pertoset/HomeCare/HomeCareApp/HomeCare.csproj",
+        "packagesPath": "/Users/pertoset/.nuget/packages/",
+        "outputPath": "/Users/pertoset/HomeCare/HomeCareApp/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\alj\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/pertoset/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,7 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -53,6 +54,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-x64",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -61,7 +76,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
