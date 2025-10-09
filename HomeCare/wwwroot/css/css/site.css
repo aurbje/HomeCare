@@ -1,0 +1,6 @@
+body {
+    scroll-behavior: smooth;
+}
+.navbar-brand {
+    font-weight: 700;
+}

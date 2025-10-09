@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- HERO SECTION -->
+<section class="bg-light py-5 text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold text-primary">Dine behov, vår omsorg</h1>
+        <p class="lead text-muted mt-3">
+            HomeCare gjør det enkelt å bestille hjelp hjemme – alt fra medisinsk assistanse til daglige gjøremål.
+        </p>
+        <a asp-controller="Home" asp-action="About" class="btn btn-primary btn-lg mt-4">Les mer om oss</a>
+    </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-4">Våre tjenester</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-semibold">Hjemmesykepleie</h5>
+                        <p class="card-text text-muted">
+                            Profesjonell medisinsk oppfølging levert rett hjem til deg av erfarne fagfolk.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-semibold">Praktisk hjelp</h5>
+                        <p class="card-text text-muted">
+                            Få hjelp med rengjøring, handling og andre daglige gjøremål for en enklere hverdag.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-semibold">Personlig assistanse</h5>
+                        <p class="card-text text-muted">
+                            Individuelt tilpasset støtte som gjør det mulig å leve et selvstendig og trygt liv hjemme.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT & CONTACT SECTION -->
+<section class="bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold">Vil du vite mer?</h2>
+        <p class="lead mt-3">Les om våre verdier eller ta kontakt direkte – vi er her for deg.</p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a asp-controller="Home" asp-action="About" class="btn btn-outline-light btn-lg px-4">Om oss</a>
+            <a asp-controller="Home" asp-action="Contact" class="btn btn-light btn-lg px-4 text-primary fw-semibold">Kontakt oss</a>
+        </div>
+    </div>
+</section>
+<!-- FOOTER -->
