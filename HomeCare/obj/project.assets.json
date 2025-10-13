@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/HomeCare.csproj",
+      "projectUniqueName": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCareApp/HomeCare.csproj",
       "projectName": "HomeCare",
-      "projectPath": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/HomeCare.csproj",
+      "projectPath": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCareApp/HomeCare.csproj",
       "packagesPath": "/Users/pertoset/.nuget/packages/",
-      "outputPath": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/",
+      "outputPath": "/Users/pertoset/Documents/GitHub/HomeCare/HomeCareApp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/pertoset/.nuget/NuGet/NuGet.Config"
