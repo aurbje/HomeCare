@@ -1,6 +1,36 @@
 body {
-    scroll-behavior: smooth;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
 }
-.navbar-brand {
-    font-weight: 700;
+
+header {
+    background-color: #2b6777;
+    color: white;
+    padding: 1rem 2rem;
+    text-align: center;
+}
+
+h1, h2 {
+    color: #2b6777;
+}
+
+section {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+a {
+    color: #2b6777;
+    text-decoration: none;
+    font-weight: 600;
+}
+a:hover {
+    text-decoration: underline;
 }

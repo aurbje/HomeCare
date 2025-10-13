@@ -9,11 +9,11 @@
     }
   },
   "profiles": {
-    "http": {
+    "HomeCare": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5148",
+      "applicationUrl": "https://localhost:7263;http://localhost:5148",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
