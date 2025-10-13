@@ -1,12 +1,3 @@
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/rpswa.dswa.cache.json
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.GeneratedMSBuildEditorConfig.editorconfig
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.AssemblyInfoInputs.cache
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.AssemblyInfo.cs
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.csproj.CoreCompileInputs.cache
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.MvcApplicationPartsAssemblyInfo.cache
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.RazorAssemblyInfo.cache
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.RazorAssemblyInfo.cs
-/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.sourcelink.json
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/bin/Debug/net8.0/appsettings.Development.json
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/bin/Debug/net8.0/appsettings.json
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/bin/Debug/net8.0/HomeCare.staticwebassets.runtime.json
@@ -16,6 +7,15 @@
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/bin/Debug/net8.0/HomeCare.runtimeconfig.json
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/bin/Debug/net8.0/HomeCare.dll
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/bin/Debug/net8.0/HomeCare.pdb
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/rpswa.dswa.cache.json
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.GeneratedMSBuildEditorConfig.editorconfig
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.AssemblyInfoInputs.cache
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.AssemblyInfo.cs
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.csproj.CoreCompileInputs.cache
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.MvcApplicationPartsAssemblyInfo.cache
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.RazorAssemblyInfo.cache
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.RazorAssemblyInfo.cs
+/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.sourcelink.json
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/rjimswa.dswa.cache.json
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/rjsmrazor.dswa.cache.json
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/rjsmcshtml.dswa.cache.json
@@ -29,15 +29,3 @@
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.pdb
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/HomeCare.genruntimeconfig.cache
 /Users/pertoset/Documents/GitHub/HomeCare/HomeCare/obj/Debug/net8.0/ref/HomeCare.dll
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/rpswa.dswa.cache.json
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.GeneratedMSBuildEditorConfig.editorconfig
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.AssemblyInfoInputs.cache
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.AssemblyInfo.cs
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.csproj.CoreCompileInputs.cache
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.MvcApplicationPartsAssemblyInfo.cache
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.RazorAssemblyInfo.cache
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.RazorAssemblyInfo.cs
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.sourcelink.json
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.dll
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/refint/HomeCare.dll
-/Users/dapabook/Downloads/IT系/OsloMet/2025 Høst/ITPE3200 Webapplikasjoner/Group Project/HomeCare-1/HomeCare/obj/Debug/net8.0/HomeCare.pdb

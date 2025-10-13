@@ -1,0 +1,105 @@
+/* === GENERELT === */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    font-family: "Segoe UI", sans-serif;
+    padding: 2rem;
+  }
+
+h1, h2, h3, h4, h5 {
+    font-weight: 700;
+    color: #003366; /* Mørk blå for trygghet og profesjonalitet */
+}
+
+a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #007bff;
+}
+
+/* === NAVBAR === */
+.navbar {
+    padding: 1rem 0;
+    background-color: #ffffff !important;
+}
+
+.navbar-brand {
+    font-size: 1.6rem;
+    color: #007bff !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #333 !important;
+    margin-left: 1rem;
+}
+
+.nav-link:hover {
+    color: #007bff !important;
+}
+
+/* === HERO-SEKSJON === */
+section.bg-light {
+    background: linear-gradient(135deg, #eaf2ff 0%, #f8f9fa 100%);
+}
+
+.display-4 {
+    color: #0056b3;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* === TJENESTER === */
+.card {
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    color: #004085;
+    font-size: 1.2rem;
+}
+
+/* === KONTAKT / FOOTER === */
+footer {
+    background-color: #003366;
+    color: #f8f9fa;
+    font-size: 0.95rem;
+}
+
+footer a {
+    color: #d4e3ff;
+}
+
+footer a:hover {
+    color: #ffffff;
+}
+
+/* === RESPONSIV JUSTERING === */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.75rem 1rem;
+    }
+}
