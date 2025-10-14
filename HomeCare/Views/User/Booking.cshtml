@@ -1,0 +1,60 @@
+@* @model HomeCare.ViewModels.BookingViewModel *@
+
+
+@{
+    var availableDates = ViewBag.AvailableDates as List<string> ?? new List<string>();
+}
+
+<h2>Book an Appointment</h2>
+
+<form asp-action="Booking" method="post">
+    <div>
+        <label>Select Date</label>
+        <select name="SelectedDate">
+            @foreach (var date in availableDates)
+            {
+                var iso = DateTime.Parse(date).ToString("yyyy-MM-dd");
+                <option value="@iso">@date</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Select Time</label>
+        <select name="Time">
+            <option value="08:00">08:00</option>
+            <option value="10:00">10:00</option>
+            <option value="14:00">14:00</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Task Category</label>
+        <select name="Category" id="categorySelect">
+            <option value="Shopping">Shopping</option>
+            <option value="Cleaning">Cleaning</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+
+    <div id="customCategoryDiv" style="display:none;">
+        <label>Specify Category</label>
+        <input name="CustomCategory" />
+    </div>
+
+    <div>
+        <label>Notes (optional)</label>
+        <textarea name="Notes">@Model.Notes</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Book</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById("categorySelect").addEventListener("change", function () {
+            const customDiv = document.getElementById("customCategoryDiv");
+            customDiv.style.display = this.value === "Other" ? "block" : "none";
+        });
+    </script>
+}

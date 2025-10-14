@@ -2,7 +2,7 @@ namespace HomeCare.Models
 {
     public class Reminder
     {
-        public string Time { get; set; }
-        public string Message { get; set; }
+        public required string Time { get; set; }
+        public string? Message { get; set; } // nullable
     }
 }

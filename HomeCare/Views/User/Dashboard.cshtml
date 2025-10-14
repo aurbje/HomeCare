@@ -4,22 +4,22 @@
 
 <div class="dashboard-section">
     <h3>Reminder</h3>
-    @* <partial name="_ReminderList" model="Model.Item1" /> *@
-    @Html.Partial("_ReminderList", Model.Item1)
+    <partial name="_ReminderList" model="Model.Item1" />
+    @* @Html.Partial("_ReminderList", Model.Item1) *@
 </div>
 
 <div class="dashboard-section">
     <h3>Calendar</h3>
-    @* <partial name="_Calendar" model="Model.Item2" /> *@
-    @Html.Partial("_Calendar", Model.Item2)
+    <partial name="_Calendar" model="Model.Item2" />
+    @* @Html.Partial("_Calendar", Model.Item2) *@
 </div>
 
 <div class="dashboard-section">
     <h3>Booked appointments</h3>
-    @* <partial name="_AppointmentList" model="Model.Item2" /> *@
-    @Html.Partial("_AppointmentList", Model.Item2)
+    <partial name="_AppointmentList" model="Model.Item2" />
+    @* @Html.Partial("_AppointmentList", Model.Item2) *@
 
     <div class="action-button">
-        <a href="/User/Booking" class="btn btn-primary">Book</a>
+        <a asp-controller="User" asp-action="Booking" class="btn btn-primary">Book New Appointment</a>
     </div>
 </div>
