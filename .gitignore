@@ -41,3 +41,7 @@ TestResults/
 *.bak
 *.orig
 *.swp
+
+# Build artifacts
+bin/
+obj/
