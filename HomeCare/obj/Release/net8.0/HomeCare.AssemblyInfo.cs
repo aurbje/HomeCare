@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HomeCare")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b165da5f8f88178ea84113cd0066b59b3e2d50d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1f793e949fdb6e7950d66012de502b66186c60b")]
 [assembly: System.Reflection.AssemblyProductAttribute("HomeCare")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HomeCare")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
