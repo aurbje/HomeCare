@@ -13,6 +13,10 @@
 
     <!-- ✅ Din egen CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 </head>
 
 @section Scripts {
@@ -21,43 +25,59 @@
 
 <body>
     <!-- ✅ HEADER & NAVBAR -->
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-            <div class="container">
-                <!-- Logo -->
-                <a class="navbar-brand fw-bold text-primary" asp-controller="Home" asp-action="Index">HomeCare</a>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+        <div class="container d-flex align-items-center">
+            <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                <img src="~/images/homecare-icon.png" alt="HomeCare Logo" class="homecare-logo me-2" />
+                <span class="fw-bold text-primary fs-4">HomeCare</span>
+            </a>
 
-                <!-- Toggler (mobilmeny) -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- Navigasjonslenker -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Hjem</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="About">Om oss</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a>
-                        </li>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door me-1"></i> Hjem
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="About">
+                            <i class="bi bi-info-circle me-1"></i> Om oss
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link d-flex align-items-center" asp-controller="Booking" asp-action="Index">
+                            <i class="bi bi-calendar-check me-1"></i> Booking
+                        </a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="Contact">
+                            <i class="bi bi-envelope me-1"></i> Kontakt
+                        </a>
+                    </li>
 
-                        <!-- 👇 Nye knapper -->
-                        <li class="nav-item ms-3">
-                            <a class="btn btn-outline-primary" asp-controller="User" asp-action="SignIn">Logg inn</a>
-                        </li>
-                        <li class="nav-item ms-2">
-                            <a class="btn btn-primary" asp-controller="User" asp-action="SignUp">Registrer deg</a>
-                        </li>
-                    </ul>
-                </div>
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-outline-primary px-3 me-2" asp-controller="User" asp-action="SignIn">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Logg inn
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary px-3" asp-controller="User" asp-action="SignUp">
+                            <i class="bi bi-person-plus me-1"></i> Registrer deg
+                        </a>
+                    </li>
+                </ul>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
+
+
 
     <!-- ✅ BODY -->
     <main role="main" class="pb-5 pt-4">

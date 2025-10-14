@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HomeCare.Models
 {
     public class User
