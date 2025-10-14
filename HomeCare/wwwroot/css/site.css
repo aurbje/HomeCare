@@ -4,7 +4,7 @@ body {
     color: #333;
     font-family: "Segoe UI", sans-serif;
     padding: 2rem;
-  }
+}
 
 h1, h2, h3, h4, h5 {
     font-weight: 700;
@@ -101,5 +101,89 @@ footer a:hover {
     .btn-primary {
         width: 100%;
         padding: 0.75rem 1rem;
+    }
+}
+
+/* =======================================================
+   === HOMECARE: SIGN-IN & SIGN-UP STYLING ===
+   (Tilpasset for eldre brukere — tydelig, rolig og trygt)
+======================================================= */
+
+.signup-container {
+    max-width: 520px;
+    margin: 3rem auto;
+}
+
+.signup-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 2rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+.signup-card:hover {
+    transform: translateY(-3px);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #0d6efd;
+    font-size: 1.05rem;
+}
+
+input.form-control {
+    font-size: 1.1rem;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #1c3e6f;
+}
+
+input.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
+    outline: none;
+}
+
+.btn-homecare {
+    background-color: #0d6efd;
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px;
+    transition: background-color 0.2s ease-in-out;
+    border: none;
+}
+
+.btn-homecare:hover {
+    background-color: #0b5ed7;
+}
+
+.back-btn {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.back-btn:hover {
+    text-decoration: underline;
+}
+
+/* === Tilpasning for små skjermer === */
+@media (max-width: 600px) {
+    .signup-card {
+        padding: 1.5rem;
+    }
+
+    input.form-control {
+        font-size: 1rem;
+    }
+
+    .btn-homecare {
+        font-size: 1rem;
     }
 }
