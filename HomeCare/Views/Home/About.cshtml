@@ -2,154 +2,131 @@
     ViewData["Title"] = "Om HomeCare";
 }
 
-<div class="about-page overflow-x-hidden">
-    <!-- Hero Section -->
-    <section class="relative h-[70vh] flex items-center justify-center text-center text-white">
-        <img src="~/images/homecare-hero.jpg" alt="HomeCare bakgrunn" class="absolute inset-0 w-full h-full object-cover brightness-75" />
-        <div class="relative z-10 px-6">
-            <h1 class="text-5xl font-bold mb-4 drop-shadow-lg">Omsorg. Trygghet. Enklere Hverdag.</h1>
-            <p class="text-lg max-w-2xl mx-auto">
-                HomeCare gjør det trygt og enkelt å motta hjelp hjemme – med teknologi som setter mennesker først.
-            </p>
-            <a asp-controller="Home" asp-action="Contact" class="mt-8 inline-block bg-white text-indigo-700 font-semibold px-6 py-3 rounded-xl shadow hover:bg-gray-100 transition">
-                Kontakt oss
-            </a>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <div class="max-w-6xl mx-auto px-6 py-20 space-y-24">
-
-        <!-- Intro Section -->
-        <section class="fade-in text-center">
-            <h2 class="text-4xl font-bold mb-6 text-gray-900">Hva er HomeCare?</h2>
-            <p class="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
-                HomeCare er en digital plattform for hjemmetjenester, utviklet for å gjøre hverdagen enklere for eldre og deres pårørende. 
-                Med HomeCare kan brukere enkelt bestille omsorgstjenester, følge opp tjenester og kommunisere med omsorgspersoner – alt på ett sted.
-            </p>
-        </section>
-
-        <!-- Vision & Mission -->
-        <section class="grid md:grid-cols-2 gap-12 fade-in">
-            <div class="bg-white p-10 rounded-2xl shadow-md hover:shadow-lg transition-shadow">
-                <h3 class="text-2xl font-semibold mb-3 text-indigo-700">Vår visjon</h3>
-                <p class="text-gray-700 leading-relaxed">
-                    Et samfunn der alle eldre kan leve trygt og selvstendig hjemme, støttet av teknologi som gjør omsorgen personlig og tilgjengelig.
-                </p>
-            </div>
-            <div class="bg-white p-10 rounded-2xl shadow-md hover:shadow-lg transition-shadow">
-                <h3 class="text-2xl font-semibold mb-3 text-indigo-700">Vår misjon</h3>
-                <p class="text-gray-700 leading-relaxed">
-                    Å tilby en brukervennlig og pålitelig plattform som gjør det enkelt å motta og administrere hjemmetjenester – med trygghet, kvalitet og omsorg i fokus.
-                </p>
-            </div>
-        </section>
-
-        <!-- Values -->
-        <section class="fade-in">
-            <h2 class="text-3xl font-bold text-center mb-10 text-gray-900">Våre kjerneverdier</h2>
-            <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
-                <div class="p-6 bg-indigo-50 rounded-xl shadow-sm text-center hover:scale-105 transition-transform duration-300">
-                    <h4 class="font-semibold text-indigo-700 mb-2">Omsorg</h4>
-                    <p class="text-gray-700 text-sm">Vi setter brukernes behov først og sørger for personlig oppfølging.</p>
-                </div>
-                <div class="p-6 bg-indigo-50 rounded-xl shadow-sm text-center hover:scale-105 transition-transform duration-300">
-                    <h4 class="font-semibold text-indigo-700 mb-2">Trygghet</h4>
-                    <p class="text-gray-700 text-sm">Alt vi gjør er sikkert, pålitelig og med fokus på personvern.</p>
-                </div>
-                <div class="p-6 bg-indigo-50 rounded-xl shadow-sm text-center hover:scale-105 transition-transform duration-300">
-                    <h4 class="font-semibold text-indigo-700 mb-2">Enkelhet</h4>
-                    <p class="text-gray-700 text-sm">HomeCare skal være intuitiv og tilgjengelig for alle, uansett teknologisk erfaring.</p>
-                </div>
-                <div class="p-6 bg-indigo-50 rounded-xl shadow-sm text-center hover:scale-105 transition-transform duration-300">
-                    <h4 class="font-semibold text-indigo-700 mb-2">Innovasjon</h4>
-                    <p class="text-gray-700 text-sm">Vi forbedrer kontinuerlig løsningen for fremtidens hjemmetjenester.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Timeline -->
-        <section class="fade-in">
-            <h2 class="text-3xl font-bold text-center mb-10 text-gray-900">Vår historie</h2>
-            <div class="relative border-l-4 border-indigo-600 ml-6">
-                <div class="ml-8 mb-10 relative">
-                    <div class="absolute w-4 h-4 bg-indigo-600 rounded-full -left-2 top-1"></div>
-                    <h3 class="font-semibold text-gray-900">2022 – Idéen oppstår</h3>
-                    <p class="text-gray-700 text-sm">Et behov for trygg digital hjemmetjeneste identifiseres gjennom samtaler med eldre og helsepersonell.</p>
-                </div>
-                <div class="ml-8 mb-10 relative">
-                    <div class="absolute w-4 h-4 bg-indigo-600 rounded-full -left-2 top-1"></div>
-                    <h3 class="font-semibold text-gray-900">2023 – Utvikling starter</h3>
-                    <p class="text-gray-700 text-sm">Teamet etableres, og første prototype av appen lanseres for testing i samarbeid med lokale hjemmetjenester.</p>
-                </div>
-                <div class="ml-8 mb-10 relative">
-                    <div class="absolute w-4 h-4 bg-indigo-600 rounded-full -left-2 top-1"></div>
-                    <h3 class="font-semibold text-gray-900">2024 – Pilot og tilbakemelding</h3>
-                    <p class="text-gray-700 text-sm">Pilotprosjektet gjennomføres, og brukernes tilbakemeldinger brukes til forbedringer.</p>
-                </div>
-                <div class="ml-8 relative">
-                    <div class="absolute w-4 h-4 bg-indigo-600 rounded-full -left-2 top-1"></div>
-                    <h3 class="font-semibold text-gray-900">2025 – Lansering</h3>
-                    <p class="text-gray-700 text-sm">HomeCare lanseres nasjonalt, og vi fortsetter å utvikle løsningen basert på brukernes behov.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Team -->
-        <section class="fade-in">
-            <h2 class="text-3xl font-bold text-center mb-10 text-gray-900">Teamet bak HomeCare</h2>
-            <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
-                <div class="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow duration-300">
-                    <img src="~/images/team1.jpg" alt="Lina Berg" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover" />
-                    <h3 class="font-semibold text-indigo-700">Lina Berg</h3>
-                    <p class="text-gray-600 text-sm">Grunnlegger & Prosjektleder</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow duration-300">
-                    <img src="~/images/team2.jpg" alt="Jonas Nilsen" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover" />
-                    <h3 class="font-semibold text-indigo-700">Jonas Nilsen</h3>
-                    <p class="text-gray-600 text-sm">Teknisk leder</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow duration-300">
-                    <img src="~/images/team3.jpg" alt="Sofie Aas" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover" />
-                    <h3 class="font-semibold text-indigo-700">Sofie Aas</h3>
-                    <p class="text-gray-600 text-sm">UX-designer</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA -->
-        <section class="fade-in text-center bg-indigo-600 text-white py-16 rounded-2xl shadow-lg">
-            <h2 class="text-3xl font-semibold mb-4">Bli en del av HomeCare</h2>
-            <p class="text-lg mb-6">Kontakt oss for samarbeid, investering eller mer informasjon om fremtidens hjemmetjeneste.</p>
-            <a asp-controller="Home" asp-action="Contact" class="bg-white text-indigo-700 font-semibold px-8 py-3 rounded-xl shadow hover:bg-gray-100 transition">
-                Kontakt oss
-            </a>
-        </section>
-
+<!-- HERO SECTION -->
+<section class="bg-primary text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Omsorg. Trygghet. Enklere hverdag.</h1>
+        <p class="lead mb-4">
+            HomeCare gjør det trygt og enkelt å motta hjelp hjemme – med teknologi som setter mennesker først.
+        </p>
+        <a asp-controller="Home" asp-action="Contact" class="btn btn-light btn-lg text-primary fw-semibold px-4">
+            Kontakt oss
+        </a>
     </div>
-</div>
+</section>
 
-@section Scripts {
-    <script>
-        const faders = document.querySelectorAll('.fade-in');
+<!-- INTRO -->
+<section class="py-5 bg-light text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-4 text-primary">Hva er HomeCare?</h2>
+        <p class="lead text-muted mx-auto" style="max-width: 800px;">
+            HomeCare er en digital plattform for hjemmetjenester, utviklet for å gjøre hverdagen enklere for eldre og deres pårørende. 
+            Med HomeCare kan brukere bestille omsorgstjenester, følge opp avtaler og kommunisere med omsorgspersoner – alt på ett sted.
+        </p>
+    </div>
+</section>
 
-        const appearOptions = {
-            threshold: 0.2,
-            rootMargin: "0px 0px -50px 0px"
-        };
+<!-- VISION & MISSION -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h3 class="fw-bold text-primary mb-3">Vår visjon</h3>
+                        <p class="text-muted">
+                            Et samfunn der alle eldre kan leve trygt og selvstendig hjemme, støttet av teknologi som gjør omsorgen personlig og tilgjengelig.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h3 class="fw-bold text-primary mb-3">Vår misjon</h3>
+                        <p class="text-muted">
+                            Å tilby en brukervennlig og pålitelig plattform som gjør det enkelt å motta og administrere hjemmetjenester – med trygghet, kvalitet og omsorg i fokus.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-        const appearOnScroll = new IntersectionObserver(function(entries, observer) {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-                entry.target.classList.add('opacity-100', 'translate-y-0');
-                observer.unobserve(entry.target);
-            });
-        }, appearOptions);
+<!-- VALUES -->
+<section class="py-5 bg-light text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-5 text-primary">Våre kjerneverdier</h2>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">Omsorg</h5>
+                        <p class="text-muted small">Vi setter brukernes behov først og sørger for personlig oppfølging.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">Trygghet</h5>
+                        <p class="text-muted small">Alt vi gjør er sikkert, pålitelig og med fokus på personvern.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">Enkelhet</h5>
+                        <p class="text-muted small">HomeCare skal være brukervennlig og tilgjengelig for alle, uansett erfaring.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">Innovasjon</h5>
+                        <p class="text-muted small">Vi forbedrer kontinuerlig løsningen for fremtidens hjemmetjenester.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-        faders.forEach(fader => {
-            fader.classList.add('opacity-0', 'translate-y-10', 'transition', 'duration-700', 'ease-out');
-            appearOnScroll.observe(fader);
-        });
-    </script>
-}
+<!-- TIMELINE -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-5 text-primary">Vår historie</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-3">
+                        <strong>2022 – Idéen oppstår:</strong> Behovet for trygg digital hjemmetjeneste identifiseres gjennom samtaler med eldre og helsepersonell.
+                    </li>
+                    <li class="list-group-item py-3">
+                        <strong>2023 – Utvikling starter:</strong> Første prototype lanseres i samarbeid med lokale hjemmetjenester.
+                    </li>
+                    <li class="list-group-item py-3">
+                        <strong>2024 – Pilot og tilbakemelding:</strong> Pilotprosjekt gjennomføres, og brukernes erfaringer brukes til forbedring.
+                    </li>
+                    <li class="list-group-item py-3">
+                        <strong>2025 – Lansering:</strong> HomeCare lanseres nasjonalt med fokus på kvalitet og trygghet.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- CTA -->
+<section class="bg-primary text-white text-center py-5">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Bli en del av HomeCare</h2>
+        <p class="lead mb-4">Kontakt oss for samarbeid, investering eller mer informasjon om fremtidens hjemmetjeneste.</p>
+        <a asp-controller="Home" asp-action="Contact" class="btn btn-light btn-lg text-primary fw-semibold px-4">
+            Kontakt oss
+        </a>
+    </div>
+</section>
