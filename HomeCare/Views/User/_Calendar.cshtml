@@ -1,0 +1,19 @@
+@model List<HomeCare.Models.Appointment>
+
+<table class="calendar-table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Service</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var appointment in Model.OrderBy(a => a.DateTime))
+        {
+            <tr>
+                <td>@appointment.DateTime.ToString("yyyy-MM-dd")</td>
+                <td>@appointment.ServiceType</td>
+            </tr>
+        }
+    </tbody>
+</table>

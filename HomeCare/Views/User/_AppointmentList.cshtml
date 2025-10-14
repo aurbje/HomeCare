@@ -1,0 +1,19 @@
+@model List<HomeCare.Models.Appointment>
+
+
+
+@if (Model != null && Model.Any())
+{
+    <ul class="appointment-list">
+        @foreach (var appointment in Model)
+        {
+            <li>
+                <strong>@appointment.DateTime.ToString("yyyy-MM-dd HH:mm")</strong> - @appointment.ServiceType
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No upcoming appointments.</p>
+}
