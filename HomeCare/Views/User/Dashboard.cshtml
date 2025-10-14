@@ -1,84 +1,76 @@
 @model HomeCare.ViewModels.User.DashboardViewModel
 
-@{
-    ViewData["Title"] = "Mitt Dashboard";
-}
+<div class="container py-4">
+    <h2 class="text-primary mb-4">Velkommen tilbake, @Model.FullName!</h2>
 
-<div class="container mt-5">
-    <h2 class="fw-bold text-primary mb-4">Velkommen tilbake, @Model.FullName 🌸</h2>
-    <p class="text-muted mb-5">
-        Her finner du oversikt over dine tjenester, avtaler og viktig informasjon.
-    </p>
+    <div class="row g-4">
 
-    <!-- === INFO-KORTENE === -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card dashboard-card text-center p-4 border-0 shadow-sm">
-                <i class="bi bi-calendar-check display-5 text-primary mb-3"></i>
-                <h5 class="fw-bold">Kommende avtaler</h5>
-                <p class="fs-2 fw-bold text-primary">@Model.UpcomingBookings</p>
-                <a asp-controller="Booking" asp-action="Index" class="btn btn-outline-primary mt-2">Vis kalender</a>
+        <!-- 🕒 PÅMINNELSER -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h4 class="text-secondary mb-3">Dagens påminnelser</h4>
+                @if (Model.Reminders != null && Model.Reminders.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var reminder in Model.Reminders)
+                        {
+                            <li class="list-group-item">
+                                <strong>@reminder.Time:</strong> @reminder.Message
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>Ingen påminnelser i dag.</p>
+                }
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card dashboard-card text-center p-4 border-0 shadow-sm">
-                <i class="bi bi-person-heart display-5 text-success mb-3"></i>
-                <h5 class="fw-bold">Fullførte tjenester</h5>
-                <p class="fs-2 fw-bold text-success">@Model.CompletedBookings</p>
-                <a asp-controller="Booking" asp-action="History" class="btn btn-outline-success mt-2">Se historikk</a>
+        <!-- 📅 AVTALER -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h4 class="text-secondary mb-3">Kommende avtaler</h4>
+                @if (Model.Appointments != null && Model.Appointments.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var appointment in Model.Appointments)
+                        {
+                            <li class="list-group-item">
+                                <strong>@appointment.ServiceType</strong> – 
+                                @appointment.DateTime.ToString("dd.MM.yyyy HH:mm")
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>Ingen kommende avtaler.</p>
+                }
+
+                <div class="mt-3 text-end">
+                    <a href="/Booking/Index" class="btn btn-primary">Bestill ny time</a>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card dashboard-card text-center p-4 border-0 shadow-sm">
-                <i class="bi bi-clock-history display-5 text-warning mb-3"></i>
-                <h5 class="fw-bold">Sist innlogget</h5>
-                <p class="fs-5">@Model.LastLogin.ToString("dd.MM.yyyy HH:mm")</p>
-                <small class="text-muted">Hyggelig å se deg igjen 💙</small>
-            </div>
-        </div>
     </div>
 
-    <!-- === VARSLER / MELDINGER === -->
-    <div class="mb-5">
-        <h4 class="text-secondary mb-3">
-            <i class="bi bi-bell-fill text-warning me-2"></i> Varsler
-        </h4>
-
+    <!-- 🔔 VARSLER -->
+    <div class="card shadow-sm p-3 mt-4">
+        <h4 class="text-secondary mb-3">Varsler</h4>
         @if (Model.Notifications != null && Model.Notifications.Any())
         {
-            <ul class="list-group shadow-sm rounded-3">
+            <ul class="list-group">
                 @foreach (var note in Model.Notifications)
                 {
-                    <li class="list-group-item py-3 d-flex align-items-center">
-                        <i class="bi bi-dot text-primary fs-3 me-2"></i> 
-                        <span>@note</span>
-                    </li>
+                    <li class="list-group-item">@note</li>
                 }
             </ul>
         }
         else
         {
-            <div class="alert alert-light border text-muted">
-                Ingen varsler akkurat nå 🌿
-            </div>
+            <p>Ingen varsler akkurat nå.</p>
         }
-    </div>
-
-    <!-- === HANDLINGSSEKSJON === -->
-    <div class="text-center mt-5">
-        <h4 class="text-primary mb-4">Hva ønsker du å gjøre videre?</h4>
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-            <a asp-controller="Booking" asp-action="Index" class="btn btn-primary btn-lg px-4">
-                <i class="bi bi-calendar-plus me-2"></i> Bestill ny tjeneste
-            </a>
-            <a asp-controller="User" asp-action="EditProfile" class="btn btn-outline-primary btn-lg px-4">
-                <i class="bi bi-person-gear me-2"></i> Rediger profil
-            </a>
-            <a asp-controller="Home" asp-action="Contact" class="btn btn-outline-secondary btn-lg px-4">
-                <i class="bi bi-envelope me-2"></i> Kontakt oss
-            </a>
-        </div>
     </div>
 </div>

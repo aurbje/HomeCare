@@ -44,6 +44,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WaWV3SW1wb3J0cy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/User/Booking.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9Cb29raW5nLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/User/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9EYXNoYm9hcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -54,6 +58,22 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/User/SignUp.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9TaWduVXAuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/User/Welcome.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9XZWxjb21lLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/User/_AppointmentList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9fQXBwb2ludG1lbnRMaXN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/User/_Calender.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9fQ2FsZW5kZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/User/_ReminderList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9fUmVtaW5kZXJMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/pertoset/Documents/GitHub/HomeCare/HomeCare/Views/_ViewStart.cshtml]
