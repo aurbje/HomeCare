@@ -1,0 +1,43 @@
+# Visual Studio Code
+.vscode/
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# Packages
+packages/
+*.nupkg
+*.suo
+*.user
+*.log
+*.vspscc
+*.vssscc
+
+# Rider
+.idea/
+
+# Mac-specific files
+.DS_Store
+.Trashes
+Thumbs.db
+
+# Project files
+*.csproj.user
+*.resharper
+*.resharper.user
+*.DotSettings
+
+# Temporary files
+*.tmp
+temp/
+
+# Test results
+TestResults/
+
+# Other common ignores
+*.bak
+*.orig
+*.swp
