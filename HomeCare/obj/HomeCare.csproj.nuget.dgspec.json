@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\HomeCare.csproj": {}
+    "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\HomeCare.csproj": {
+    "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\HomeCare.csproj",
+        "projectUniqueName": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj",
         "projectName": "HomeCare",
-        "projectPath": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\HomeCare.csproj",
+        "projectPath": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCare\\HomeCare.csproj",
         "packagesPath": "C:\\Users\\alj\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCareApp\\obj\\",
+        "outputPath": "C:\\Users\\alj\\OsloMet\\2025 Høst\\ITPE3200 Webapplikasjoner\\GitHub\\HomeCare\\HomeCare\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\alj\\AppData\\Roaming\\NuGet\\NuGet.Config"
