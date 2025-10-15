@@ -1,7 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using HomeCare.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Legg til tjenester for MVC
 builder.Services.AddControllersWithViews();
+
+// Legg til DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
@@ -17,6 +25,7 @@ app.UseStaticFiles(); // For CSS, JS, bilder
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Endepunkter for MVC
