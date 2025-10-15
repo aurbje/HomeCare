@@ -13,7 +13,7 @@
             Vi hjelper deg med å holde hjemmet trygt og komfortabelt.
         </p>
 
-        <form asp-action="SignUp" method="post" novalidate>
+        <form asp-controller="Auth" asp-action="SignUp" method="post" novalidate>
             <div class="mb-3">
                 <label asp-for="FullName" class="form-label">Fullt navn</label>
                 <input asp-for="FullName" class="form-control" placeholder="Skriv inn ditt fulle navn" />

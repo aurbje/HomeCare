@@ -4,13 +4,16 @@ using HomeCare.Data;
 using HomeCare.Models;
 using System.Security.Cryptography;
 using System.Text;
+using HomeCare.ViewModels.Account;
+using BCrypt.Net;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 
 namespace HomeCare.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController : Controller
     {
         private readonly AppDbContext _context;
 
@@ -19,17 +22,40 @@ namespace HomeCare.Controllers
             _context = context;
         }
 
-        // Sign up
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(User user)
+        [HttpGet("SignUp")]
+        public IActionResult SignUp()
         {
-            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
-                return BadRequest("Email already exists");
+            return View();
+        }
 
-            user.PasswordHash = HashPassword(user.PasswordHash); // hash password
+        // handle form submission for sign up
+        [HttpPost("signup")]
+        public async Task<IActionResult> SignUp(SignUpViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+
+            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            {
+                return BadRequest("Email already exists");
+            }
+
+            var user = new User
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+                Username = model.Email,
+                PasswordHash = HashPassword(model.Password),
+                Role = "user"
+            };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return Ok("User registered successfully");
+
+            return RedirectToAction("SignIn", "Auth");
         }
 
         // Login
@@ -45,10 +71,7 @@ namespace HomeCare.Controllers
 
         private string HashPassword(string password)
         {
-            using var sha256 = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha256.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
 }
