@@ -3,27 +3,38 @@
 }
 
 <!-- HERO SECTION -->
-<section class="hero-homecare text-center text-white d-flex align-items-center justify-content-center"
-         style="background-image:url('@Url.Content("~/images/homecare-hero.jpg")')">
-    <div class="container">
-        <h1 class="display-6 fw-bold">Dine behov, vår omsorg</h1>
-        <p class="lead">Trygghet, nærhet og støtte – akkurat når du trenger det.</p>
-        <a asp-controller="Home" asp-action="About" class="btn btn-primary mt-3">Les mer om oss</a>
+<section class="hero-homecare d-flex align-items-center justify-content-center text-center text-white position-relative">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative z-2">
+        <h1 class="display-3 fw-bold mb-3 animate-fade">Omsorg der du er</h1>
+        <p class="lead mb-4 animate-fade-delay">Trygghet, nærhet og støtte – akkurat når du trenger det.</p>
+        <a asp-controller="Home" asp-action="About" class="btn btn-main btn-lg px-4 py-2 shadow-lg">Les mer om oss</a>
     </div>
 </section>
 
 
+<!-- INTRO SECTION -->
+<section class="intro-section py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Omsorg i trygge hender</h2>
+        <p class="lead mx-auto" style="max-width: 800px;">
+            HomeCare tilbyr profesjonell hjelp i hjemmet, tilpasset dine behov.  
+            Vi forstår hvor viktig trygghet og nærhet er i hverdagen, og vi er her for å gjøre det lettere.
+        </p>
+    </div>
+</section>
 
 <!-- SERVICES SECTION -->
-<section class="py-5">
+<section class="services-section py-5 bg-light">
     <div class="container">
-        <h2 class="text-center fw-bold mb-4">Våre tjenester</h2>
+        <h2 class="text-center fw-bold mb-5">Våre tjenester</h2>
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-semibold">Hjemmesykepleie</h5>
-                        <p class="card-text text-muted">
+                <div class="card h-100 border-0 shadow service-card text-center">
+                    <div class="card-body">
+                        <img src="~/images/forside2.png" alt="" class="mb-3" width="235">
+                        <h4 class="fw-semibold mb-2 text-green">Hjemmesykepleie</h4>
+                        <p class="text-muted">
                             Profesjonell medisinsk oppfølging levert rett hjem til deg av erfarne fagfolk.
                         </p>
                     </div>
@@ -31,10 +42,11 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-semibold">Praktisk hjelp</h5>
-                        <p class="card-text text-muted">
+                <div class="card h-100 border-0 shadow service-card text-center">
+                    <div class="card-body">
+                        <img src="~/images/forside3.png" alt="" class="mb-3" width="235">
+                        <h4 class="fw-semibold mb-2 text-green">Praktisk hjelp</h4>
+                        <p class="text-muted">
                             Få hjelp med rengjøring, handling og andre daglige gjøremål for en enklere hverdag.
                         </p>
                     </div>
@@ -42,10 +54,11 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-semibold">Personlig assistanse</h5>
-                        <p class="card-text text-muted">
+                <div class="card h-100 border-0 shadow service-card text-center">
+                    <div class="card-body">
+                        <img src="~/images/forside4.png" alt="" class="mb-3" width="235">
+                        <h4 class="fw-semibold mb-2 text-green">Personlig assistanse</h4>
+                        <p class="text-muted">
                             Individuelt tilpasset støtte som gjør det mulig å leve et selvstendig og trygt liv hjemme.
                         </p>
                     </div>
@@ -55,15 +68,39 @@
     </div>
 </section>
 
-<!-- ABOUT & CONTACT SECTION -->
-<section class="bg-primary text-white py-5">
-    <div class="container text-center">
-        <h2 class="fw-bold">Vil du vite mer?</h2>
-        <p class="lead mt-3">Les om våre verdier eller ta kontakt direkte – vi er her for deg.</p>
-        <div class="d-flex justify-content-center gap-3 mt-4">
-            <a asp-controller="Home" asp-action="About" class="btn btn-outline-light btn-lg px-4">Om oss</a>
-            <a asp-controller="Home" asp-action="Contact" class="btn btn-light btn-lg px-4 text-primary fw-semibold">Kontakt oss</a>
+<!-- ABOUT SECTION -->
+<section class="about-section py-5 bg-white rounded-5">
+    <div class="container d-flex flex-column flex-md-row align-items-center gap-5">
+        <div class="about-text flex-fill">
+            <h2 class="fw-bold mb-3">Et varmt og pålitelig team</h2>
+            <p class="lead text-muted mb-4">
+                Våre ansatte er dedikerte fagfolk med hjerte for omsorg.  
+                Vi legger vekt på respekt, trygghet og verdighet i møte med alle vi hjelper.
+            </p>
+            <a asp-controller="Home" asp-action="About" class="btn btn-main px-4 py-2">Les mer om oss</a>
+        </div>
+        <div class="about-img flex-fill text-center">
+            <img src="~/images/forside4.png" alt="Omsorg i hjemmet"
+                 class="img-fluid rounded-4 shadow-lg" style="max-width: 80%;">
         </div>
     </div>
 </section>
+
+<!-- CTA SECTION -->
+<section class="cta-section text-center text-white py-5">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Vil du vite mer?</h2>
+        <p class="lead mb-4">Les om våre verdier eller ta kontakt direkte – vi er her for deg.</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a asp-controller="Home" asp-action="About" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Om oss</a>
+            <a asp-controller="Home" asp-action="Contact" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Kontakt oss</a>
+        </div>
+    </div>
+</section>
+
 <!-- FOOTER -->
+<footer class="text-center text-white bg-transparent py-4 mt-5">
+    <div class="container">
+        <p class="mb-0">© 2025 HomeCare — Omsorg der du er</p>
+    </div>
+</footer>

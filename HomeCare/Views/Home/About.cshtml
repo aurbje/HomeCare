@@ -3,39 +3,34 @@
 }
 
 <!-- HERO SECTION -->
-<section class="bg-primary text-white text-center py-5">
-    <div class="container">
-        <h1 class="display-4 fw-bold mb-3">Omsorg. Trygghet. Enklere hverdag.</h1>
-        <p class="lead mb-4">
-            HomeCare gjør det trygt og enkelt å motta hjelp hjemme – med teknologi som setter mennesker først.
-        </p>
-        <a asp-controller="Home" asp-action="Contact" class="btn btn-light btn-lg text-primary fw-semibold px-4">
-            Kontakt oss
-        </a>
+<section class="hero-homecare d-flex align-items-center justify-content-center text-center text-white position-relative">
+    <div class="container position-relative z-2">
+        <h1 class="display-3 fw-bold mb-3 animate-fade">Om HomeCare</h1>
+        <p class="lead mb-4 animate-fade-delay text-white">Trygghet, nærhet og støtte – akkurat når du trenger det.</p>
+        <a asp-controller="Home" asp-action="About" class="btn btn-main btn-lg px-4 py-2 shadow-lg">Les mer om oss</a>
     </div>
 </section>
 
 <!-- INTRO -->
 <section class="py-5 bg-light text-center">
     <div class="container">
-        <h2 class="fw-bold mb-4 text-primary">Hva er HomeCare?</h2>
+        <h2 class="fw-bold mb-4 text-green">Hva er HomeCare?</h2>
         <p class="lead text-muted mx-auto" style="max-width: 800px;">
             HomeCare har levert pålitelige og omsorgsfulle hjemmetjenester i Oslo-området siden 1999.
-Vi tilbyr tjenester både gjennom offentlige ordninger og for privatpersoner som ønsker ekstra trygghet og støtte i hverdagen.
-I HomeCare vet vi hvor viktig forutsigbarhet, trygghet og stabilitet er.
-Derfor bygger vi alle våre tjenester på respekt, nærhet og personlig oppfølging – slik at du og dine pårørende alltid skal føle dere ivaretatt.
+            Vi tilbyr tjenester både gjennom offentlige ordninger og for privatpersoner som ønsker ekstra trygghet og støtte i hverdagen.
+            Hos oss står respekt, nærhet og personlig oppfølging sentralt – slik at du og dine pårørende alltid føler dere ivaretatt.
         </p>
     </div>
 </section>
 
 <!-- VISION & MISSION -->
-<section class="py-5">
+<section class="py-5 bg-white">
     <div class="container">
         <div class="row g-4">
             <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h3 class="fw-bold text-primary mb-3">Vår visjon</h3>
+                <div class="card h-100 border-0 shadow-lg rounded-4 hover-lift">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold text-gradient mb-3"><i class="bi bi-eye-fill me-2"></i>Vår visjon</h3>
                         <p class="text-muted">
                             Et samfunn der alle eldre kan leve trygt og selvstendig hjemme, støttet av teknologi som gjør omsorgen personlig og tilgjengelig.
                         </p>
@@ -43,9 +38,9 @@ Derfor bygger vi alle våre tjenester på respekt, nærhet og personlig oppfølg
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h3 class="fw-bold text-primary mb-3">Vår misjon</h3>
+                <div class="card h-100 border-0 shadow-lg rounded-4 hover-lift">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold text-gradient mb-3"><i class="bi bi-heart-fill me-2"></i>Vår misjon</h3>
                         <p class="text-muted">
                             Å tilby en brukervennlig og pålitelig plattform som gjør det enkelt å motta og administrere hjemmetjenester – med trygghet, kvalitet og omsorg i fokus.
                         </p>
@@ -56,39 +51,43 @@ Derfor bygger vi alle våre tjenester på respekt, nærhet og personlig oppfølg
     </div>
 </section>
 
-<!-- VALUES -->
+<!-- VERDIER -->
 <section class="py-5 bg-light text-center">
     <div class="container">
-        <h2 class="fw-bold mb-5 text-primary">Våre kjerneverdier</h2>
+        <h2 class="fw-bold mb-5 text-green">Våre kjerneverdier</h2>
         <div class="row g-4">
             <div class="col-md-3 col-sm-6">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                     <div class="card-body">
-                        <h5 class="fw-bold text-primary">Omsorg</h5>
+                        <i class="bi bi-people-fill fs-1 mb-3"></i>
+                        <h5 class="fw-bold text-gradient">Omsorg</h5>
                         <p class="text-muted small">Vi setter brukernes behov først og sørger for personlig oppfølging.</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                     <div class="card-body">
-                        <h5 class="fw-bold text-primary">Trygghet</h5>
+                        <i class="bi bi-shield-lock-fill fs-1 mb-3"></i>
+                        <h5 class="fw-bold text-gradient">Trygghet</h5>
                         <p class="text-muted small">Alt vi gjør er sikkert, pålitelig og med fokus på personvern.</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                     <div class="card-body">
-                        <h5 class="fw-bold text-primary">Enkelhet</h5>
+                        <i class="bi bi-lightning-charge-fill fs-1 mb-3"></i>
+                        <h5 class="fw-bold text-gradient">Enkelhet</h5>
                         <p class="text-muted small">HomeCare skal være brukervennlig og tilgjengelig for alle, uansett erfaring.</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                     <div class="card-body">
-                        <h5 class="fw-bold text-primary">Innovasjon</h5>
+                        <i class="bi bi-cpu-fill fs-1 mb-3"></i>
+                        <h5 class="fw-bold text-gradient">Innovasjon</h5>
                         <p class="text-muted small">Vi forbedrer kontinuerlig løsningen for fremtidens hjemmetjenester.</p>
                     </div>
                 </div>
@@ -100,23 +99,23 @@ Derfor bygger vi alle våre tjenester på respekt, nærhet og personlig oppfølg
 <!-- TIMELINE -->
 <section class="py-5">
     <div class="container">
-        <h2 class="fw-bold text-center mb-5 text-primary">Vår historie</h2>
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item py-3">
-                        <strong>2022 – Idéen oppstår:</strong> Behovet for trygg digital hjemmetjeneste identifiseres gjennom samtaler med eldre og helsepersonell.
-                    </li>
-                    <li class="list-group-item py-3">
-                        <strong>2023 – Utvikling starter:</strong> Første prototype lanseres i samarbeid med lokale hjemmetjenester.
-                    </li>
-                    <li class="list-group-item py-3">
-                        <strong>2024 – Pilot og tilbakemelding:</strong> Pilotprosjekt gjennomføres, og brukernes erfaringer brukes til forbedring.
-                    </li>
-                    <li class="list-group-item py-3">
-                        <strong>2025 – Lansering:</strong> HomeCare lanseres nasjonalt med fokus på kvalitet og trygghet.
-                    </li>
-                </ul>
+        <h2 class="fw-bold text-center mb-5 text-gradient">Vår historie</h2>
+        <div class="timeline position-relative mx-auto" style="max-width: 700px;">
+            <div class="timeline-item mb-4">
+                <h6 class="fw-bold text-gradient">2024 – Idéen oppstår</h6>
+                <p class="text-muted small">Behovet for trygg digital hjemmetjeneste identifiseres gjennom samtaler med eldre og helsepersonell.</p>
+            </div>
+            <div class="timeline-item mb-4">
+                <h6 class="fw-bold text-gradient">2025 – Utvikling starter</h6>
+                <p class="text-muted small">Første prototype lanseres i samarbeid med lokale hjemmetjenester.</p>
+            </div>
+            <div class="timeline-item mb-4">
+                <h6 class="fw-bold text-gradient">2025 – Pilot og tilbakemelding</h6>
+                <p class="text-muted small">Pilotprosjekt gjennomføres, og brukernes erfaringer brukes til forbedring.</p>
+            </div>
+            <div class="timeline-item">
+                <h6 class="fw-bold text-gradient">2025 – Lansering</h6>
+                <p class="text-muted small">HomeCare lanseres nasjonalt med fokus på kvalitet og trygghet.</p>
             </div>
         </div>
     </div>
@@ -125,32 +124,41 @@ Derfor bygger vi alle våre tjenester på respekt, nærhet og personlig oppfølg
 <!-- TEAM -->
 <section class="py-5 bg-light text-center">
     <div class="container">
-        <h2 class="fw-bold mb-5 text-primary">Teamet bak HomeCare</h2>
-        <div class="row g-4 justify-content-center">
-            <div class="col-md-4 col-sm-6">
-                <div class="card border-0 shadow-sm h-100">
+        <h2 class="fw-bold mb-5 text-green">Teamet bak HomeCare</h2>
+        <div class="row g-5 justify-content-center">
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-lg rounded-4 hover-lift h-100">
                     <div class="card-body">
-                        <img src="~/images/team1.jpg" alt="Lina Berg" class="rounded-circle mb-3" width="100" height="100" />
-                        <h5 class="fw-bold text-primary">Lina Berg</h5>
-                        <p class="text-muted small">Grunnlegger & Prosjektleder</p>
+                        <img src="~/images/alexander.png" alt="Alexander Jahr" class="rounded-circle mb-3 shadow-sm" width="100" height="100" />
+                        <h5 class="fw-bold text-gradient">Alexander Jahr</h5>
+                        <p class="text-muted small">Grunnlegger & Backend</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6">
-                <div class="card border-0 shadow-sm h-100">
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-lg rounded-4 hover-lift h-100">
                     <div class="card-body">
-                        <img src="~/images/team2.jpg" alt="Jonas Nilsen" class="rounded-circle mb-3" width="100" height="100" />
-                        <h5 class="fw-bold text-primary">Jonas Nilsen</h5>
-                        <p class="text-muted small">Teknisk leder</p>
+                        <img src="~/images/yu.png" alt="Yu Kaland" class="rounded-circle mb-3 shadow-sm" width="100" height="100" />
+                        <h5 class="fw-bold text-gradient">Yu Terada Kaland</h5>
+                        <p class="text-muted small">Grunnlegger & Backend</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6">
-                <div class="card border-0 shadow-sm h-100">
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-lg rounded-4 hover-lift h-100">
                     <div class="card-body">
-                        <img src="~/images/team3.jpg" alt="Sofie Aas" class="rounded-circle mb-3" width="100" height="100" />
-                        <h5 class="fw-bold text-primary">Sofie Aas</h5>
-                        <p class="text-muted small">UX-designer</p>
+                        <img src="~/images/ulrik.png" alt="Ulrik Rasmussen" class="rounded-circle mb-3 shadow-sm" width="100" height="100" />
+                        <h5 class="fw-bold text-gradient">Ulrik Rasmussen</h5>
+                        <p class="text-muted small">Grunnlegger & UX-design</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-lg rounded-4 hover-lift h-100">
+                    <div class="card-body">
+                        <img src="~/images/aurora.png" alt="Aurora Bjerke" class="rounded-circle mb-3 shadow-sm" width="100" height="100" />
+                        <h5 class="fw-bold text-gradient">Aurora Bjerke</h5>
+                        <p class="text-muted small">Grunnlegger & UX-design</p>
                     </div>
                 </div>
             </div>
@@ -159,12 +167,26 @@ Derfor bygger vi alle våre tjenester på respekt, nærhet og personlig oppfølg
 </section>
 
 <!-- CTA -->
-<section class="bg-primary text-white text-center py-5">
+<section class="cta-section text-white text-center py-5" 
+         style="background: transparent;">
     <div class="container">
-        <h2 class="fw-bold mb-3">Bli en del av HomeCare</h2>
+        <h2 class="fw-bold mb-3 text-gradient">Bli en del av HomeCare</h2>
         <p class="lead mb-4">Kontakt oss for samarbeid, investering eller mer informasjon om fremtidens hjemmetjeneste.</p>
-        <a asp-controller="Home" asp-action="Contact" class="btn btn-light btn-lg text-primary fw-semibold px-4">
+        <a asp-controller="Home" asp-action="Contact" 
+           class="btn btn-light btn-lg fw-semibold px-5 py-3 rounded-pill">
             Kontakt oss
         </a>
     </div>
 </section>
+
+<!-- Extra Styles -->
+<style>
+.text-gradient {
+    background: linear-gradient(90deg, #007bff, #00c896);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.hover-lift:hover {
+    transform: translateY(-5px);
+    transition: 0.3s ease;
+}

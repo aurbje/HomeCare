@@ -1,305 +1,382 @@
+/* ===============================================
+   HOMECARE - STABIL OG RESPONSIV STIL
+   Designet for MacBook, nettbrett og mobil
+   Farger og tone inspirert av Ecura + HomeCare
+=============================================== */
+
+/* === FARGEPALETTE === */
+:root {
+  --hc-teal: #10B981; /* Frisk grønn (hovedfarge fra logo) */
+  --hc-green: #4ADE80; /* Lysere grønn */
+  --hc-darkgreen: #255d31;
+  --hc-bg-light: #f6fbf9;
+  --hc-bg-dark: #0b2236;
+  --hc-text-dark: #1d2b2f;
+  --hc-text-light: #f9fffd;
+  --hc-gray: #708c91;
+  --hc-white: #ffffff;
+  --hc-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
 /* === GENERELT === */
 body {
-    background-color: #f8f9fa;
-    color: #4340ff;
-    font-family: "Segoe UI", sans-serif;
-    padding: 2rem;
+  background-color: var(--hc-bg-light);
+  color: var(--hc-text-dark);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.7;
+  font-size: 1.1rem;
+  margin: 0;
+  padding: 0;
+  padding-top: 65px; /* skyver alt ned slik at det starter under navbaren */
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  color: var(--hc-teal) !important;
 }
 
 h1 {
-    font-weight: 700;
-    color: #ffffff; /* Hvit for tydeligheten */
+  font-size: 2.8rem;
+  font-weight: 700;
 }
-h2, h3, h4, h5 {
-    font-weight: 700;
-    color: #72b1ff; /* Mørk blå for trygghet og profesjonalitet */
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+p {
+  color: var(--hc-gray);
+  margin-bottom: 1.5rem;
+  font-weight: 400;
 }
 
 a {
-    text-decoration: none;
-    transition: color 0.3s ease;
+  color: var(--hc-teal);
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 a:hover {
-    color: #007bff;
+  color: var(--hc-green);
 }
 
-/* === HOMECARE FIXED / STICKY NAVBAR (FORBEDRET) === */
+/* ===============================================
+   NAVBAR
+=============================================== */
 .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1030;
-    background-color: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.2s ease;
-    padding: 1rem 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1030;
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Når man scroller – gjør navbaren litt kompakt og mer markert */
 .navbar.scrolled {
-    background-color: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
-    padding: 0.6rem 0;
+  padding: 0.7rem 4vw;
+  background: rgba(255, 255, 255, 0.98);
 }
 
-/* Sørg for at resten av innholdet ikke havner bak navbaren */
-body {
-    padding-top: 85px; /* juster hvis navbaren blir høyere/lavere */
-}
-
-/* Logo justeringer */
+/* Logo */
 .homecare-logo {
-    height: 38px;
-    width: 38px;
-    object-fit: contain;
-    border-radius: 50%;
+  height: 46px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
 }
 
-/* Pen hover og spacing */
+/* Nav-links */
+.navbar-nav {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .nav-link {
-    font-size: 1.05rem;
-    font-weight: 500;
-    color: #333 !important;
-    transition: color 0.3s ease, transform 0.2s ease;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .nav-link:hover {
-    color: #0d6efd !important;
-    transform: translateY(-2px);
+  color: var(--hc-teal) !important;
+  transform: translateY(-1px);
 }
 
-
-/* === HERO-SEKSJON === */
-section.bg-light {
-    background: linear-gradient(135deg, #eaf2ff 0%, #f8f9fa 100%);
+/* Knapper */
+.btn-success {
+  background-color: var(--hc-teal);
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
 }
 
-.display-4 {
-    color: #0056b3;
+.btn-success:hover {
+  background-color: var(--hc-green);
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 2rem;
+.btn-outline-success {
+  border-color: var(--hc-teal);
+  color: var(--hc-teal);
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
+.btn-outline-success:hover {
+  background-color: var(--hc-teal);
+  color: white;
 }
 
-/* === TJENESTER === */
+/* === NAVBAR RESPONSIVITET === */
+@media (max-width: 900px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 2rem;
+  }
+
+  .navbar-nav {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 1rem;
+  }
+
+  .nav-cta {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ===============================================
+   HERO-SEKSJON
+=============================================== */
+.hero-homecare {
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  animation: heroSlideshow 24s infinite ease-in-out;
+  color: var(--hc-white);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 10rem 2rem;
+}
+
+/* Lysere gradient som slipper mer av bildet gjennom */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      rgba(0, 40, 35, 0.251),
+      rgba(3, 57, 34, 0.25),
+      rgba(11, 11, 11, 0.55)
+  );
+  z-index: 1;
+}
+
+@keyframes heroSlideshow {
+  0%   { background-image: url('../images/forside1.png'); }
+  25%  { background-image: url('../images/forside2.png'); }
+  50%  { background-image: url('../images/forside4.png'); }
+  75%  { background-image: url('../images/about1.png'); }
+  100% { background-image: url('../images/forside7.png'); }
+}
+
+/* Tekstbehandling for å bevare lesbarhet over lysere bilde */
+.hero-homecare h1,
+.hero-homecare p {
+  position: relative;
+  z-index: 2;
+  text-shadow: 2 2px 10px rgba(4, 85, 26, 0.45);
+}
+
+.hero-homecare p.lead {
+  color: #fff !important;
+}
+
+/* Animasjoner */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade {
+  animation: fadeUp 1s ease-out;
+}
+
+.animate-fade-delay {
+  animation: fadeUp 1.5s ease-out;
+}
+
+/* Knapper */
+.btn-main {
+  background-color: var(--hc-teal);
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-main:hover {
+  background-color: var(--hc-green);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+
+/* ===============================================
+   SEKSJONER OG KORT
+=============================================== */
+section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
 .card {
-    border-radius: 12px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--hc-white);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: var(--hc-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.card-title {
-    color: #004085;
-    font-size: 1.2rem;
+.card h3 {
+  color: var(--hc-teal);
+  font-weight: 700;
 }
 
-/* === KONTAKT / FOOTER === */
-footer {
-    background-color: #003366;
-    color: #f8f9fa;
-    font-size: 0.95rem;
+/* Kort-animasjon */
+.service-card {
+  transition: all 0.3s ease;
 }
 
-footer a {
-    color: #d4e3ff;
+.service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 90, 75, 0.15);
 }
 
-footer a:hover {
-    color: #ffffff;
-}
-
-/* === RESPONSIV JUSTERING === */
-@media (max-width: 768px) {
-    .display-4 {
-        font-size: 2rem;
-    }
-
-    .btn-primary {
-        width: 100%;
-        padding: 0.75rem 1rem;
-    }
-}
-
-/* =======================================================
-   === HOMECARE: SIGN-IN & SIGN-UP STYLING ===
-   (Tilpasset for eldre brukere — tydelig, rolig og trygt)
-======================================================= */
-
-.signup-container {
-    max-width: 520px;
-    margin: 3rem auto;
-}
-
-.signup-card {
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    padding: 2rem;
-    transition: transform 0.2s ease-in-out;
-}
-
-.signup-card:hover {
-    transform: translateY(-3px);
+/* ===============================================
+   SKJEMA / SIGN-IN
+=============================================== */
+.form-section {
+  background-color: var(--hc-white);
+  max-width: 520px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: var(--hc-shadow);
 }
 
 .form-label {
-    font-weight: 600;
-    color: #0d6efd;
-    font-size: 1.05rem;
+  display: block;
+  text-align: left;
+  color: var(--hc-text-dark);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 input.form-control {
-    font-size: 1.1rem;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #1c3e6f;
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #bcd4d1;
+  margin-bottom: 1.5rem;
 }
 
 input.form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
-    outline: none;
+  border-color: var(--hc-teal);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+  outline: none;
 }
 
-.btn-homecare {
-    background-color: #0d6efd;
-    color: white;
-    font-size: 1.15rem;
-    font-weight: 600;
-    border-radius: 10px;
-    padding: 12px;
-    transition: background-color 0.2s ease-in-out;
-    border: none;
+.btn-form {
+  background-color: var(--hc-teal);
+  color: var(--hc-white);
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
 }
 
-.btn-homecare:hover {
-    background-color: #0b5ed7;
+.btn-form:hover {
+  background-color: var(--hc-green);
 }
 
-.back-btn {
-    display: inline-block;
-    margin-bottom: 1rem;
-    color: #0d6efd;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
+/* ===============================================
+   FOOTER
+=============================================== */
+footer {
+  background-color: var(--hc-darkgreen);
+  color: var(--hc-white);
+  padding: 2rem;
+  text-align: center;
+  font-size: 1rem;
 }
 
-.back-btn:hover {
-    text-decoration: underline;
+footer a {
+  color: var(--hc-green);
+  text-decoration: underline;
 }
 
-/* === Tilpasning for små skjermer === */
-@media (max-width: 600px) {
-    .signup-card {
-        padding: 1.5rem;
-    }
-
-    input.form-control {
-        font-size: 1rem;
-    }
-
-    .btn-homecare {
-        font-size: 1rem;
-    }
-}
-/* === HOMECARE HERO MED BAKGRUNNSBILDE === */
-.hero-homecare {
-    background-image: url('../images/homecare-hero.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 70vh;
-    color: #fff;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-    border-radius: 0 0 25px 25px;
-    position: relative;
-    overflow: hidden;
+footer a:hover {
+  color: var(--hc-white);
 }
 
-.hero-homecare::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 51, 102, 0.45); /* blå filter-overlay for kontrast og varme */
-    z-index: 0;
-}
+/* ===============================================
+   RESPONSIV DESIGN
+=============================================== */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.2rem;
+  }
 
-.hero-homecare .container {
-    position: relative;
-    z-index: 1;
-}
+  .hero-homecare h1 {
+    font-size: 2.4rem;
+  }
 
-.hero-homecare h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.hero-homecare p {
-    font-size: 1.3rem;
-    font-weight: 400;
-    color: #eaf2ff;
-}
-/* === HOMECARE DASHBOARD === */
-.dashboard-card {
-    border-radius: 16px;
-    background-color: #fff;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.dashboard-card i {
-    opacity: 0.9;
-}
-
-.list-group-item {
-    border: none;
-    border-bottom: 1px solid #eee;
-    font-size: 1.05rem;
-    background-color: #fff;
-}
-
-.list-group-item:last-child {
-    border-bottom: none;
-}
-
-.alert {
-    border-radius: 12px;
-}
-
-/* === KNAPPER I DASHBOARD === */
-.btn-lg {
-    border-radius: 10px;
+  .hero-homecare p {
     font-size: 1.1rem;
-    font-weight: 600;
-    padding: 0.9rem 1.8rem;
+  }
 }
-
-.btn-outline-primary:hover {
-    background-color: #0d6efd;
-    color: #fff;
-}
-

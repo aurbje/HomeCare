@@ -7,7 +7,7 @@
     <div class="signup-card">
         <a asp-controller="Home" asp-action="Index" class="back-btn">← Tilbake til forsiden</a>
 
-        <h2 class="text-center text-primary mb-4">Logg inn på HomeCare</h2>
+        <h2 class="text-center mb-4">Logg inn på HomeCare</h2>
         <p class="text-center text-muted mb-4">
             Velkommen tilbake! Logg inn for å få tilgang til dine tjenester og varsler.
         </p>
@@ -25,12 +25,12 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-homecare w-100 mb-3">Logg inn</button>
+            <button type="submit" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Logg inn</button>
 
             <div class="text-center mt-3">
                 <p class="text-muted">
                     Har du ikke konto?
-                    <a asp-controller="User" asp-action="SignUp" class="text-primary text-decoration-none fw-bold">
+                    <a asp-controller="User" asp-action="SignUp" class=" text-decoration-none fw-bold">
                         Registrer deg her
                     </a>
                 </p>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HomeCare</title>
@@ -26,56 +27,56 @@
 <body>
     <!-- ✅ HEADER & NAVBAR -->
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
-        <div class="container d-flex align-items-center">
-            <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
-                <img src="~/images/homecare-icon.png" alt="HomeCare Logo" class="homecare-logo me-2" />
-                <span class="fw-bold text-primary fs-4">HomeCare</span>
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm py-3 fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+        <img src="~/images/logoen.jpg" alt="HomeCare Logo" class="homecare-logo me-2" />
+        <span class="fw-semibold text-success fs-4">HomeCare</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center">
+          <li class="nav-item mx-2">
+            <a class="nav-link" asp-controller="Home" asp-action="Index">
+              <i class="bi bi-house-door me-1"></i> Hjem
             </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center">
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="Index">
-                            <i class="bi bi-house-door me-1"></i> Hjem
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="About">
-                            <i class="bi bi-info-circle me-1"></i> Om oss
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center" asp-controller="Booking" asp-action="Index">
-                            <i class="bi bi-calendar-check me-1"></i> Booking
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="Contact">
-                            <i class="bi bi-envelope me-1"></i> Kontakt
-                        </a>
-                    </li>
-
-                    <li class="nav-item ms-3">
-                        <a class="btn btn-outline-primary px-3 me-2" asp-controller="User" asp-action="SignIn">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Logg inn
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary px-3" asp-controller="User" asp-action="SignUp">
-                            <i class="bi bi-person-plus me-1"></i> Registrer deg
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link" asp-controller="Home" asp-action="About">
+              <i class="bi bi-info-circle me-1"></i> Om oss
+            </a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link" asp-controller="Home" asp-action="BookTime">
+              <i class="bi bi-calendar-check me-1"></i> Booking
+            </a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link" asp-controller="Home" asp-action="Contact">
+              <i class="bi bi-envelope me-1"></i> Kontakt
+            </a>
+          </li>
+          <li class="nav-item ms-3">
+            <a class="btn btn-success px-3" asp-controller="User" asp-action="SignIn">
+              <i class="bi bi-person-plus me-1"></i> Logg inn
+            </a>
+          </li>
+          <li class="nav-item ms-3">
+            <a class="btn btn-outline-success px-3 me-2" asp-controller="User" asp-action="SignUp">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Registrer deg
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 </header>
+
 
 
 
