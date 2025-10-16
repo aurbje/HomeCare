@@ -13,6 +13,14 @@ namespace HomeCare.ViewModels.Account
         [Display(Name = "E-postadresse")]
         public string Email { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Telefonnummer må fylles ut")]
+        [Display(Name = "Telefonnummer")]
+        public string TlfNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Adresse må fylles ut")]
+        [Display(Name = "Adresse")]
+        public string Address { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Passord må fylles ut")]
         [DataType(DataType.Password)]
         [Display(Name = "Passord")]

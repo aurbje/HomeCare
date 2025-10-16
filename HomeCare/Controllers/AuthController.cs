@@ -2,17 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomeCare.Data;
 using HomeCare.Models;
-using System.Security.Cryptography;
-using System.Text;
-using HomeCare.ViewModels.Account;
-using BCrypt.Net;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 
 namespace HomeCare.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly AppDbContext _context;
@@ -22,56 +15,25 @@ namespace HomeCare.Controllers
             _context = context;
         }
 
-        [HttpGet("SignUp")]
-        public IActionResult SignUp()
+        // Login
+        [HttpPost]
+        public async Task<IActionResult> SignIn(string email, string password)
         {
-            return View();
-        }
-
-        // handle form submission for sign up
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(SignUpViewModel model)
-        {
-            if (!ModelState.IsValid)
+             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
+                ModelState.AddModelError("", "E-post og passord må fylles ut");
                 return View();
             }
 
-
-            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                return BadRequest("Email already exists");
+                ModelState.AddModelError("", "Ugyldig e-post eller passord");
+                return View();
             }
 
-            var user = new User
-            {
-                FullName = model.FullName,
-                Email = model.Email,
-                Username = model.Email,
-                PasswordHash = HashPassword(model.Password),
-                Role = "user"
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("SignIn", "Auth");
-        }
-
-        // Login
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] User login)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == login.Email);
-            if (user == null || user.PasswordHash != HashPassword(login.PasswordHash))
-                return Unauthorized("Invalid email or password");
-
-            return Ok("Login successful");
-        }
-
-        private string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+            // TODO: Sett opp autentisering/cookies/session
+            return RedirectToAction("Index", "Home");
         }
     }
 }

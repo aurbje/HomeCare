@@ -13,7 +13,7 @@
             Vi hjelper deg med å holde hjemmet trygt og komfortabelt.
         </p>
 
-        <form asp-controller="Auth" asp-action="SignUp" method="post" novalidate>
+        <form asp-action="SignUp" method="post">
             <div class="mb-3">
                 <label asp-for="FullName" class="form-label">Fullt navn</label>
                 <input asp-for="FullName" class="form-control" placeholder="Skriv inn ditt fulle navn" />
@@ -24,6 +24,18 @@
                 <label asp-for="Email" class="form-label">E-postadresse</label>
                 <input asp-for="Email" class="form-control" type="email" placeholder="F.eks. anna@epost.no" />
                 <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="TlfNumber" class="form-label">Telefonnummer</label>
+                <input asp-for="TlfNumber" class="form-control" placeholder="Skriv inn telefonnummer" />
+                <span asp-validation-for="TlfNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">Adresse</label>
+                <input asp-for="Address" class="form-control" placeholder="Skriv inn adresse" />
+                <span asp-validation-for="Address" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
