@@ -4,16 +4,17 @@ using HomeCare.ViewModels.Account; // der SignInViewModel og SignUpViewModel lig
 using HomeCare.Models; 
 using HomeCare.Data;
 using System.Threading.Tasks;
+using HomeCare.Repositories;
 
 namespace HomeCare.Controllers
 {
     public class UserController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IUserRepository _userRepo;
 
-        public UserController(AppDbContext context)
+        public UserController(IUserRepository userRepo)
         {
-            _context = context;
+            _userRepo = userRepo;
         }
 
         [HttpGet]
@@ -30,7 +31,7 @@ namespace HomeCare.Controllers
                 return View(model);
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            var user = await _userRepo.GetByEmailAsync(model.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
                 ModelState.AddModelError("", "Ugyldig e-post eller passord");
@@ -62,7 +63,7 @@ namespace HomeCare.Controllers
             // Debug: logg verdiene fra modellen
             Console.WriteLine($"FullName: {model.FullName}, Email: {model.Email}, Tlf: {model.TlfNumber}, Address: {model.Address}");
 
-            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            if (await _userRepo.EmailExistsAsync(model.Email))
             {
                 return View(model);
             }
@@ -77,8 +78,8 @@ namespace HomeCare.Controllers
                 Address = model.Address
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _userRepo.AddAsync(user);
+            await _userRepo.SaveChangesAsync();
 
             return RedirectToAction("SignIn");
         }

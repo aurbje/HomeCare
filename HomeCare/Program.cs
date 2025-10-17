@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using HomeCare.Data;
+using HomeCare.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Legg til tjenester for MVC
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Legg til DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
