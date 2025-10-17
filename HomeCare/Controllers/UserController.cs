@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using HomeCare.ViewModels.Account; // der SignInViewModel og SignUpViewModel ligger
 using HomeCare.Models; 
 using HomeCare.Data;
+using System.Threading.Tasks;
 
 namespace HomeCare.Controllers
 {
@@ -22,16 +23,22 @@ namespace HomeCare.Controllers
         }
 
         [HttpPost]
-        public IActionResult SignIn(SignInViewModel model)
+        public async Task<IActionResult> SignIn(SignInViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                // Her legger du inn logikk for å sjekke bruker
-                // F.eks. sjekk i database (User.cs-modell)
-                return RedirectToAction("Index", "Home");
+                return View(model);
             }
 
-            return View(model);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+            {
+                ModelState.AddModelError("", "Ugyldig e-post eller passord");
+                return View(model);
+            }
+
+            // if login success, sent to homepage, can change this later
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
