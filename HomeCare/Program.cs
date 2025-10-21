@@ -23,6 +23,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// sends user to error page in case of unhandled exceptions
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // For CSS, JS, bilder
 

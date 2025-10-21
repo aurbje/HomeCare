@@ -11,10 +11,12 @@ namespace HomeCare.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepo;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserRepository userRepo)
+        public UserController(IUserRepository userRepo, ILogger<UserController> logger)
         {
             _userRepo = userRepo;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -28,18 +30,31 @@ namespace HomeCare.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Login atempt failed validation for email {Email}", model.Email);
                 return View(model);
             }
 
-            var user = await _userRepo.GetByEmailAsync(model.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+            try
             {
-                ModelState.AddModelError("", "Ugyldig e-post eller passord");
-                return View(model);
-            }
+                var user = await _userRepo.GetByEmailAsync(model.Email);
 
-            // if login success, sent to homepage, can change this later
-            return RedirectToAction("Index", "Home");
+                if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+                {
+                    _logger.LogWarning("Invalid login atempt for email {Email}", model.Email);
+                    ModelState.AddModelError("", "Ugyldig e-post eller passord");
+                    return View(model);
+                }
+
+                _logger.LogInformation("User {Email} logged inn successfully", model.Email);
+
+                // if login success, sent to homepage, can change this later
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected error during login for email {Email}", model.Email);
+                return View("Error"); // må lage egen error side/popup
+            }
         }
 
         [HttpGet]
@@ -51,37 +66,44 @@ namespace HomeCare.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUp(SignUpViewModel model)
         {
-            Console.WriteLine("SignUp POST reached");
-
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                Console.WriteLine("Validation errors: " + string.Join(", ", errors));
+                _logger.LogWarning("Signup validation failed for email {Email}. Errors: {Errors}", model.Email, errors);
                 return View(model);
             }
 
-            // Debug: logg verdiene fra modellen
-            Console.WriteLine($"FullName: {model.FullName}, Email: {model.Email}, Tlf: {model.TlfNumber}, Address: {model.Address}");
-
-            if (await _userRepo.EmailExistsAsync(model.Email))
+            try
             {
-                return View(model);
+                if (await _userRepo.EmailExistsAsync(model.Email))
+                {
+                    _logger.LogInformation("Signup atempt with already reg email {Email}", model.Email);
+                    ModelState.AddModelError("Email", "E-postadressen er allerede registrert");
+                    return View(model);
+                }
+
+                var user = new User
+                {
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    PasswordHash = HashPassword(model.Password),
+                    Role = "user",
+                    TlfNumber = model.TlfNumber,
+                    Address = model.Address
+                };
+
+                await _userRepo.AddAsync(user);
+                await _userRepo.SaveChangesAsync();
+
+                _logger.LogInformation("New user registered with email {Email}", model.Email);
+
+                return RedirectToAction("SignIn");
             }
-
-            var user = new User
+            catch(Exception e)
             {
-                FullName = model.FullName,
-                Email = model.Email,
-                PasswordHash = HashPassword(model.Password),
-                Role = "user",
-                TlfNumber = model.TlfNumber,
-                Address = model.Address
-            };
-
-            await _userRepo.AddAsync(user);
-            await _userRepo.SaveChangesAsync();
-
-            return RedirectToAction("SignIn");
+                _logger.LogError(e, "Error occurred while registering new user {Email}", model.Email);
+                return View("Error"); // må lage egen error side/popup 
+            }
         }
 
         private string HashPassword(string password)
