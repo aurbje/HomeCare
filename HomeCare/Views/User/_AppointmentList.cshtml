@@ -4,16 +4,27 @@
 
 @if (Model != null && Model.Any())
 {
-    <ul class="appointment-list">
-        @foreach (var appointment in Model)
-        {
-            <li>
-                <strong>@appointment.DateTime.ToString("yyyy-MM-dd HH:mm")</strong> - @appointment.ServiceType
-            </li>
-        }
-    </ul>
+    <table class="table table-booking-custom">
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>Category</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td>@a.DateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@a.Category?.Name</td>
+                    <td>@a.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 else
 {
-    <p>No upcoming appointments.</p>
+    <p>No upcoming appointments.</p> @* WORKS! *@
 }

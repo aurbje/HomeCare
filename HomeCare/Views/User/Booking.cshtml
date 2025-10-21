@@ -1,60 +1,219 @@
-@* @model HomeCare.ViewModels.BookingViewModel *@
-
-
+@using HomeCare.Models
+@model HomeCare.ViewModels.BookingViewModel
 @{
-    var availableDates = ViewBag.AvailableDates as List<string> ?? new List<string>();
+    ViewData["Title"] = "Booking";
 }
 
-<h2>Book an Appointment</h2>
 
-<form asp-action="Booking" method="post">
-    <div>
-        <label>Select Date</label>
-        <select name="SelectedDate">
-            @foreach (var date in availableDates)
-            {
-                var iso = DateTime.Parse(date).ToString("yyyy-MM-dd");
-                <option value="@iso">@date</option>
-            }
-        </select>
+<div class="booking-container">
+    <!-- Booking Form -->
+    <div class="booking-form">
+        <h2>Book an Appointment</h2>
+
+        @if (TempData["BookingSuccess"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["BookingSuccess"]
+            </div>
+        }
+
+        <form asp-action="Booking" method="post">
+            <input type="hidden" asp-for="AppointmentId" /><!--for editing appointment-->
+            <!-- Date Selection -->
+            <div class="form-group">
+                <label for="SelectedDate">Date</label>
+                <!---NOW USER CAN ONLY CHOOSE FROM THE DATES RESISTERED IN DB-->
+                <div class="date-options">
+                    @if (Model.AvailableDates != null && Model.AvailableDates.Any())
+                    {
+                        foreach (var date in Model.AvailableDates)
+                        {
+                            <label class="date-option btn btn-outline-secondary m-1">
+                                <input type="radio" name="SelectedDate" value="@date.Date.ToString("yyyy-MM-dd")"
+                                    data-date-id="@date.Id" />
+                                @date.Date.ToString("MMM dd")
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-danger">No available dates found.</p>
+                    }
+
+                </div>
+
+                <span asp-validation-for="SelectedDate" class="text-danger"></span>
+            </div>
+
+            <!-- Time Selection -->
+            <div class="form-group">
+                <label for="TimeSlotId">Time</label>
+                <div id="time-slot-wrapper" class="mt-2">
+                    <div id="time-slot-buttons" class="btn-group-vertical" role="group" aria-label="Time slots">
+                        <p class="text-muted" id="time-slot-placeholder">Please select a date first.</p>
+                    </div>
+                    <input type="hidden" name="TimeSlotId" id="TimeSlotId" value="" />
+                    <span asp-validation-for="TimeSlotId" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <!-- Category Selection -->
+            <div class="form-group">
+                <label for="CategoryId">Category</label>
+                <select asp-for="CategoryId" class="form-control" id="categorySelect">
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            <!--Note-->
+            <div class="form-group" id="customCategoryDiv" style="display:none;">
+                <label for="Notes">Notes</label>
+                <textarea asp-for="Notes" class="form-control"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+            @* <button type="submit" class="btn btn-primary mt-3">Book</button> *@
+            <button type="submit" class="btn btn-primary mt-3">
+                @(Model.AppointmentId > 0 ? "Update Appointment" : "Book Appointment")
+            </button>
+
+
+        </form>
+
     </div>
 
-    <div>
-        <label>Select Time</label>
-        <select name="Time">
-            <option value="08:00">08:00</option>
-            <option value="10:00">10:00</option>
-            <option value="14:00">14:00</option>
-        </select>
-    </div>
 
-    <div>
-        <label>Task Category</label>
-        <select name="Category" id="categorySelect">
-            <option value="Shopping">Shopping</option>
-            <option value="Cleaning">Cleaning</option>
-            <option value="Other">Other</option>
-        </select>
-    </div>
+    @{
+        int? editingId = ViewBag.EditingId as int?;
+    }
+    <!-- Right: Existing Appointments -->
+    <div class="booking-list">
+        <h2>Upcoming Appointments</h2>
 
-    <div id="customCategoryDiv" style="display:none;">
-        <label>Specify Category</label>
-        <input name="CustomCategory" />
+        @if (ViewBag.Appointments is List<Appointment> appointments && appointments.Any())
+        {
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Category</th>
+                        <th><!--Notes--></th>
+                        <th class="text-end"><!--Actions--></th> <!-- Right-aligned -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--HERFRA-->
+                    @foreach (var a in appointments)
+                    {
+                        var isEditing = editingId.HasValue && editingId.Value == a.Id;
+                        <tr class="@(isEditing ? "editing-row" : "")">
+                            <td>
+                                @a.DateTime.ToString("yyyy-MM-dd HH:mm")
+                                @if (isEditing)
+                                {
+                                    <span class="badge bg-warning text-dark ms-2">Editing</span>
+                                }
+                            </td>
+                            <td>@a.Category.Name</td>
+                            <td>@a.Notes</td>
+                            <td class="text-end">
+                                <a asp-action="EditAppointment" asp-route-id="@a.Id"
+                                    class="btn btn-sm btn-outline-primary me-1 @(isEditing ? "" : (editingId.HasValue ? "disabled" : ""))">
+                                    Edit
+                                </a>
+                                <a href="#" onclick="confirmCancel(@a.Id)"
+                                    class="btn btn-sm btn-outline-danger @(editingId.HasValue && !isEditing ? "disabled" : "")">
+                                    Cancel
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    <!--TIL HIT-->
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No appointments found.</p>
+        }
     </div>
-
-    <div>
-        <label>Notes (optional)</label>
-        <textarea name="Notes">@Model.Notes</textarea>
+    <div class="mt-3 text-center">
+        <a asp-action="Dashboard" class="btn btn-secondary">Back to Dashboard</a>
     </div>
+</div>
 
-    <button type="submit" class="btn btn-primary">Book</button>
-</form>
 
 @section Scripts {
     <script>
+        // Show Notes field if "Other" is selected
         document.getElementById("categorySelect").addEventListener("change", function () {
             const customDiv = document.getElementById("customCategoryDiv");
-            customDiv.style.display = this.value === "Other" ? "block" : "none";
+            const selectedText = this.options[this.selectedIndex].text;
+            customDiv.style.display = selectedText.toUpperCase() === "OTHER" ? "block" : "none";
         });
+
+        // Time slot button logic
+        const dateRadios = document.querySelectorAll("input[name='SelectedDate']");
+        const timeSlotContainer = document.getElementById("time-slot-buttons");
+        const timeSlotInput = document.getElementById("TimeSlotId");
+
+        // Razor-safe JS object construction
+        const dateSlotMap = {
+                                                                                                                        @for (int i = 0; i < Model.AvailableDates.Count; i++)
+            {
+                var date = Model.AvailableDates[i];
+                var slots = date.TimeSlots.Where(ts => !ts.IsBooked).ToList();
+
+                @: "@date.Id": [
+                    for (int j = 0; j < slots.Count; j++)
+                    {
+                        var slot = slots[j];
+                        var comma = j < slots.Count - 1 ? "," : "";
+                        @:{ id: @slot.Id, label: "@slot.Slot" }@comma
+                                                                                                                                                                                                                                        }
+                            @: ]@(i < Model.AvailableDates.Count - 1 ? "," : "")
+                    }
+                                                                                                                    };
+
+        // When user selects a date, show time slot buttons
+        dateRadios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                const selectedDateId = this.getAttribute("data-date-id");
+                const slots = dateSlotMap[selectedDateId] || [];
+
+                timeSlotContainer.innerHTML = "";
+                timeSlotInput.value = "";
+
+                if (slots.length === 0) {
+                    timeSlotContainer.innerHTML = "<p class='text-danger'>No available time slots.</p>";
+                    return;
+                }
+
+                slots.forEach(slot => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "btn btn-outline-primary mb-1";
+                    btn.textContent = slot.label;
+                    btn.onclick = () => {
+                        timeSlotInput.value = slot.id;
+                        document.querySelectorAll("#time-slot-buttons button").forEach(b => b.classList.remove("active"));
+                        btn.classList.add("active");
+                    };
+                    timeSlotContainer.appendChild(btn);
+                });
+            });
+        });
+
+        function confirmCancel(id) {
+            if (confirm("Do you want to cancel this appointment?")) {
+                window.location.href = '/User/CancelAppointment/' + id;
+            }
+        }
     </script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
