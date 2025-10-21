@@ -1,9 +1,27 @@
+using Microsoft.EntityFrameworkCore;
+using HomeCare.Data; // ← AppDbContext (namespace)
+
+using HomeCare.Repositories;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Legg til tjenester for MVC
+// Tjenester for MVC
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    DbInitializer.Seed(context);
+}
 
 // Middleware
 if (!app.Environment.IsDevelopment())
@@ -12,11 +30,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// sends user to error page in case of unhandled exceptions
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // For CSS, JS, bilder
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Endepunkter for MVC

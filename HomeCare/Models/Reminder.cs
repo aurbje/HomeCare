@@ -1,5 +1,8 @@
-public class Reminder
+namespace HomeCare.Models
 {
-    public string? Time { get; set; }
-    public string? Message { get; set; }
+    public class Reminder
+    {
+        public required string Time { get; set; }
+        public string? Message { get; set; } // nullable
+    }
 }

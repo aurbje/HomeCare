@@ -1,76 +1,47 @@
-@model HomeCare.ViewModels.User.DashboardViewModel
+@model (List<HomeCare.Models.Reminder>, List<HomeCare.Models.Appointment>)
+@{
+    ViewData["Title"] = "User Dashboard"; // Later we change this name
+}
 
-<div class="container py-4">
-    <h2 class="text-primary mb-4">Velkommen tilbake, @Model.FullName!</h2>
+<h2>Dashboard</h2>
 
-    <div class="row g-4">
+<!-- Top: message after login-->
+<div class="dashboard-header bg-primary text-white text-center py-4">
+    <h2>Welcome back!</h2>
+    <p>Hi, <span>Username</span> ( ◠‿◠ )</p>
+    <p>Hello, @ViewBag.Username!</p>
 
-        <!-- 🕒 PÅMINNELSER -->
-        <div class="col-md-6">
-            <div class="card shadow-sm p-3">
-                <h4 class="text-secondary mb-3">Dagens påminnelser</h4>
-                @if (Model.Reminders != null && Model.Reminders.Any())
-                {
-                    <ul class="list-group">
-                        @foreach (var reminder in Model.Reminders)
-                        {
-                            <li class="list-group-item">
-                                <strong>@reminder.Time:</strong> @reminder.Message
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p>Ingen påminnelser i dag.</p>
-                }
-            </div>
+</div>
+
+<!-- Bottom:  -->
+<div class="dashboard-main d-flex flex-wrap">
+
+    <!--LEFT-->
+    <div class="dashboard-left flex-fill p-3" style="min-width: 300px;">
+        <!--Left top-->
+        <div class="reminder-section mb-4">
+
+            <h3>Reminder</h3>
+            <partial name="_ReminderList" model="Model.Item1" />
+            @* @Html.Partial("_ReminderList", Model.Item1) *@
         </div>
 
-        <!-- 📅 AVTALER -->
-        <div class="col-md-6">
-            <div class="card shadow-sm p-3">
-                <h4 class="text-secondary mb-3">Kommende avtaler</h4>
-                @if (Model.Appointments != null && Model.Appointments.Any())
-                {
-                    <ul class="list-group">
-                        @foreach (var appointment in Model.Appointments)
-                        {
-                            <li class="list-group-item">
-                                <strong>@appointment.ServiceType</strong> – 
-                                @appointment.DateTime.ToString("dd.MM.yyyy HH:mm")
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p>Ingen kommende avtaler.</p>
-                }
+        <div class="appointment-section">
+            <h3>Booked appointments</h3>
+            <partial name="_AppointmentList" model="Model.Item2" />
+            @* @Html.Partial("_AppointmentList", Model.Item2) *@
 
-                <div class="mt-3 text-end">
-                    <a href="/Booking/Index" class="btn btn-primary">Bestill ny time</a>
-                </div>
+            <div class="action-button">
+                <a asp-controller="User" asp-action="Booking" class="btn btn-primary">Book New Appointment</a>
             </div>
         </div>
-
     </div>
 
-    <!-- 🔔 VARSLER -->
-    <div class="card shadow-sm p-3 mt-4">
-        <h4 class="text-secondary mb-3">Varsler</h4>
-        @if (Model.Notifications != null && Model.Notifications.Any())
-        {
-            <ul class="list-group">
-                @foreach (var note in Model.Notifications)
-                {
-                    <li class="list-group-item">@note</li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p>Ingen varsler akkurat nå.</p>
-        }
+    <!--RIGHT-->
+    <div class="dashboard-right flex-fill p-3" style="min-width: 300px;">
+        <h3>Calendar</h3>
+        <partial name="_Calendar" model="Model.Item2" />
+        @* @Html.Partial("_Calendar", Model.Item2) *@
     </div>
+
 </div>

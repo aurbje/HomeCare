@@ -15,4 +15,3 @@ namespace HomeCare.ViewModels.Account
         public string Password { get; set; } = string.Empty;
     }
 }
-
