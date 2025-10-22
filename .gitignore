@@ -6,6 +6,8 @@
 [Oo]bj/
 [Dd]ebug/
 [Rr]elease/
+bin/
+obj/
 
 # Packages
 packages/
@@ -16,7 +18,7 @@ packages/
 *.vspscc
 *.vssscc
 
-# Rider
+# Rider / JetBrains
 .idea/
 
 # Mac-specific files
@@ -41,7 +43,3 @@ TestResults/
 *.bak
 *.orig
 *.swp
-
-# Build artifacts
-bin/
-obj/

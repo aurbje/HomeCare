@@ -100,6 +100,13 @@ namespace HomeCare.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
+                    // <<<<<<< HEAD
+                    // =======
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    // >>>>>>> main
                     b.Property<int>("TimeSlotId")
                         .HasColumnType("INTEGER");
 
@@ -134,6 +141,48 @@ namespace HomeCare.Migrations
                     b.ToTable("BookingOptions");
                 });
 
+            // <<<<<<< HEAD
+            // =======
+            modelBuilder.Entity("HomeCare.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TlfNumber")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            // >>>>>>> main
             modelBuilder.Entity("TimeSlot", b =>
                 {
                     b.Property<int>("Id")

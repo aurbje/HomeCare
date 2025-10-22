@@ -7,4 +7,6 @@ public class TimeSlot
     public AvailableDate? AvailableDate { get; set; } // nullable
 
     public bool IsBooked { get; set; } = false;
+
 }
+
