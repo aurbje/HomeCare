@@ -55,18 +55,6 @@ new TimeSlot { Id = 7, Slot = "10:00-11:00", AvailableDateId = 3, IsBooked = fal
 // new TimeSlot { Id = 10, Slot = "14:00-15:00", AvailableDateId = 6, IsBooked = false }
 );
 
-
-            // Time Slots
-            modelBuilder.Entity<TimeSlot>().HasData(
-                new TimeSlot { Id = 1, Slot = "09:00-10:00", AvailableDateId = 1, IsBooked = false },
-                new TimeSlot { Id = 2, Slot = "10:00-11:00", AvailableDateId = 1, IsBooked = false },
-                new TimeSlot { Id = 3, Slot = "11:00-12:00", AvailableDateId = 1, IsBooked = false },
-                new TimeSlot { Id = 4, Slot = "13:00-14:00", AvailableDateId = 1, IsBooked = false },
-                new TimeSlot { Id = 5, Slot = "14:00-15:00", AvailableDateId = 2, IsBooked = false },
-                new TimeSlot { Id = 6, Slot = "09:00-10:00", AvailableDateId = 3, IsBooked = false },
-                new TimeSlot { Id = 7, Slot = "10:00-11:00", AvailableDateId = 3, IsBooked = false }
-            );
-
             // Categories
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Cleaning" },
