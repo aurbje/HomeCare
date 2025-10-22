@@ -1,0 +1,24 @@
+@model List<HomeCare.Models.Reminder>
+
+
+@if (Model != null && Model.Any())
+{
+    <ul class="reminder-list">
+        @foreach (var reminder in Model)
+        {
+            <li>
+                <strong>@reminder.Time</strong> - @reminder.Message
+            </li>
+        }
+    </ul>
+    @* <ul>
+        @foreach (var r in Model.Item1)
+        {
+            <li>@r.Time - @r.Message</li>
+        }
+    </ul> *@
+}
+else
+{
+    <p>No reminders for today.</p>
+}

@@ -1,0 +1,78 @@
+@model List<HomeCare.Models.Appointment>
+
+<!--design calender-->
+
+<h4>( ^ω^ ) Legg inn Ulrik sin kalender i her(_Calender.cshtml)</h4>
+
+@{
+    var year = ViewBag.CalendarYear as int? ?? DateTime.Today.Year;
+    var month = ViewBag.CalendarMonth as int? ?? DateTime.Today.Month;
+    var currentMonth = new DateTime(year, month, 1);
+    var prevMonth = currentMonth.AddMonths(-1);
+    var nextMonth = currentMonth.AddMonths(1);
+    var daysInMonth = DateTime.DaysInMonth(year, month);
+    var firstDay = new DateTime(year, month, 1);
+    var appointmentsByDate = Model.GroupBy(a => a.DateTime.Date).ToDictionary(g => g.Key, g => g.ToList());
+    var offset = ((int)firstDay.DayOfWeek + 6) % 7; // start from monday
+    var totalCells = offset + daysInMonth;
+    var rows = (int)Math.Ceiling(totalCells / 7.0);
+    int cellIndex = 0;
+}
+
+
+<div class="calendar-nav mb-2 d-flex justify-content-between align-items-center">
+    <a asp-action="Dashboard" asp-route-year="@prevMonth.Year" asp-route-month="@prevMonth.Month"
+        class="btn btn-outline-secondary">← @prevMonth.ToString("MMM yyyy")</a>
+    <h4 class="mb-0">@currentMonth.ToString("MMMM yyyy")</h4>
+    <a asp-action="Dashboard" asp-route-year="@nextMonth.Year" asp-route-month="@nextMonth.Month"
+        class="btn btn-outline-secondary">@nextMonth.ToString("MMM yyyy") →</a>
+</div>
+<div class="calendar-container">
+    <table class="table table-calendar">
+        <thead>
+            <tr>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+                <th>Sun</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int r = 0; r < rows; r++)
+            {
+                <tr>
+                    @for (int c = 0; c < 7; c++)
+                    {
+                        if (cellIndex < offset || cellIndex >= offset + daysInMonth)
+                        {
+                            <td class="empty"></td>
+                        }
+                        else
+                        {
+                            var date = firstDay.AddDays(cellIndex - offset);
+                            var hasAppointments = appointmentsByDate.ContainsKey(date);
+                            var isSunday = date.DayOfWeek == DayOfWeek.Sunday;
+
+                            <td class="calendar-day @(hasAppointments ? "has-appointment" : "") @(isSunday ? "sunday" : "")">
+                                <div class="date-label">@date.Day</div>
+                                @if (hasAppointments)
+                                {
+                                    foreach (var appt in appointmentsByDate[date].OrderBy(a => a.DateTime))
+                                    {
+                                        <div class="appt-entry">
+                                            <small>@appt.DateTime.ToString("HH:mm") - @appt.Category?.Name</small>
+                                        </div>
+                                    }
+                                }
+                            </td>
+                        }
+                        cellIndex++;
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
