@@ -1,83 +1,86 @@
-using Microsoft.AspNetCore.Mvc;
-using HomeCare.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace HomeCare.Controllers
-{
-    public class AppointmentController : Controller
-    {
-        // Midlertidig in-memory-liste (erstattes med database senere)
-        private static readonly List<Appointment> _appointments = new();
+// Kan dette slettes????
 
-        // === BOOKING-SKJEMA ===
-        [HttpGet]
-        public IActionResult Book()
-        {
-            return View(); // Viser Book.cshtml
-        }
+// using Microsoft.AspNetCore.Mvc;
+// using HomeCare.Models;
+// using System;
+// using System.Collections.Generic;
+// using System.Linq;
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Book(Appointment appt)
-        {
-            if (ModelState.IsValid)
-            {
-                appt.Id = _appointments.Count + 1;
-                appt.DateTime = appt.DateTime == default ? DateTime.Now.AddDays(1) : appt.DateTime;
+// namespace HomeCare.Controllers
+// {
+//     public class AppointmentController : Controller
+//     {
+//         // Midlertidig in-memory-liste (erstattes med database senere)
+//         private static readonly List<Appointment> _appointments = new();
 
-                _appointments.Add(appt);
+//         // === BOOKING-SKJEMA ===
+//         [HttpGet]
+//         public IActionResult Book()
+//         {
+//             return View(); // Viser Book.cshtml
+//         }
 
-                TempData["SuccessMessage"] = $"Timen for {appt.ServiceType} er registrert!";
-                return RedirectToAction("Confirm", new { id = appt.Id });
-            }
+//         [HttpPost]
+//         [ValidateAntiForgeryToken]
+//         public IActionResult Book(Appointment appt)
+//         {
+//             if (ModelState.IsValid)
+//             {
+//                 appt.Id = _appointments.Count + 1;
+//                 appt.DateTime = appt.DateTime == default ? DateTime.Now.AddDays(1) : appt.DateTime;
 
-            // Hvis validering feiler
-            TempData["ErrorMessage"] = "Vennligst fyll ut alle nødvendige felter.";
-            return View(appt);
-        }
+//                 _appointments.Add(appt);
 
-        // === BEKREFTELSE ===
-        [HttpGet]
-        public IActionResult Confirm(int id)
-        {
-            var appt = _appointments.FirstOrDefault(a => a.Id == id);
-            if (appt == null)
-                return NotFound("Avtalen finnes ikke.");
+//                 TempData["SuccessMessage"] = $"Timen for {appt.ServiceType} er registrert!";
+//                 return RedirectToAction("Confirm", new { id = appt.Id });
+//             }
 
-            return View(appt);
-        }
+//             // Hvis validering feiler
+//             TempData["ErrorMessage"] = "Vennligst fyll ut alle nødvendige felter.";
+//             return View(appt);
+//         }
 
-        // === LISTE OVER ALLE BOOKINGER ===
-        [HttpGet]
-        public IActionResult ViewAll()
-        {
-            return View(_appointments);
-        }
+//         // === BEKREFTELSE ===
+//         [HttpGet]
+//         public IActionResult Confirm(int id)
+//         {
+//             var appt = _appointments.FirstOrDefault(a => a.Id == id);
+//             if (appt == null)
+//                 return NotFound("Avtalen finnes ikke.");
 
-        // === AVLYS AVTALE ===
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Cancel(int id)
-        {
-            var appt = _appointments.FirstOrDefault(a => a.Id == id);
-            if (appt == null)
-                return Json(new { success = false, message = "Avtalen ble ikke funnet." });
+//             return View(appt);
+//         }
 
-            _appointments.Remove(appt);
-            return Json(new { success = true, message = "Avtalen ble avlyst. Ønsker du å bestille en ny?" });
-        }
+//         // === LISTE OVER ALLE BOOKINGER ===
+//         [HttpGet]
+//         public IActionResult ViewAll()
+//         {
+//             return View(_appointments);
+//         }
 
-        // === ADMIN / MANAGE ENKELTAVTALE ===
-        [HttpGet]
-        public IActionResult Manage(int id)
-        {
-            var appt = _appointments.FirstOrDefault(a => a.Id == id);
-            if (appt == null)
-                return NotFound();
+//         // === AVLYS AVTALE ===
+//         [HttpPost]
+//         [ValidateAntiForgeryToken]
+//         public IActionResult Cancel(int id)
+//         {
+//             var appt = _appointments.FirstOrDefault(a => a.Id == id);
+//             if (appt == null)
+//                 return Json(new { success = false, message = "Avtalen ble ikke funnet." });
 
-            return View(appt);
-        }
-    }
-}
+//             _appointments.Remove(appt);
+//             return Json(new { success = true, message = "Avtalen ble avlyst. Ønsker du å bestille en ny?" });
+//         }
+
+//         // === ADMIN / MANAGE ENKELTAVTALE ===
+//         [HttpGet]
+//         public IActionResult Manage(int id)
+//         {
+//             var appt = _appointments.FirstOrDefault(a => a.Id == id);
+//             if (appt == null)
+//                 return NotFound();
+
+//             return View(appt);
+//         }
+//     }
+// }
