@@ -1,62 +1,80 @@
-// Legg til tjenester for MVC
-using HomeCare.Data; // ← AppDbContext (namespace)
-using Microsoft.EntityFrameworkCore;
+using HomeCare.Data;
 using HomeCare.Repositories;
-
+using HomeCare.Repositories.Interfaces;
+using HomeCare.Repositories.Implementations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// register AppDbContext in DI
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+// cleared the default providers and added console + debug logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
-
-// Tjenester for MVC
-//>>>>>>> main
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// DbContext
+// register repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>(); // added booking repository here
+
+// database connection (using sqlite)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-
-// DB Initialize
-
-//>>>>>>> main
+// database initialization
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    DbInitializer.Seed(context);
+    try
+    {
+        DbInitializer.Seed(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Error while seeding the database");
+    }
 }
 
-
-//>>>>>>> main
-// Middleware
+// in production mode we send the user to a friendly error page
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-// sends user to error page in case of unhandled exceptions
-if (!app.Environment.IsDevelopment())
+else
 {
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+    // show full error details while developing
+    app.UseDeveloperExceptionPage();
 }
 
+// catch all unhandled exceptions and log them
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next.Invoke();
+    }
+    catch (Exception ex)
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, $"Unexpected error on path: {context.Request.Path}");
+        throw;
+    }
+});
+
+// middleware setup 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // For CSS, JS, bilder
+app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Endepunkter for MVC
+// mvc route setup
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
