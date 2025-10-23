@@ -1,14 +1,19 @@
-using Microsoft.EntityFrameworkCore;
+// Legg til tjenester for MVC
 using HomeCare.Data; // ← AppDbContext (namespace)
-
+using Microsoft.EntityFrameworkCore;
 using HomeCare.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Tjenester for MVC
-builder.Services.AddControllersWithViews();
+// register AppDbContext in DI
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+// Tjenester for MVC
+//>>>>>>> main
+builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // DbContext
@@ -17,12 +22,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+
+// DB Initialize
+
+//>>>>>>> main
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     DbInitializer.Seed(context);
 }
 
+
+//>>>>>>> main
 // Middleware
 if (!app.Environment.IsDevelopment())
 {

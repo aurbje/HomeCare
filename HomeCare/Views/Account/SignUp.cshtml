@@ -38,6 +38,20 @@
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
 
+            <!-- 🏠 Adresse -->
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">Adresse</label>
+                <input asp-for="Address" class="form-control" placeholder="F.eks. Solsiden 12, Oslo" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <!-- 📞 Telefonnummer -->
+            <div class="mb-4">
+                <label asp-for="TlfNumber" class="form-label">Telefonnummer</label>
+                <input asp-for="TlfNumber" class="form-control" placeholder="F.eks. 91234567" />
+                <span asp-validation-for="TlfNumber" class="text-danger"></span>
+            </div>
+
             <button type="submit" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Opprett konto</button>
         </form>
     </div>
