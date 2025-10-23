@@ -6,7 +6,6 @@
 
 
 <div class="booking-container">
-    <!-- Booking Form -->
     <div class="booking-form">
         <h2>Book an Appointment</h2>
 
@@ -19,10 +18,8 @@
 
         <form asp-action="Booking" method="post">
             <input type="hidden" asp-for="AppointmentId" /><!--for editing appointment-->
-            <!-- Date Selection -->
             <div class="form-group">
                 <label for="SelectedDate">Date</label>
-                <!---NOW USER CAN ONLY CHOOSE FROM THE DATES RESISTERED IN DB-->
                 <div class="date-options">
                     @if (Model.AvailableDates != null && Model.AvailableDates.Any())
                     {
@@ -45,7 +42,6 @@
                 <span asp-validation-for="SelectedDate" class="text-danger"></span>
             </div>
 
-            <!-- Time Selection -->
             <div class="form-group">
                 <label for="TimeSlotId">Time</label>
                 <div id="time-slot-wrapper" class="mt-2">
@@ -58,7 +54,6 @@
             </div>
 
 
-            <!-- Category Selection -->
             <div class="form-group">
                 <label for="CategoryId">Category</label>
                 <select asp-for="CategoryId" class="form-control" id="categorySelect">
@@ -70,7 +65,6 @@
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
 
-            <!--Note-->
             <div class="form-group" id="customCategoryDiv" style="display:none;">
                 <label for="Notes">Notes</label>
                 <textarea asp-for="Notes" class="form-control"></textarea>
@@ -107,7 +101,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!--HERFRA-->
                     @foreach (var a in appointments)
                     {
                         var isEditing = editingId.HasValue && editingId.Value == a.Id;
@@ -133,7 +126,6 @@
                             </td>
                         </tr>
                     }
-                    <!--TIL HIT-->
                 </tbody>
             </table>
         }

@@ -1,6 +1,6 @@
 @model (List<HomeCare.Models.Reminder>, List<HomeCare.Models.Appointment>)
 @{
-    ViewData["Title"] = "User Dashboard"; // Later we change this name
+    ViewData["Title"] = "User Dashboard"; // change this name later
 }
 
 <h2>Dashboard</h2>
@@ -13,12 +13,9 @@
 
 </div>
 
-<!-- Bottom:  -->
 <div class="dashboard-main d-flex flex-wrap">
 
-    <!--LEFT-->
     <div class="dashboard-left flex-fill p-3" style="min-width: 300px;">
-        <!--Left top-->
         <div class="reminder-section mb-4">
 
             <h3>Reminder</h3>
@@ -38,7 +35,6 @@
         </div>
     </div>
 
-    <!--RIGHT-->
     <div class="dashboard-right flex-fill p-3" style="min-width: 300px;">
         <h3>Calendar</h3>
         <partial name="_Calendar" model="Model.Item2" />
