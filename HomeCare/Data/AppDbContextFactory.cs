@@ -11,7 +11,7 @@ namespace HomeCare.Data
         public AppDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlite("Data Source=booking.db"); // name database
+            optionsBuilder.UseSqlite("Data Source=HomeCare.db"); // name database
 
             return new AppDbContext(optionsBuilder.Options);
         }

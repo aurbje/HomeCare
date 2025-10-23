@@ -95,13 +95,34 @@ namespace HomeCare.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Time = table.Column<string>(type: "TEXT", nullable: false),
+                    ServiceType = table.Column<string>(type: "TEXT", nullable: false),
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Appointments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     DateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ServiceType = table.Column<string>(type: "TEXT", nullable: false),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
                     TimeSlotId = table.Column<int>(type: "INTEGER", nullable: false),
                     CategoryId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -169,6 +190,11 @@ namespace HomeCare.Migrations
                 column: "TimeSlotId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bookings_UserId",
+                table: "Bookings",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TimeSlots_AvailableDateId",
                 table: "TimeSlots",
                 column: "AvailableDateId");
@@ -184,13 +210,16 @@ namespace HomeCare.Migrations
                 name: "BookingOptions");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Bookings");
 
             migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "TimeSlots");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "AvailableDates");
