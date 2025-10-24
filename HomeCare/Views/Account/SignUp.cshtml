@@ -13,7 +13,7 @@
             Vi hjelper deg med å holde hjemmet trygt og komfortabelt.
         </p>
 
-        <form asp-action="SignUp" method="post" novalidate>
+        <form asp-controller="Account" asp-action="SignUp" method="post" novalidate>
             <div class="mb-3">
                 <label asp-for="FullName" class="form-label">Fullt navn</label>
                 <input asp-for="FullName" class="form-control" placeholder="Skriv inn ditt fulle navn" />
@@ -27,6 +27,18 @@
             </div>
 
             <div class="mb-3">
+                <label asp-for="Address" class="form-label">Adresse</label>
+                <input asp-for="Address" class="form-control" placeholder="F.eks. Solsiden 12, Oslo" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="TlfNumber" class="form-label">Telefonnummer</label>
+                <input asp-for="TlfNumber" class="form-control" placeholder="F.eks. 91234567" />
+                <span asp-validation-for="TlfNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
                 <label asp-for="Password" class="form-label">Passord</label>
                 <input asp-for="Password" class="form-control" type="password" placeholder="Velg et passord" />
                 <span asp-validation-for="Password" class="text-danger"></span>
@@ -36,20 +48,6 @@
                 <label asp-for="ConfirmPassword" class="form-label">Bekreft passord</label>
                 <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="Gjenta passordet" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-
-            <!-- 🏠 Adresse -->
-            <div class="mb-3">
-                <label asp-for="Address" class="form-label">Adresse</label>
-                <input asp-for="Address" class="form-control" placeholder="F.eks. Solsiden 12, Oslo" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-
-            <!-- 📞 Telefonnummer -->
-            <div class="mb-4">
-                <label asp-for="TlfNumber" class="form-label">Telefonnummer</label>
-                <input asp-for="TlfNumber" class="form-control" placeholder="F.eks. 91234567" />
-                <span asp-validation-for="TlfNumber" class="text-danger"></span>
             </div>
 
             <button type="submit" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Opprett konto</button>
