@@ -48,12 +48,12 @@ namespace HomeCare.Controllers
                 _logger.LogInformation("User {Email} logged inn successfully", model.Email);
 
                 // if login success, sent to homepage, can change this later
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "User");
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unexpected error during login for email {Email}", model.Email);
-                return View("Error"); // må lage egen error side/popup
+                return View("Error"); 
             }
         }
 
