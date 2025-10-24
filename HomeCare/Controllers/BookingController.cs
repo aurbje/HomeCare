@@ -3,55 +3,46 @@ using Microsoft.EntityFrameworkCore;
 using HomeCare.Models;
 using HomeCare.Data;
 using HomeCare.ViewModels;
+using System.Threading.Tasks;
+using HomeCare.Repositories.Interfaces;
 
 namespace HomeCare.Controllers
 {
     public class BookingController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IBookingRepository _bookingRepo;
 
-        public BookingController(AppDbContext context)
+        public BookingController(IBookingRepository bookingRepo)
         {
-            _context = context;
+            _bookingRepo = bookingRepo;
         }
 
         // GET: Booking page with available dates and categories
-        public IActionResult Booking()
+        public async Task<IActionResult> Booking()
         {
-            var availableDates = _context.AvailableDates
-                .Include(d => d.TimeSlots)
-                .Where(d => d.Date >= DateTime.Today && d.TimeSlots.Any(ts => !ts.IsBooked))
-                .OrderBy(d => d.Date)
-                .ToList();
-
-            var categories = _context.Categories
-                .OrderBy(c => c.Name)
-                .ToList();
+            var availableDates = await _bookingRepo.GetAvailableDatesAsync();
+            var categories = await _bookingRepo.GetCategoriesAsync();
 
             var model = new BookingViewModel
             {
                 SelectedDate = DateTime.Today,
                 TimeSlotId = 0,
                 CategoryId = categories.FirstOrDefault()?.Id ?? 0,
-                AvailableDates = availableDates,
-                Categories = categories
+                AvailableDates = availableDates.ToList(),
+                Categories = categories.ToList()
             };
 
-            ViewBag.Appointments = _context.Appointments
-                .Include(a => a.TimeSlot)
-                .Include(a => a.Category)
-                .Where(a => a.DateTime >= DateTime.Today)
-                .OrderBy(a => a.DateTime)
-                .ToList();
+            ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
+                
 
             return View(model); // Views/Booking/Booking.cshtml
         }
 
         // POST: Handle booking submission
         [HttpPost]
-        public IActionResult Booking(BookingViewModel model)
+        public async Task<IActionResult> Booking(BookingViewModel model)
         {
-            var selectedCategory = _context.Categories.FirstOrDefault(c => c.Id == model.CategoryId);
+            var selectedCategory = await _bookingRepo.GetCategoryByIdAsync(model.CategoryId);
 
             // Require notes if category is "OTHER"
             if (selectedCategory?.Name.ToUpper() == "OTHER" && string.IsNullOrWhiteSpace(model.Notes))
@@ -60,9 +51,7 @@ namespace HomeCare.Controllers
             }
 
             // Retrieve selected time slot and ensure it's not already booked
-            var selectedSlot = _context.TimeSlots
-                .Include(ts => ts.AvailableDate)
-                .FirstOrDefault(ts => ts.Id == model.TimeSlotId && !ts.IsBooked);
+            var selectedSlot = await _bookingRepo.GetAvailableTimeSlotAsync(model.TimeSlotId);
 
             if (selectedSlot == null)
             {
@@ -92,23 +81,19 @@ namespace HomeCare.Controllers
                 if (model.AppointmentId > 0)
                 {
                     // Editing existing appointment
-                    var existing = _context.Appointments.FirstOrDefault(a => a.Id == model.AppointmentId);
+                    var existing = await _bookingRepo.GetAppointmentByIdAsync(model.AppointmentId);
                     if (existing != null)
                     {
-                        // Unbook previous time slot
-                        var oldSlot = _context.TimeSlots.FirstOrDefault(ts => ts.Id == existing.TimeSlotId);
-                        if (oldSlot != null) oldSlot.IsBooked = false;
-
                         // Update appointment details
-                        existing.DateTime = selectedSlot.AvailableDate.Date.Add(startTime);
+                        existing.DateTime = selectedSlot!.AvailableDate.Date.Add(startTime);
                         existing.TimeSlotId = selectedSlot.Id;
                         existing.CategoryId = selectedCategory!.Id;
                         existing.Notes = model.Notes;
 
                         selectedSlot.IsBooked = true;
+                        await _bookingRepo.UpdateTimeSlotAsync(selectedSlot);
 
-                        _context.SaveChanges();
-
+                        await _bookingRepo.UpdateAppointmentAsync(existing);
                         TempData["BookingSuccess"] = $"Appointment has changed to {existing.DateTime:yyyy-MM-dd} {selectedSlot.Slot}!";
                         return RedirectToAction("Booking");
                     }
@@ -126,57 +111,42 @@ namespace HomeCare.Controllers
 
                     selectedSlot.IsBooked = true;
 
-                    _context.Appointments.Add(appointment);
-                    _context.SaveChanges();
-
+                    await _bookingRepo.AddAppointmentAsync(appointment);
                     TempData["BookingSuccess"] = $"Appointment booked for {model.SelectedDate:yyyy-MM-dd} {selectedSlot.Slot}!";
-                    return RedirectToAction("Booking", "Booking");
+                    return RedirectToAction("Booking");
                 }
             }
 
             // Reload view model if validation fails
-            model.AvailableDates = _context.AvailableDates
-                .Include(d => d.TimeSlots)
-                .Where(d => d.Date >= DateTime.Today && d.TimeSlots.Any(ts => !ts.IsBooked))
-                .OrderBy(d => d.Date)
-                .ToList();
-
-            model.Categories = _context.Categories
-                .OrderBy(c => c.Name)
-                .ToList();
-
-            ViewBag.Appointments = _context.Appointments
-                .Include(a => a.TimeSlot)
-                .Include(a => a.Category)
-                .Where(a => a.DateTime >= DateTime.Today)
-                .OrderBy(a => a.DateTime)
-                .ToList();
+             model.AvailableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
+            model.Categories = (await _bookingRepo.GetCategoriesAsync()).ToList();
+            ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
 
             return View(model);
         }
 
         // Cancel appointment
-        public IActionResult CancelAppointment(int id)
+        public async Task<IActionResult> CancelAppointment(int id)
         {
-            var appointment = _context.Appointments.FirstOrDefault(a => a.Id == id);
+            var appointment = await _bookingRepo.GetAppointmentByIdAsync(id);
             if (appointment != null)
             {
-                var slot = _context.TimeSlots.FirstOrDefault(ts => ts.Id == appointment.TimeSlotId);
-                if (slot != null) slot.IsBooked = false;
+                var slot = await _bookingRepo.GetAvailableTimeSlotAsync(appointment.TimeSlotId);
+                if (slot != null)
+                {
+                    slot.IsBooked = false;
+                    await _bookingRepo.UpdateTimeSlotAsync(slot);
+                }
 
-                _context.Appointments.Remove(appointment);
-                _context.SaveChanges();
+                await _bookingRepo.DeleteAppointmentAsync(id);
                 TempData["BookingSuccess"] = "Appointment has been cancelled.";
             }
             return RedirectToAction("Booking");
         }
         // Edit appointment
-        public IActionResult EditAppointment(int id)
+        public async Task<IActionResult> EditAppointment(int id)
         {
-            var appointment = _context.Appointments
-                .Include(a => a.TimeSlot)
-                .Include(a => a.Category)
-                .FirstOrDefault(a => a.Id == id);
+            var appointment = await _bookingRepo.GetAppointmentByIdAsync(id);
 
             if (appointment == null) return NotFound();
 
@@ -186,22 +156,13 @@ namespace HomeCare.Controllers
                 TimeSlotId = appointment.TimeSlotId,
                 CategoryId = appointment.CategoryId,
                 Notes = appointment.Notes,
-                AvailableDates = _context.AvailableDates.Include(d => d.TimeSlots)
-                    .Where(d => d.Date >= DateTime.Today && d.TimeSlots.Any(ts => !ts.IsBooked || ts.Id == appointment.TimeSlotId))
-                    .OrderBy(d => d.Date).ToList(),
-                Categories = _context.Categories.OrderBy(c => c.Name).ToList(),
+                AvailableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList(),
+                Categories = (await _bookingRepo.GetCategoriesAsync()).ToList(),
                 AppointmentId = appointment.Id // Add this to your ViewModel
             };
 
             // List of booked appointments
-            ViewBag.Appointments = _context.Appointments
-        .Include(a => a.TimeSlot)
-        .Include(a => a.Category)
-        .Where(a => a.DateTime >= DateTime.Today)
-        .OrderBy(a => a.DateTime)
-        .ToList();
-
-            // For highlight editing appointment
+            ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
             ViewBag.EditingId = appointment.Id;
 
             return View("Booking", model);
