@@ -360,3 +360,120 @@ footer a:hover {
     font-size: 1.1rem;
   }
 }
+/* BOOKING PAGE BY @porridge86 */
+.booking-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.booking-form,
+.booking-list {
+  flex: 1 1 45%;
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .booking-container {
+    flex-direction: column;
+  }
+}
+
+.date-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.date-option {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.date-option input[type="radio"] {
+  accent-color: #007bff;
+}
+
+/* booking  */
+#time-slot-buttons p {
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.table-booking-custom tr,
+.table-booking-custom td,
+.table-booking-custom th {
+  border: none !important;
+  background-color: transparent !important;
+}
+
+/*Calendar i dashboard*/
+.calendar-container {
+  margin-top: 1rem;
+}
+
+.table-calendar {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-calendar th,
+.table-calendar td {
+  width: 14.28%;
+  height: 100px;
+  vertical-align: top;
+  border: 1px solid #ddd;
+  padding: 4px;
+}
+
+.calendar-day {
+  position: relative;
+}
+
+.date-label {
+  font-weight: bold;
+}
+
+.has-appointment {
+  background-color: #f0f8ff;
+}
+
+.appt-entry {
+  font-size: 0.75rem;
+  margin-top: 2px;
+  color: #007bff;
+}
+
+/* sunday in red */
+.table-calendar th:last-child {
+  color: red;
+}
+
+.calendar-day.sunday .date-label {
+  color: red;
+  font-weight: bold;
+}
+
+/* editing in booking*/
+.editing-row {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  transition: background-color 0.3s ease;
+}
+
+.badge.bg-warning {
+  font-size: 0.75rem;
+  vertical-align: middle;
+}
+
+button.disabled,
+a.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
