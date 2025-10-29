@@ -14,38 +14,45 @@ namespace HomeCare.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
+        // Get all appointments (bookings)
+        public async Task<IEnumerable<Appointment>> GetAllBookingsAsync()
         {
-            return await _context.Bookings
-                .Include(b => b.User) // includes user data if needed
+            return await _context.Appointments
+                .Include(a => a.TimeSlot)   // Include related timeslot info
+                .Include(a => a.Category)   // Include category info
                 .ToListAsync();
         }
 
-        public async Task<Booking?> GetBookingByIdAsync(int id)
+        // Get a single appointment by ID
+        public async Task<Appointment?> GetBookingByIdAsync(int id)
         {
-            return await _context.Bookings
-                .Include(b => b.User)
-                .FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Appointments
+                .Include(a => a.TimeSlot)
+                .Include(a => a.Category)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task AddBookingAsync(Booking booking)
+        // Add a new appointment
+        public async Task AddBookingAsync(Appointment appointment)
         {
-            _context.Bookings.Add(booking);
+            await _context.Appointments.AddAsync(appointment);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateBookingAsync(Booking booking)
+        // Update an existing appointment
+        public async Task UpdateBookingAsync(Appointment appointment)
         {
-            _context.Bookings.Update(booking);
+            _context.Appointments.Update(appointment);
             await _context.SaveChangesAsync();
         }
 
+        // Delete an appointment by ID
         public async Task DeleteBookingAsync(int id)
         {
-            var booking = await _context.Bookings.FindAsync(id);
-            if (booking != null)
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment != null)
             {
-                _context.Bookings.Remove(booking);
+                _context.Appointments.Remove(appointment);
                 await _context.SaveChangesAsync();
             }
         }
