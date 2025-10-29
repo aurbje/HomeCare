@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeCare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251023101658_UpdateDatabaseSchema")]
-    partial class UpdateDatabaseSchema
+    [Migration("20251029105629_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,10 +101,6 @@ namespace HomeCare.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ServiceType")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TimeSlotId")
