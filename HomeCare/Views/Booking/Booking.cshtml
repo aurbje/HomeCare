@@ -95,8 +95,8 @@
                     <tr>
                         <th>Dato & Tidspunkt</th>
                         <th>Kategori</th>
+                        <td class="text-end">
                         <th></th>
-                        <th class="text-end">/th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -201,7 +201,7 @@
         });
 
         function confirmCancel(id) {
-            if (confirm("Do you want to cancel this appointment?")) {
+            if (confirm("Vil du avlyse denne timen?")) {
                 window.location.href = '/Booking/CancelAppointment/' + id;
             }
         }

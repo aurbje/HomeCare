@@ -5,6 +5,34 @@
 @if (Model != null && Model.Any())
 {
     <table class="table table-booking-custom">
+    <thead>
+        <tr>
+            <th>Dato & Tidspunkt</th>
+            <th>Kategori</th>
+            <th>Notater</th>
+            <th>Handlinger</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td>@a.DateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@a.Category?.Name</td>
+                <td>@a.Notes</td>
+                <td>
+                    <a class="btn btn-primary" href="/Appointments/Edit/@a.Id">Endre timen</a>
+                    <a class="btn btn-danger" href="/Appointments/Delete/@a.Id">Kanseller timen</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+}
+else
+{
+    <table class="table table-booking-custom">
         <thead>
             <tr>
                 <th>Dato & Tidspunkt</th>
@@ -13,18 +41,9 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var a in Model)
-            {
-                <tr>
-                    <td>@a.DateTime.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@a.Category?.Name</td>
-                    <td>@a.Notes</td>
-                </tr>
-            }
+            <tr>
+                <td colspan="3" class="text-center">Ingen avtaler foreløpig.</td>
+            </tr>
         </tbody>
     </table>
-}
-else
-{
-    <p>Ingen avtaler foreløpig.</p> @* *@
 }
