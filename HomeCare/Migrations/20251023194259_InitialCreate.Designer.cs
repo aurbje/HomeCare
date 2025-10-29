@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeCare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251021214849_InitialCreate")]
+    [Migration("20251023194259_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -103,10 +103,6 @@ namespace HomeCare.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ServiceType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("TimeSlotId")
                         .HasColumnType("INTEGER");
 
@@ -117,6 +113,36 @@ namespace HomeCare.Migrations
                     b.HasIndex("TimeSlotId");
 
                     b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("HomeCare.Models.Booking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Time")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("HomeCare.Models.BookingOption", b =>
@@ -271,6 +297,15 @@ namespace HomeCare.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("TimeSlot");
+                });
+
+            modelBuilder.Entity("HomeCare.Models.Booking", b =>
+                {
+                    b.HasOne("HomeCare.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TimeSlot", b =>
