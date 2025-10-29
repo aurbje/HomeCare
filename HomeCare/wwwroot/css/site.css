@@ -1,13 +1,7 @@
-/* ===============================================
-   HOMECARE - STABIL OG RESPONSIV STIL
-   Designet for MacBook, nettbrett og mobil
-   Farger og tone inspirert av Ecura + HomeCare
-=============================================== */
 
-/* === FARGEPALETTE === */
 :root {
-  --hc-teal: #10B981; /* Frisk grønn (hovedfarge fra logo) */
-  --hc-green: #4ADE80; /* Lysere grønn */
+  --hc-teal: #10B981; 
+  --hc-green: #4ADE80;
   --hc-darkgreen: #255d31;
   --hc-bg-light: #f6fbf9;
   --hc-bg-dark: #0b2236;
@@ -18,7 +12,6 @@
   --hc-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* === GENERELT === */
 body {
   background-color: var(--hc-bg-light);
   color: var(--hc-text-dark);
@@ -27,7 +20,7 @@ body {
   font-size: 1.1rem;
   margin: 0;
   padding: 0;
-  padding-top: 65px; /* skyver alt ned slik at det starter under navbaren */
+  padding-top: 65px;
 }
 
 h1, h2, h3, h4 {
@@ -63,9 +56,7 @@ a:hover {
   color: var(--hc-green);
 }
 
-/* ===============================================
-   NAVBAR
-=============================================== */
+
 .navbar {
   position: fixed;
   top: 0;
@@ -83,7 +74,7 @@ a:hover {
   background: rgba(255, 255, 255, 0.98);
 }
 
-/* Logo */
+/* Logoen */
 .homecare-logo {
   height: 46px;
   width: auto;
@@ -138,7 +129,7 @@ a:hover {
   color: white;
 }
 
-/* === NAVBAR RESPONSIVITET === */
+
 @media (max-width: 900px) {
   .navbar {
     flex-direction: column;
@@ -161,9 +152,7 @@ a:hover {
   }
 }
 
-/* ===============================================
-   HERO-SEKSJON
-=============================================== */
+/* hero-seksjonen*/ 
 .hero-homecare {
   height: 100vh;
   background-size: cover;
@@ -247,9 +236,6 @@ a:hover {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
 }
 
-/* ===============================================
-   SEKSJONER OG KORT
-=============================================== */
 section {
   max-width: 1100px;
   margin: 0 auto;
@@ -292,9 +278,6 @@ section {
   box-shadow: 0 8px 20px rgba(0, 90, 75, 0.15);
 }
 
-/* ===============================================
-   SKJEMA / SIGN-IN
-=============================================== */
 .form-section {
   background-color: var(--hc-white);
   max-width: 520px;
@@ -344,9 +327,8 @@ input.form-control:focus {
   background-color: var(--hc-green);
 }
 
-/* ===============================================
-   FOOTER
-=============================================== */
+/* footer */ 
+
 footer {
   background-color: var(--hc-darkgreen);
   color: var(--hc-white);
@@ -364,9 +346,7 @@ footer a:hover {
   color: var(--hc-white);
 }
 
-/* ===============================================
-   RESPONSIV DESIGN
-=============================================== */
+/* responsivt design */
 @media (max-width: 768px) {
   h1 {
     font-size: 2.2rem;

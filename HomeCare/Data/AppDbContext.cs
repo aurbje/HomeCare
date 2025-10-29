@@ -10,7 +10,7 @@ namespace HomeCare.Data
         // === USER DATA ===
         public DbSet<User> Users { get; set; }
 
-        public DbSet<Booking> Bookings { get; set; }
+        public DbSet <Booking> Bookings { get; set; }
 
         // === BOOKING DATA ===
         public DbSet<BookingOption> BookingOptions { get; set; }

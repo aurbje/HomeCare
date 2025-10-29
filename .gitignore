@@ -44,7 +44,7 @@ TestResults/
 *.orig
 *.swp
 
-# SQLite database files
+#SQLite database files
 *.db
-*.db-shm
-*.db-wal 
+*.bd-shm
+*.db-wal

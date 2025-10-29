@@ -7,7 +7,7 @@
 
 <div class="booking-container">
     <div class="booking-form">
-        <h2>Book an Appointment</h2>
+        <h2>Book time her</h2>
 
         @if (TempData["BookingSuccess"] != null)
         {
@@ -19,7 +19,7 @@
         <form asp-action="Booking" method="post">
             <input type="hidden" asp-for="AppointmentId" /><!--for editing appointment-->
             <div class="form-group">
-                <label for="SelectedDate">Date</label>
+                <label for="SelectedDate">Dato</label>
                 <div class="date-options">
                     @if (Model.AvailableDates != null && Model.AvailableDates.Any())
                     {
@@ -34,7 +34,7 @@
                     }
                     else
                     {
-                        <p class="text-danger">No available dates found.</p>
+                        <p class="text-danger">Ingen ledige datoer funnet.</p>
                     }
 
                 </div>
@@ -43,10 +43,10 @@
             </div>
 
             <div class="form-group">
-                <label for="TimeSlotId">Time</label>
+                <label for="TimeSlotId">Tidspunkt</label>
                 <div id="time-slot-wrapper" class="mt-2">
                     <div id="time-slot-buttons" class="btn-group-vertical" role="group" aria-label="Time slots">
-                        <p class="text-muted" id="time-slot-placeholder">Please select a date first.</p>
+                        <p class="text-muted" id="time-slot-placeholder">Velg et tidspunkt først.</p>
                     </div>
                     <input type="hidden" name="TimeSlotId" id="TimeSlotId" value="" />
                     <span asp-validation-for="TimeSlotId" class="text-danger"></span>
@@ -55,7 +55,7 @@
 
 
             <div class="form-group">
-                <label for="CategoryId">Category</label>
+                <label for="CategoryId">Kategori</label>
                 <select asp-for="CategoryId" class="form-control" id="categorySelect">
                     @foreach (var cat in Model.Categories)
                     {
@@ -73,7 +73,7 @@
 
             @* <button type="submit" class="btn btn-primary mt-3">Book</button> *@
             <button type="submit" class="btn btn-primary mt-3">
-                @(Model.AppointmentId > 0 ? "Update Appointment" : "Book Appointment")
+                @(Model.AppointmentId > 0 ? "Oppdater timen" : "Book Time")
             </button>
 
 
@@ -85,19 +85,18 @@
     @{
         int? editingId = ViewBag.EditingId as int?;
     }
-    <!-- Right: Existing Appointments -->
     <div class="booking-list">
-        <h2>Upcoming Appointments</h2>
+        <h2>Fremtidige Timer</h2>
 
         @if (ViewBag.Appointments is List<Appointment> appointments && appointments.Any())
         {
             <table class="table table-custom">
                 <thead>
                     <tr>
-                        <th>Date & Time</th>
-                        <th>Category</th>
-                        <th><!--Notes--></th>
-                        <th class="text-end"><!--Actions--></th> <!-- Right-aligned -->
+                        <th>Dato & Tidspunkt</th>
+                        <th>Kategori</th>
+                        <th></th>
+                        <th class="text-end">/th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -109,7 +108,7 @@
                                 @a.DateTime.ToString("yyyy-MM-dd HH:mm")
                                 @if (isEditing)
                                 {
-                                    <span class="badge bg-warning text-dark ms-2">Editing</span>
+                                    <span class="badge bg-warning text-dark ms-2">Endre timen</span>
                                 }
                             </td>
                             <td>@a.Category.Name</td>
@@ -117,11 +116,11 @@
                             <td class="text-end">
                                 <a asp-action="EditAppointment" asp-route-id="@a.Id"
                                     class="btn btn-sm btn-outline-primary me-1 @(isEditing ? "" : (editingId.HasValue ? "disabled" : ""))">
-                                    Edit
+                                    Endre timen
                                 </a>
                                 <a href="#" onclick="confirmCancel(@a.Id)"
                                     class="btn btn-sm btn-outline-danger @(editingId.HasValue && !isEditing ? "disabled" : "")">
-                                    Cancel
+                                    Kanseller timen
                                 </a>
                             </td>
                         </tr>
@@ -131,11 +130,11 @@
         }
         else
         {
-            <p>No appointments found.</p>
+            <p>Ingen avtaler funnet.</p>
         }
     </div>
     <div class="mt-3 text-center">
-        <a asp-action="Dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        <a asp-controller="User" asp-action="Dashboard" class="btn btn-secondary">Tilbake til Min Side</a>
     </div>
 </div>
 
