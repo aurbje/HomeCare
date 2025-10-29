@@ -1,5 +1,7 @@
 @model List<HomeCare.Models.Appointment>
 
+// calender for the user 
+
 @{
     System.Globalization.CultureInfo culture = new System.Globalization.CultureInfo("nb-NO");
     var year = ViewBag.CalendarYear as int? ?? DateTime.Today.Year;

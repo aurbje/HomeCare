@@ -12,8 +12,6 @@ namespace HomeCare.ViewModels.User
         public int CompletedBookings { get; set; }
         public DateTime LastLogin { get; set; }
         public List<string> Notifications { get; set; } = new();
-
-        // Nye detaljer for visning
         public List<Reminder> Reminders { get; set; } = new();
         public List<Appointment> Appointments { get; set; } = new();
     }

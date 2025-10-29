@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HomeCare.ViewModels.Account; // der SignInViewModel og SignUpViewModel ligger
+using HomeCare.ViewModels.Account; // where SignInViewModel og SignUpViewModel is
 using HomeCare.Models; 
 using HomeCare.Data;
 using System.Threading.Tasks;
@@ -102,7 +102,7 @@ namespace HomeCare.Controllers
             catch(Exception e)
             {
                 _logger.LogError(e, "Error occurred while registering new user {Email}", model.Email);
-                return View("Error"); // må lage egen error side/popup 
+                return View("Error"); // need an error side/popup 
             }
         }
 

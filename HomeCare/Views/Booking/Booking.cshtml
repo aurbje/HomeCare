@@ -5,6 +5,8 @@
 }
 
 
+// booking page containers 
+
 <div class="booking-container">
     <div class="booking-form">
         <h2>Book time her</h2>
@@ -17,7 +19,7 @@
         }
 
         <form asp-action="Booking" method="post">
-            <input type="hidden" asp-for="AppointmentId" /><!--for editing appointment-->
+            <input type="hidden" asp-for="AppointmentId" /> // for editing appointment
             <div class="form-group">
                 <label for="SelectedDate">Dato</label>
                 <div class="date-options">
