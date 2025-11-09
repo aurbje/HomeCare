@@ -5,4 +5,7 @@ public class AvailableDate
     public DateTime Date { get; set; }
     public ICollection<TimeSlot> TimeSlots { get; set; } = new List<TimeSlot>();
 
+    public int RemainingSlots { get; set; }     // added after the error CS1061 — Missing method or property : AvailableDate does not contain a definition for RemainingSlots
+
+
 }

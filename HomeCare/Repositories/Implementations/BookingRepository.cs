@@ -76,7 +76,7 @@ namespace HomeCare.Repositories.Implementations
                 .ToListAsync();
         }
 
-         public async Task<Appointment?> GetAppointmentByIdAsync(int id)
+        public async Task<Appointment?> GetAppointmentByIdAsync(int id)
         {
             return await _context.Appointments
                 .Include(a => a.TimeSlot)
@@ -124,6 +124,12 @@ namespace HomeCare.Repositories.Implementations
             await _context.SaveChangesAsync();
         }
 
+        // added after the error CS1061
+        public async Task UpdateAvailableDateAsync(AvailableDate availableDate)
+        {
+            _context.AvailableDates.Update(availableDate);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task SaveChangesAsync()
         {

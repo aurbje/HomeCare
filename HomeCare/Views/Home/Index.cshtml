@@ -1,8 +1,10 @@
 @{
     ViewData["Title"] = "Home";
+    Layout = "_Layout";
 }
 
-<section class="hero-homecare d-flex align-items-center justify-content-center text-center text-white position-relative">
+<section
+    class="hero-homecare d-flex align-items-center justify-content-center text-center text-white position-relative">
     <div class="hero-overlay"></div>
     <div class="container position-relative z-2">
         <h1 class="display-3 fw-bold mb-3 animate-fade">Omsorg der du er</h1>
@@ -16,7 +18,7 @@
     <div class="container text-center">
         <h2 class="fw-bold mb-4">Omsorg i trygge hender</h2>
         <p class="lead mx-auto" style="max-width: 800px;">
-            HomeCare tilbyr profesjonell hjelp i hjemmet, tilpasset dine behov.  
+            HomeCare tilbyr profesjonell hjelp i hjemmet, tilpasset dine behov.
             Vi forstår hvor viktig trygghet og nærhet er i hverdagen, og vi er her for å gjøre det lettere.
         </p>
     </div>
@@ -70,14 +72,14 @@
         <div class="about-text flex-fill">
             <h2 class="fw-bold mb-3">Et varmt og pålitelig team</h2>
             <p class="lead text-muted mb-4">
-                Våre ansatte er dedikerte fagfolk med hjerte for omsorg.  
+                Våre ansatte er dedikerte fagfolk med hjerte for omsorg.
                 Vi legger vekt på respekt, trygghet og verdighet i møte med alle vi hjelper.
             </p>
             <a asp-controller="Home" asp-action="About" class="btn btn-main px-4 py-2">Les mer om oss</a>
         </div>
         <div class="about-img flex-fill text-center">
-            <img src="~/images/forside4.png" alt="Omsorg i hjemmet"
-                 class="img-fluid rounded-4 shadow-lg" style="max-width: 80%;">
+            <img src="~/images/forside4.png" alt="Omsorg i hjemmet" class="img-fluid rounded-4 shadow-lg"
+                style="max-width: 80%;">
         </div>
     </div>
 </section>
@@ -87,8 +89,10 @@
         <h2 class="fw-bold mb-3">Vil du vite mer?</h2>
         <p class="lead mb-4">Les om våre verdier eller ta kontakt direkte – vi er her for deg.</p>
         <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a asp-controller="Home" asp-action="About" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Om oss</a>
-            <a asp-controller="Home" asp-action="Contact" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Kontakt oss</a>
+            <a asp-controller="Home" asp-action="About" class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Om
+                oss</a>
+            <a asp-controller="Home" asp-action="Contact"
+                class="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Kontakt oss</a>
         </div>
     </div>
 </section>

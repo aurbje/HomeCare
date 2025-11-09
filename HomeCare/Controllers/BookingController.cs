@@ -37,7 +37,7 @@ namespace HomeCare.Controllers
             };
 
             ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
-                
+
 
             return View(model); // Views/Booking/Booking.cshtml
         }
@@ -129,7 +129,7 @@ namespace HomeCare.Controllers
 
                     await _bookingRepo.AddAppointmentAsync(appointment);
 
-                    _logger.LogInformation("New appointment created for {DateTime} in category {CategoryId}.", 
+                    _logger.LogInformation("New appointment created for {DateTime} in category {CategoryId}.",
                         appointment.DateTime, appointment.CategoryId);
 
                     TempData["BookingSuccess"] = $"Appointment booked for {model.SelectedDate:yyyy-MM-dd} {selectedSlot.Slot}!";
@@ -139,7 +139,7 @@ namespace HomeCare.Controllers
 
             _logger.LogWarning("Booking failed: Model state invalid.");
             // Reload view model if validation fails
-             model.AvailableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
+            model.AvailableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
             model.Categories = (await _bookingRepo.GetCategoriesAsync()).ToList();
             ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
 
@@ -158,6 +158,15 @@ namespace HomeCare.Controllers
                 if (slot != null)
                 {
                     slot.IsBooked = false;
+
+                    // 空き枠の復元処理（必要に応じて）
+                    var availableDate = slot.AvailableDate;
+                    if (availableDate != null)
+                    {
+                        availableDate.RemainingSlots += 1;
+                        await _bookingRepo.UpdateAvailableDateAsync(availableDate);
+                    }
+
                     await _bookingRepo.UpdateTimeSlotAsync(slot);
                 }
 
