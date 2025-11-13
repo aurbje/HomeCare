@@ -25,6 +25,9 @@
                     {
                         foreach (var date in Model.AvailableDates)
                         {
+                            var availableSlots = date.TimeSlots.Where(ts => !ts.IsBooked).ToList();
+                            var isEditingSlot = date.TimeSlots.Any(ts => ts.Id == Model.TimeSlotId); // 自分の予約枠
+
                             <label class="date-option btn btn-outline-secondary m-1">
                                 <input type="radio" name="SelectedDate" value="@date.Date.ToString("yyyy-MM-dd")"
                                     data-date-id="@date.Id" />
@@ -66,7 +69,7 @@
             </div>
 
             <div class="form-group" id="customCategoryDiv" style="display:none;">
-                <label for="Notes">Notes</label>
+                <label for="Notes">Notater</label>
                 <textarea asp-for="Notes" class="form-control"></textarea>
                 <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
@@ -96,7 +99,7 @@
                         <th>Dato & Tidspunkt</th>
                         <th>Kategori</th>
                         <th></th>
-                        <th class="text-end">/th> 
+                        <th class="text-end">
                     </tr>
                 </thead>
                 <tbody>
@@ -138,7 +141,6 @@
     </div>
 </div>
 
-
 @section Scripts {
     <script>
         // Show Notes field if "Other" is selected
@@ -148,17 +150,19 @@
             customDiv.style.display = selectedText.toUpperCase() === "OTHER" ? "block" : "none";
         });
 
-        // Time slot button logic
         const dateRadios = document.querySelectorAll("input[name='SelectedDate']");
         const timeSlotContainer = document.getElementById("time-slot-buttons");
         const timeSlotInput = document.getElementById("TimeSlotId");
 
         // Razor-safe JS object construction
         const dateSlotMap = {
-                                                                                                                        @for (int i = 0; i < Model.AvailableDates.Count; i++)
+                                                                            @for (int i = 0; i < Model.AvailableDates.Count; i++)
             {
                 var date = Model.AvailableDates[i];
-                var slots = date.TimeSlots.Where(ts => !ts.IsBooked).ToList();
+
+                var slots = date.TimeSlots
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .Where(ts => !ts.IsBooked || ts.Id == Model.TimeSlotId) // includes booked timeslot
+                .ToList();
 
                 @: "@date.Id": [
                     for (int j = 0; j < slots.Count; j++)
@@ -166,10 +170,10 @@
                         var slot = slots[j];
                         var comma = j < slots.Count - 1 ? "," : "";
                         @:{ id: @slot.Id, label: "@slot.Slot" }@comma
-                                                                                                                                                                                                                                        }
-                            @: ]@(i < Model.AvailableDates.Count - 1 ? "," : "")
+                                                                                                                                                    }
+                    @: ]@(i < Model.AvailableDates.Count - 1 ? "," : "")
                     }
-                                                                                                                    };
+                                                                        };
 
         // When user selects a date, show time slot buttons
         dateRadios.forEach(radio => {
@@ -180,8 +184,9 @@
                 timeSlotContainer.innerHTML = "";
                 timeSlotInput.value = "";
 
+                // This?
                 if (slots.length === 0) {
-                    timeSlotContainer.innerHTML = "<p class='text-danger'>No available time slots.</p>";
+                    timeSlotContainer.innerHTML = "<p class='text-danger'>Ingen ledige timer.</p>";
                     return;
                 }
 
@@ -197,7 +202,53 @@
                     };
                     timeSlotContainer.appendChild(btn);
                 });
+
+                // porridge86: Fixed, Automatically select existing TimeSlots when editing
+                const currentSlotId = timeSlotInput.value;
+                if (currentSlotId) {
+                    const matchBtn = Array.from(timeSlotContainer.children).find(b => b.textContent === currentSlotId);
+                    if (matchBtn) matchBtn.classList.add("active");
+                }
+
+                // Porridge86: Added, Display a note if there is only one vacancy and it is the booked reservation slot
+                const availableCount = slots.length;
+                const editingSlotId = parseInt("@Model.TimeSlotId");
+                const onlyOwnSlot = availableCount === 1 && slots[0].id === editingSlotId;
+
+                if (onlyOwnSlot) {
+                    const warning = document.createElement("p");
+                    warning.className = "text-danger mt-2";
+                    warning.textContent = "Det er ingen andre ledige timer denne dagen.";
+                    timeSlotContainer.appendChild(warning);
+                }
             });
+        });
+
+        // porridge86: Fixed, Select existing date when editing and fire change event
+        window.addEventListener("DOMContentLoaded", function () {
+            const selectedDateValue = "@Model.SelectedDate";
+            const selectedSlotId = "@Model.TimeSlotId";
+
+            if (selectedDateValue) {
+                const selectedRadio = Array.from(dateRadios).find(r => r.value === selectedDateValue);
+                if (selectedRadio) {
+                    selectedRadio.checked = true;
+                    selectedRadio.dispatchEvent(new Event("change")); // Time zone button
+                }
+            }
+
+            if (selectedSlotId) {
+                timeSlotInput.value = selectedSlotId;
+                // porridge86: Fixed, Add active after time zone button is generated
+                setTimeout(() => {
+                    const buttons = document.querySelectorAll("#time-slot-buttons button");
+                    buttons.forEach(btn => {
+                        if (btn.textContent === selectedSlotId) {
+                            btn.classList.add("active");
+                        }
+                    });
+                }, 200);
+            }
         });
 
         function confirmCancel(id) {

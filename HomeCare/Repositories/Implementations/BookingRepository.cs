@@ -50,11 +50,20 @@ namespace HomeCare.Repositories.Implementations
             }
         }
 
+        public async Task<AvailableDate?> GetAvailableDateByDateAsync(DateTime date)
+        {
+            return await _context.AvailableDates
+                .Include(d => d.TimeSlots)
+                .FirstOrDefaultAsync(d => d.Date == date);
+        }
+
+
         public async Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync()
         {
             return await _context.AvailableDates
                 .Include(d => d.TimeSlots)
-                .Where(d => d.Date >= DateTime.Today && d.TimeSlots.Any(ts => !ts.IsBooked))
+                //.Where(d => d.Date >= DateTime.Today && d.TimeSlots.Any(ts => !ts.IsBooked))
+                .Where(d => d.Date >= DateTime.Today) // show all
                 .OrderBy(d => d.Date)
                 .ToListAsync();
         }
@@ -108,9 +117,8 @@ namespace HomeCare.Repositories.Implementations
 
         public async Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId)
         {
-            return await _context.TimeSlots
-                .Include(ts => ts.AvailableDate)
-                .FirstOrDefaultAsync(ts => ts.Id == timeSlotId && !ts.IsBooked);
+            return await _context.TimeSlots.Include(ts => ts.AvailableDate)
+            .FirstOrDefaultAsync(ts => ts.Id == timeSlotId); // fixed
         }
 
         public async Task<Category?> GetCategoryByIdAsync(int categoryId)
@@ -130,6 +138,7 @@ namespace HomeCare.Repositories.Implementations
             _context.AvailableDates.Update(availableDate);
             await _context.SaveChangesAsync();
         }
+
 
         public async Task SaveChangesAsync()
         {

@@ -60,6 +60,17 @@ namespace HomeCare.Controllers
             // Retrieve selected time slot and ensure it's not already booked
             var selectedSlot = await _bookingRepo.GetAvailableTimeSlotAsync(model.TimeSlotId);
 
+            // Porridge 86: Fixed, TimeSlotId is retrieved from existing reservation even if not selected when editing
+            if (selectedSlot == null && model.AppointmentId > 0)
+            {
+                var existing = await _bookingRepo.GetAppointmentByIdAsync(model.AppointmentId);
+                if (existing != null)
+                {
+                    selectedSlot = await _bookingRepo.GetAvailableTimeSlotAsync(existing.TimeSlotId);
+                    model.TimeSlotId = existing.TimeSlotId;
+                }
+            }
+
             if (selectedSlot == null)
             {
                 _logger.LogWarning("Booking attempt failed: Selected time slot {TimeSlotId} is unavailable.", model.TimeSlotId);
@@ -94,7 +105,7 @@ namespace HomeCare.Controllers
                     if (existing != null)
                     {
                         // Update appointment details
-                        existing.DateTime = selectedSlot!.AvailableDate.Date.Add(startTime);
+                        existing.DateTime = selectedSlot!.AvailableDate.Date.Add(startTime); // porridge86: Fixed. Can be updated without changing date and time
                         existing.TimeSlotId = selectedSlot.Id;
                         existing.CategoryId = selectedCategory!.Id;
                         existing.Notes = model.Notes;
@@ -159,7 +170,6 @@ namespace HomeCare.Controllers
                 {
                     slot.IsBooked = false;
 
-                    // 空き枠の復元処理（必要に応じて）
                     var availableDate = slot.AvailableDate;
                     if (availableDate != null)
                     {
@@ -196,6 +206,22 @@ namespace HomeCare.Controllers
                 return NotFound();
             }
 
+            var availableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
+
+            // Fixed: Add the reservation date to be edited if it is not included in availableDates
+            if (!availableDates.Any(d => d.Date == appointment.DateTime.Date))
+            {
+                var dateEntity = await _bookingRepo.GetAvailableDateByDateAsync(appointment.DateTime.Date);
+
+                if (dateEntity != null)
+                {
+                    // Fixed: Ensure that the booked slot is included in TimeSlots even if IsBooked = true
+                    availableDates.Add(dateEntity);
+                    availableDates = availableDates.OrderBy(d => d.Date).ToList();
+                }
+            }
+
+
             var model = new BookingViewModel
             {
                 SelectedDate = appointment.DateTime.Date,
@@ -206,6 +232,7 @@ namespace HomeCare.Controllers
                 Categories = (await _bookingRepo.GetCategoriesAsync()).ToList(),
                 AppointmentId = appointment.Id // Add this to your ViewModel
             };
+
 
             // List of booked appointments
             ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();

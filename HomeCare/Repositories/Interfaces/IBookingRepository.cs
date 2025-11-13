@@ -22,6 +22,9 @@ namespace HomeCare.Repositories.Interfaces
         Task DeleteAppointmentAsync(int id);
         Task UpdateTimeSlotAsync(TimeSlot timeSlot);
 
+        Task<AvailableDate?> GetAvailableDateByDateAsync(DateTime date);
+
+
         // Supporting data
         Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync();
         Task<IEnumerable<Category>> GetCategoriesAsync();

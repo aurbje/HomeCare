@@ -4,11 +4,11 @@ namespace HomeCare.ViewModels
     {
         public required DateTime SelectedDate { get; set; } // = DateTime.Today;
 
-        public int TimeSlotId { get; set; } = 0; //= "08:00-9:00"; <--Booking()POST
+        public int TimeSlotId { get; set; } = 0; // = "08:00-9:00"; <--Booking()POST
+        // Porridge86: Fixed TimeSlotId after editing
 
         public int CategoryId { get; set; } = 0;
-        public string? Notes { get; set; } // if Cateory == "OTHER", required
-
+        public string? Notes { get; set; } // if Category == "OTHER", required
 
         // to display
         public List<AvailableDate> AvailableDates { get; set; } = new();

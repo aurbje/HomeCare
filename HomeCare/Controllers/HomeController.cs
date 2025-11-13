@@ -5,14 +5,12 @@ public class HomeController : Controller
 {
     public IActionResult Index()
     {
-        ViewData["Title"] = "Home";
         return View();
     }
 
     public IActionResult About()
     {
-        ViewData["Title"] = "About Us";
-        return View();
+        return View("About");
     }
 
     public IActionResult Contact()
