@@ -1,42 +1,59 @@
 @model (List<HomeCare.Models.Reminder>, List<HomeCare.Models.Appointment>)
 @{
-    ViewData["Title"] = "User Dashboard"; // change this name later
+    ViewData["Title"] = "Din side"; // change this name later
 }
 
-<h2>Velkommen til din side!</h2>
+<!--Apply base font size and line height for user page-->
+<div class="font-resizable-area user-dashboard">
 
-<!-- Top: message after login-->
-<div class="dashboard-header bg-primary text-white text-center py-4">
-    <h2>Din side</h2>
+    <!--Accessible page heading without <header>-->
+    <div class="dashboard-header  text-center py-4 mt-5">
+        <h1 class="fs-2" aria-level="1">Velkommen til din side!</h1>
+    </div>
 
-</div>
+    <!--Main-->
+    <div class="container-fluid py-2">
+        <div class="row g-3">
+            <div class="col-12 col-lg-6 d-flex flex-column gap-2">
 
-<div class="dashboard-main d-flex flex-wrap">
+                <!--Reminders section with card and border-->
+                <section role="region" aria-labelledby="reminder-heading">
+                    <div class="card border-start col-12 border-4 border-success">
+                        <div class="card-body">
+                            <h2 id="reminder-heading" class="card-title fs-4 mb-3">Påminnelser</h2>
+                            <partial name="_ReminderList" model="Model.Item1" />
+                        </div>
+                    </div>
+                </section>
 
-    <div class="dashboard-left flex-fill p-3" style="min-width: 300px;">
-        <div class="reminder-section mb-4">
+                <!--Appointments section with large button and spacing-->
+                <section role="region" aria-labelledby="appointment-heading">
+                    <div class="card border-start border-4 border-success">
+                        <div class="card-body">
+                            <h2 id="appointment-heading" class="card-title fs-4 mb-3">Dine timer</h2>
+                            <partial name="_AppointmentList" model="Model.Item2" />
+                            <div class="mt-4">
+                                <a asp-action="Booking" asp-controller="Booking"
+                                    class="btn btn-primary btn-lg px-4 py-2" aria-label="Bestill ny time">
+                                    <i class="bi bi-calendar-plus me-2"></i> Book time her
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-            <h3>Påminnelser</h3>
-            <partial name="_ReminderList" model="Model.Item1" />
-            @* @Html.Partial("_ReminderList", Model.Item1) *@
-        </div>
-
-        <div class="appointment-section">
-            <h3>Dine timer</h3>
-            <partial name="_AppointmentList" model="Model.Item2" />
-            @* @Html.Partial("_AppointmentList", Model.Item2) *@
-
-            <div class="action-button">
-                <a asp-action="Booking" asp-controller="Booking" class="btn btn-primary">Book time her</a>
-
+            <!--Calendar section with clear heading and spacing-->
+            <div class="col-12 col-lg-6">
+                <section role="region" aria-labelledby="calendar-heading">
+                    <div class="card border-start border-4 border-success">
+                        <div class="card-body">
+                            <h2 id="calendar-heading" class="card-title fs-4 mb-3">Kalender</h2>
+                            <partial name="_Calendar" model="Model.Item2" />
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
-
-    <div class="dashboard-right flex-fill p-3" style="min-width: 300px;">
-        <h3>Kalender</h3>
-        <partial name="_Calendar" model="Model.Item2" />
-        @* @Html.Partial("_Calendar", Model.Item2) *@
-    </div>
-
 </div>

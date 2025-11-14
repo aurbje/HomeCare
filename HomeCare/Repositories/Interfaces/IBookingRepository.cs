@@ -14,6 +14,8 @@ namespace HomeCare.Repositories.Interfaces
         // added after error CS1061: There is no UpdateAvailableDateAsync in IBookingRepository
         Task UpdateAvailableDateAsync(AvailableDate availableDate); // to update AvailableDate
 
+        // personnel
+        Task<IEnumerable<User>> GetAvailablePersonnelByDateAsync(DateTime date);
         // Appointments
         Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync();
         Task<Appointment?> GetAppointmentByIdAsync(int id);
@@ -32,5 +34,9 @@ namespace HomeCare.Repositories.Interfaces
         Task<Category?> GetCategoryByIdAsync(int categoryId);
 
         Task SaveChangesAsync();
+        Task AddPersonnelAvailabilityAsync(int personnelId, DateTime date);
+        Task<User?> GetUserByFullNameAsync(string fullName);
+
+
     }
 }

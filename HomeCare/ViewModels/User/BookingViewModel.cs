@@ -1,3 +1,5 @@
+using HomeCare.Models;
+
 namespace HomeCare.ViewModels
 {
     public class BookingViewModel
@@ -9,6 +11,9 @@ namespace HomeCare.ViewModels
 
         public int CategoryId { get; set; } = 0;
         public string? Notes { get; set; } // if Category == "OTHER", required
+
+        public int? SelectedPersonnelId { get; set; }
+        public List<HomeCare.Models.User> AvailablePersonnel { get; set; } = new();
 
         // to display
         public List<AvailableDate> AvailableDates { get; set; } = new();

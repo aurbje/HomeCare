@@ -4,6 +4,7 @@ using HomeCare.Repositories.Interfaces;
 using HomeCare.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using HomeCare.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>(); // added booking repository here
 
+//
+builder.Services.AddScoped<IPersonnelRepository, PersonnelRepository>();
+
+
 // database connection (using sqlite)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -30,7 +35,25 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
-        DbInitializer.Seed(context);
+        // DbInitializer.Seed(context);
+        // if there is no user in db (temporary)
+        if (!context.Users.Any(u => u.Id == 1))
+        {
+            context.Users.Add(new User
+            {
+                Id = 1,
+                FullName = "Test Personnel",
+                Email = "test@example.com",
+                Role = "Personnel"
+            });
+            // context.Users.Add(new User
+            // {
+            //     FullName = "Admin",
+            //     Email = "admin@homecare.com",
+            //     Role = "Admin"
+            // });
+            context.SaveChanges();
+        }
     }
     catch (Exception ex)
     {
@@ -66,7 +89,7 @@ app.Use(async (context, next) =>
     }
 });
 
-// middleware setup 
+// middleware setup
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

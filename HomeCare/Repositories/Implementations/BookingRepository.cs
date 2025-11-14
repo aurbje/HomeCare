@@ -17,14 +17,16 @@ namespace HomeCare.Repositories.Implementations
         public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
         {
             return await _context.Bookings
-                .Include(b => b.User) // includes user data if needed
+                        .Include(b => b.Client)
+        .Include(b => b.Personnel)// includes user data if needed
                 .ToListAsync();
         }
 
         public async Task<Booking?> GetBookingByIdAsync(int id)
         {
             return await _context.Bookings
-                .Include(b => b.User)
+                        .Include(b => b.Client)
+        .Include(b => b.Personnel)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
@@ -50,6 +52,29 @@ namespace HomeCare.Repositories.Implementations
             }
         }
 
+        public async Task<User?> GetUserByFullNameAsync(string fullName)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.FullName == fullName);
+        }
+        public async Task AddPersonnelAvailabilityAsync(int personnelId, DateTime date)
+        {
+            var exists = await _context.PersonnelAvailabilities
+                .AnyAsync(a => a.PersonnelId == personnelId && a.Date.Date == date.Date);
+
+            if (!exists)
+            {
+                var availability = new PersonnelAvailability
+                {
+                    PersonnelId = personnelId,
+                    Date = date
+                };
+
+                _context.PersonnelAvailabilities.Add(availability);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+
         public async Task<AvailableDate?> GetAvailableDateByDateAsync(DateTime date)
         {
             return await _context.AvailableDates
@@ -57,16 +82,15 @@ namespace HomeCare.Repositories.Implementations
                 .FirstOrDefaultAsync(d => d.Date == date);
         }
 
-
         public async Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync()
         {
             return await _context.AvailableDates
                 .Include(d => d.TimeSlots)
-                //.Where(d => d.Date >= DateTime.Today && d.TimeSlots.Any(ts => !ts.IsBooked))
-                .Where(d => d.Date >= DateTime.Today) // show all
+                .Where(d => d.Date >= DateTime.Today) // only future
                 .OrderBy(d => d.Date)
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
@@ -144,5 +168,15 @@ namespace HomeCare.Repositories.Implementations
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<User>> GetAvailablePersonnelByDateAsync(DateTime date)
+        {
+            return await _context.PersonnelAvailabilities
+                .Where(a => a.Date.Date == date.Date)
+                .Select(a => a.Personnel)
+                .Distinct()
+                .ToListAsync();
+        }
+
     }
 }

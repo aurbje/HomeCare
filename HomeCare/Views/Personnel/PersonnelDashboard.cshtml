@@ -1,0 +1,129 @@
+@model HomeCare.ViewModels.Personnel.PersonnelDashboardViewModel
+
+@{
+    ViewData["Title"] = "Din side"; // change later
+                                    // recieve the avairabledates from controller, display in order
+    var availableDates = (ViewBag.AvailableDates as List<DateTime> ?? new List<DateTime>())
+    .OrderBy(d => d.Date)
+    .ToList();
+    var culture = new System.Globalization.CultureInfo("nb-NO");
+}
+
+<div class="personnel-dashboard">
+    <div class="dashboard-header text-center py-4 mt-5">
+        @* <h1 class="fs-2">Velkommen, @Model.PersonnelName!</h1> *@
+        <h1 class="fs-2">Velkommen, @Model?.PersonnelName.</h2>
+
+    </div>
+
+    <div class="container py-3">
+        <div class="row g-4">
+
+            <!-- Today's work list -->
+            <div class="col-12 col-lg-6">
+                <section aria-labelledby="visit-heading">
+                    <div class="card border-start border-4 border-success">
+                        <div class="card-body">
+                            <h2 id="visit-heading" class="fs-4 mb-3">Dagens besøk</h2>
+                            @if (Model.TodayVisits.Any())
+                            {
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tid</th>
+                                            <th>Navn</th>
+                                            <th>Adresse</th>
+                                            <th>Telefon</th>
+                                            <th>Oppgaver</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var visit in Model.TodayVisits)
+                                        {
+                                            <tr>
+                                                <td>@visit.Time.ToString("HH:mm")</td>
+                                                <td>@visit.ClientName</td>
+                                                <td>@visit.Address</td>
+                                                <td>@visit.Phone</td>
+                                                <td>@string.Join(", ", visit.Tasks)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <p>Ingen besøk planlagt i dag.</p>
+                            }
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Woring day section-->
+            <div class="col-12 col-lg-6">
+                <section aria-labelledby="availability-heading">
+                    <div class="card border-start border-4 border-success">
+                        <div class="card-body">
+                            <!--display registered day-->
+                            <h2 class="fs-4 mb-3">Dine registrerte tilgjengelige dager</h5>
+
+                                @if (Model.AvailableDates != null && Model.AvailableDates.Any())
+                                {
+                                    <ul class="mt-4">
+                                        @foreach (var date in Model.AvailableDates.OrderBy(d => d.Date))
+                                        {
+                                            <li>
+                                                @date.ToString("dddd dd. MMMM", culture)
+                                                <form asp-action="DeleteAvailability" method="post" style="display:inline;"
+                                                    onsubmit="return confirm('Vil du slette denne tilgjengelige dagen?');">
+                                                    <input type="hidden" name="dateToDelete"
+                                                        value="@date.ToString("yyyy-MM-dd")" />
+                                                    <button type="submit" class="btn btn-sm btn-danger">Slett</button>
+                                                </form>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mt-3">Ingen tilgjengelige dager er registrert ennå.</p>
+                                }
+
+                                <!--register working day-->
+                                <h2 id="availability-heading" class="fs-4 mb-3">Register din tilgjengelig dag</h2>
+                                <form asp-action="RegisterAvailability" method="post">
+                                    <div class="form-group">
+                                        <label for="AvailableDate">Velg dato</label>
+                                        <input type="date" name="AvailableDate" class="form-control"
+                                            min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                            required /><!--you cannot register earlier than today-->
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-3">Registrer</button>
+                                </form>
+                                <!--validation-->
+                                @if (TempData["Error"] != null)
+                                {
+                                    <div class="alert alert-danger">@TempData["Error"]</div>
+                                }
+
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Kalender -->
+            <div class="col-12">
+                <section aria-labelledby="calendar-heading">
+                    <div class="card border-start border-4 border-info">
+                        <div class="card-body">
+                            <h2 id="calendar-heading" class="fs-4 mb-3">Kalender</h2>
+                            <partial name="_PersonnelCalendar" model="Model.CalendarEvents" />
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

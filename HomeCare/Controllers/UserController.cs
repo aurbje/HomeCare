@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using HomeCare.Models;
 using HomeCare.Data;
 using HomeCare.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
+
+//[Authorize(Roles = UserRoles.User)]
 namespace HomeCare.Controllers
 {
     public class UserController : Controller

@@ -1,0 +1,166 @@
+@model List<HomeCare.ViewModels.Personnel.CalendarEvent>
+
+@{
+    System.Globalization.CultureInfo culture = new System.Globalization.CultureInfo("nb-NO");
+    var year = ViewBag.CalendarYear as int? ?? DateTime.Today.Year;
+    var month = ViewBag.CalendarMonth as int? ?? DateTime.Today.Month;
+    var currentMonth = new DateTime(year, month, 1);
+    var prevMonth = currentMonth.AddMonths(-1);
+    var nextMonth = currentMonth.AddMonths(1);
+    var daysInMonth = DateTime.DaysInMonth(year, month);
+    var firstDay = new DateTime(year, month, 1);
+    var appointmentsByDate = Model.GroupBy(a => a.StartTime.Date).ToDictionary(g => g.Key, g => g.ToList());
+    var offset = ((int)firstDay.DayOfWeek + 6) % 7;
+    var totalCells = offset + daysInMonth;
+    var rows = (int)Math.Ceiling(totalCells / 7.0);
+    int cellIndex = 0;
+    var availableDates = ViewBag.AvailableDates as List<DateTime> ?? new List<DateTime>();
+}
+
+<div class="calendar-nav mb-2 d-flex justify-content-between align-items-center">
+    <a asp-action="PersonnelDashboard" asp-route-year="@prevMonth.Year" asp-route-month="@prevMonth.Month"
+        class="btn btn-outline-secondary">← @prevMonth.ToString("MMMM yyyy", culture)</a>
+    <h3 class="mb-0">@currentMonth.ToString("MMMM yyyy", culture)</h4>
+        <a asp-action="PersonnelDashboard" asp-route-year="@nextMonth.Year" asp-route-month="@nextMonth.Month"
+            class="btn btn-outline-secondary">@nextMonth.ToString("MMMM yyyy", culture) →</a>
+</div>
+
+<form asp-action="RegisterMultipleAvailability" method="post">
+    <div class="calendar-container">
+        <table class="table table-calendar">
+            <thead>
+                <tr>
+                    <th>Man</th>
+                    <th>Tir</th>
+                    <th>Ons</th>
+                    <th>Tor</th>
+                    <th>Fre</th>
+                    <th>Lør</th>
+                    <th>Søn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int r = 0; r < rows; r++)
+                {
+                    <tr>
+                        @for (int c = 0; c < 7; c++)
+                        {
+                            if (cellIndex < offset || cellIndex >= offset + daysInMonth)
+                            {
+                                <td class="empty"></td>
+                            }
+                            else
+                            {
+                                var date = firstDay.AddDays(cellIndex - offset);
+                                var hasAppointments = appointmentsByDate.ContainsKey(date);
+                                var isSunday = date.DayOfWeek == DayOfWeek.Sunday;
+                                var isAvailable = availableDates.Any(d => d.Date == date.Date);
+                                var isPast = date.Date < DateTime.Today;
+
+                                <td class="calendar-day @(hasAppointments ? "has-appointment" : "") @(isSunday ? "sunday" : "") @(isAvailable ? "available-day" : "")"
+                                    style="position: relative;">
+                                    <div class="date-label">@date.Day</div>
+
+                                    @if (!isPast)
+                                    {
+                                        <div style="position: absolute; top: 4px; right: 4px;">
+                                            @if (isAvailable)
+                                            {
+                                                <!--Fixed: Removed nested form and replaced with JS-based delete button -->
+                                                <button type="button" class="btn btn-sm btn-danger" title="Slett tilgjengelig dag"
+                                                    onclick="submitDelete('@date.ToString("yyyy-MM-dd")')">
+                                                    slett
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <label title="Registrer som tilgjengelig dag">
+                                                    <input type="checkbox" name="SelectedDates" value="@date.ToString("yyyy-MM-dd")" />
+                                                </label>
+                                            }
+                                        </div>
+                                    }
+
+                                    @if (hasAppointments)
+                                    {
+                                        foreach (var appt in appointmentsByDate[date].OrderBy(a => a.StartTime))
+                                        {
+                                            <div class="appt-entry">
+                                                <small>
+                                                    @appt.StartTime.ToString("HH:mm", culture)
+                                                    - @appt.ClientName
+                                                    - @appt.CategoryName
+                                                </small>
+                                            </div>
+                                        }
+                                    }
+                                </td>
+
+                                @* <td class="calendar-day @(hasAppointments ? "has-appointment" : "") @(isSunday ? "sunday" : "") @(isAvailable ? "available-day" : "") style="
+                                    position: relative;">
+                                    <div class="date-label">@date.Day</div>
+
+                                    @if (!isPast)
+                                    {
+                                        <div style="position: absolute; top: 4px; right: 4px;">
+                                            @if (isAvailable)
+                                            {
+                                                <!-- delete -->
+                                                <form asp-action="DeleteAvailability" method="post"
+                                                    onsubmit="return confirm('Vil du slette denne tilgjengelige dagen?');">
+                                                    <input type="hidden" name="dateToDelete" value="@date.ToString("yyyy-MM-dd")" />
+                                                    <button type="button" class="btn btn-sm btn-danger" title="Slett tilgjengelig dag"
+                                                        onclick="submitDelete('@date.ToString("yyyy-MM-dd")')">
+                                                        slett
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <!-- checkbox to register -->
+                                                <label title="Registrer som tilgjengelig dag">
+                                                    <input type="checkbox" name="SelectedDates" value="@date.ToString("yyyy-MM-dd")" />
+                                                </label>
+                                            }
+                                        </div>
+                                    }
+
+                                    @if (hasAppointments)
+                                    {
+                                        foreach (var appt in appointmentsByDate[date].OrderBy(a => a.StartTime))
+                                        {
+                                            <div class="appt-entry">
+                                                <small>
+                                                    @appt.StartTime.ToString("HH:mm", culture)
+                                                    - @appt.ClientName
+                                                    - @appt.CategoryName
+                                                </small>
+                                            </div>
+                                        }
+                                    }
+                                </td> *@
+
+                            }
+                            cellIndex++;
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Registrer valgte dager</button>
+</form><!--Fixed: Added hidden form and JS to handle delete action safely -->
+<form id="deleteForm" method="post" asp-action="DeleteAvailability" style="display:none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="dateToDelete" id="dateToDeleteInput" />
+</form>
+
+<script>
+    function submitDelete(dateString) {
+        if (confirm('Vil du slette denne tilgjengelige dagen?')) {
+            document.getElementById('dateToDeleteInput').value = dateString;
+            document.getElementById('deleteForm').submit();
+        }
+    }
+</script>

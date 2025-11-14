@@ -17,8 +17,12 @@ namespace HomeCare.Models
 
         public string? Notes { get; set; }
 
-        // Fremtidig relasjon til bruker (når database legges til)
-        public int? UserId { get; set; }
-        public User? User { get; set; }
+        // User
+        public int? ClientId { get; set; }
+        public User? Client { get; set; }
+
+        // Personnel
+        public int? PersonnelId { get; set; }
+        public User? Personnel { get; set; }
     }
 }

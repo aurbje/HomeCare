@@ -15,5 +15,7 @@ namespace HomeCare.Models
 
         public int CategoryId { get; set; }
         public Category Category { get; set; } = null!; // never null
+        public int? PersonnelId { get; set; }
+        public User? Personnel { get; set; }
     }
 }

@@ -452,6 +452,19 @@ footer a:hover {
 
 .calendar-day {
   position: relative;
+  z-index: 0;
+}
+
+.calendar-day input[type="checkbox"],
+.calendar-day button {
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+td.calendar-day.available-day {
+  background-color: lightblue !important;
+  z-index: 0;
+  /* personnel has registered this day  */
 }
 
 .date-label {
@@ -494,4 +507,90 @@ button.disabled,
 a.disabled {
   pointer-events: none;
   opacity: 0.5;
+}
+
+
+/* size changer  */
+.text-size-controls button {
+  font-size: 1rem;
+}
+
+.font-resizable-area {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* User Dashboard base styles */
+.user-dashboard {
+  font-size: 18px;
+  line-height: 1.6;
+  /* padding: 1rem;
+  margin: 0 auto;
+  max-width: 1200px; */
+}
+
+/* Prevent heading from being hidden under navbar */
+.user-dashboard .dashboard-header {
+  margin-top: 65px;
+}
+
+/* Section cards with color-coded borders */
+.user-dashboard .card {
+  border-radius: 0.5rem;
+  box-shadow: var(--hc-shadow);
+  background-color: var(--hc-white);
+  padding: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.user-dashboard .card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.user-dashboard .card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--hc-teal);
+}
+
+/* Large accessible button */
+.user-dashboard .btn-lg {
+  font-size: 1.25rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+}
+
+/* Icon alignment inside buttons */
+.user-dashboard .btn i {
+  vertical-align: middle;
+}
+
+/* Responsive padding for card body */
+@media (max-width: 768px) {
+  .user-dashboard .card-body {
+    padding: 1rem;
+  }
+}
+
+/* Section spacing */
+.user-dashboard section {
+  margin-bottom: 1rem;
+}
+
+/* Accessible region styling */
+.user-dashboard section[role="region"] {
+  outline: none;
+}
+
+/* Calendar section spacing */
+.user-dashboard .calendar-container {
+  margin-top: 1rem;
+}
+
+/* Override only inside dashboard */
+.user-dashboard h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--hc-teal);
+  margin-bottom: 1rem;
 }

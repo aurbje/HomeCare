@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+
+[Index(nameof(Name), IsUnique = true)]
 public class Category
 {
     public int Id { get; set; }

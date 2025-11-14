@@ -10,7 +10,7 @@
     var daysInMonth = DateTime.DaysInMonth(year, month);
     var firstDay = new DateTime(year, month, 1);
     var appointmentsByDate = Model.GroupBy(a => a.DateTime.Date).ToDictionary(g => g.Key, g => g.ToList());
-    var offset = ((int)firstDay.DayOfWeek + 6) % 7; // start på mandag
+    var offset = ((int)firstDay.DayOfWeek + 6) % 7; // start from monday
     var totalCells = offset + daysInMonth;
     var rows = (int)Math.Ceiling(totalCells / 7.0);
     int cellIndex = 0;
@@ -18,10 +18,10 @@
 
 <div class="calendar-nav mb-2 d-flex justify-content-between align-items-center">
     <a asp-action="Dashboard" asp-route-year="@prevMonth.Year" asp-route-month="@prevMonth.Month"
-       class="btn btn-outline-secondary">← @prevMonth.ToString("MMMM yyyy", culture)</a>
+        class="btn btn-outline-secondary">← @prevMonth.ToString("MMMM yyyy", culture)</a>
     <h4 class="mb-0">@currentMonth.ToString("MMMM yyyy", culture)</h4>
     <a asp-action="Dashboard" asp-route-year="@nextMonth.Year" asp-route-month="@nextMonth.Month"
-       class="btn btn-outline-secondary">@nextMonth.ToString("MMMM yyyy", culture) →</a>
+        class="btn btn-outline-secondary">@nextMonth.ToString("MMMM yyyy", culture) →</a>
 </div>
 
 <div class="calendar-container">

@@ -6,12 +6,15 @@ using HomeCare.ViewModels;
 using System.Threading.Tasks;
 using HomeCare.Repositories.Interfaces;
 
+
 namespace HomeCare.Controllers
 {
     public class BookingController : Controller
     {
         private readonly IBookingRepository _bookingRepo;
         private readonly ILogger<BookingController> _logger;
+
+
 
         public BookingController(IBookingRepository bookingRepo, ILogger<BookingController> logger)
         {
@@ -24,16 +27,33 @@ namespace HomeCare.Controllers
         {
             _logger.LogInformation("Loading booking page with available dates and categories.");
 
+            // For development
+            var testPersonnel = await _bookingRepo.GetUserByFullNameAsync("Test Personnel");
+            if (testPersonnel != null)
+            {
+                await _bookingRepo.AddPersonnelAvailabilityAsync(testPersonnel.Id, DateTime.Today);
+            }
+
+
+
+
             var availableDates = await _bookingRepo.GetAvailableDatesAsync();
             var categories = await _bookingRepo.GetCategoriesAsync();
 
+            var selectedDate = DateTime.Today;
+            var availablePersonnel = await _bookingRepo.GetAvailablePersonnelByDateAsync(selectedDate);
+
+            // see how many personnel are
+            _logger.LogInformation("Available personnel count: {Count}", availablePersonnel.Count());
+
             var model = new BookingViewModel
             {
-                SelectedDate = DateTime.Today,
+                SelectedDate = selectedDate,
                 TimeSlotId = 0,
                 CategoryId = categories.FirstOrDefault()?.Id ?? 0,
                 AvailableDates = availableDates.ToList(),
-                Categories = categories.ToList()
+                Categories = categories.ToList(),
+                AvailablePersonnel = availablePersonnel.ToList()
             };
 
             ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
@@ -133,7 +153,8 @@ namespace HomeCare.Controllers
                         DateTime = selectedSlot.AvailableDate.Date.Add(startTime),
                         TimeSlotId = selectedSlot.Id,
                         CategoryId = selectedCategory!.Id,
-                        Notes = model.Notes
+                        Notes = model.Notes,
+                        PersonnelId = model.SelectedPersonnelId
                     };
 
                     selectedSlot.IsBooked = true;

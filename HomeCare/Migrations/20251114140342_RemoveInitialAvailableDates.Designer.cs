@@ -3,6 +3,7 @@ using System;
 using HomeCare.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeCare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251114140342_RemoveInitialAvailableDates")]
+    partial class RemoveInitialAvailableDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -45,9 +48,6 @@ namespace HomeCare.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Categories");
 
@@ -89,17 +89,12 @@ namespace HomeCare.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("PersonnelId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("TimeSlotId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("PersonnelId");
 
                     b.HasIndex("TimeSlotId");
 
@@ -112,17 +107,11 @@ namespace HomeCare.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("PersonnelId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ServiceType")
                         .IsRequired()
@@ -132,11 +121,12 @@ namespace HomeCare.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("PersonnelId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
                 });
@@ -291,10 +281,6 @@ namespace HomeCare.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HomeCare.Models.User", "Personnel")
-                        .WithMany()
-                        .HasForeignKey("PersonnelId");
-
                     b.HasOne("TimeSlot", "TimeSlot")
                         .WithMany()
                         .HasForeignKey("TimeSlotId")
@@ -303,24 +289,16 @@ namespace HomeCare.Migrations
 
                     b.Navigation("Category");
 
-                    b.Navigation("Personnel");
-
                     b.Navigation("TimeSlot");
                 });
 
             modelBuilder.Entity("HomeCare.Models.Booking", b =>
                 {
-                    b.HasOne("HomeCare.Models.User", "Client")
+                    b.HasOne("HomeCare.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("UserId");
 
-                    b.HasOne("HomeCare.Models.User", "Personnel")
-                        .WithMany()
-                        .HasForeignKey("PersonnelId");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Personnel");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HomeCare.Models.PersonnelAppointment", b =>
