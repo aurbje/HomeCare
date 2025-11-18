@@ -1,35 +1,40 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using HomeCare.Models;
 
 namespace HomeCare.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<Caregiver>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        // === USER DATA ===
-        public DbSet<User> Users { get; set; }
+        // user data – renamed to avoid conflict with IdentityDbContext.Users
+        public DbSet<User> AppUsers { get; set; } = default!;
 
-        public DbSet <Booking> Bookings { get; set; }
+        // visits
+        public DbSet<Visit> Visits { get; set; } = default!;
+        public DbSet<CareTask> CareTasks { get; set; } = default!;
 
-        // === BOOKING DATA ===
-        public DbSet<BookingOption> BookingOptions { get; set; }
-        public DbSet<Appointment> Appointments { get; set; }
-        public DbSet<AvailableDate> AvailableDates { get; set; }
-        public DbSet<TimeSlot> TimeSlots { get; set; }
-        public DbSet<Category> Categories { get; set; }
+        // booking data
+        public DbSet<Booking> Bookings { get; set; } = default!;
+        public DbSet<BookingOption> BookingOptions { get; set; } = default!;
+        public DbSet<Appointment> Appointments { get; set; } = default!;
+        public DbSet<AvailableDate> AvailableDates { get; set; } = default!;
+        public DbSet<TimeSlot> TimeSlots { get; set; } = default!;
+        public DbSet<Category> Categories { get; set; } = default!;
 
-        // === DATABASE SEEDING ===
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Available Dates
+            base.OnModelCreating(modelBuilder);
+
+            // available Dates
             modelBuilder.Entity<AvailableDate>().HasData(
                 new AvailableDate { Id = 1, Date = new DateTime(2025, 12, 15) },
                 new AvailableDate { Id = 2, Date = new DateTime(2025, 12, 16) },
                 new AvailableDate { Id = 3, Date = new DateTime(2025, 12, 17) }
             );
 
-            // Time Slots
+            // time slots
             modelBuilder.Entity<TimeSlot>().HasData(
                 new TimeSlot { Id = 1, Slot = "09:00-10:00", AvailableDateId = 1, IsBooked = false },
                 new TimeSlot { Id = 2, Slot = "10:00-11:00", AvailableDateId = 1, IsBooked = false },
@@ -40,7 +45,7 @@ namespace HomeCare.Data
                 new TimeSlot { Id = 7, Slot = "10:00-11:00", AvailableDateId = 3, IsBooked = false }
             );
 
-            // Categories
+            // categories
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Cleaning" },
                 new Category { Id = 2, Name = "Nursing" },

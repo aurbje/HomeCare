@@ -13,5 +13,8 @@ namespace HomeCare.ViewModels.Account
         [DataType(DataType.Password)]
         [Display(Name = "Passord")]
         public string Password { get; set; } = string.Empty;
+
+        [Display(Name = "Husk meg")]
+        public bool RememberMe { get; set; } = false;
     }
 }

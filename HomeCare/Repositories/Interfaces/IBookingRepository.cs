@@ -10,7 +10,7 @@ namespace HomeCare.Repositories.Interfaces
         Task UpdateBookingAsync(Booking booking);           // update existing booking
         Task DeleteBookingAsync(int id);                    // delete a booking by id
 
-        // Appointments
+        // appointments
         Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync();
         Task<Appointment?> GetAppointmentByIdAsync(int id);
         Task AddAppointmentAsync(Appointment appointment);
@@ -18,7 +18,7 @@ namespace HomeCare.Repositories.Interfaces
         Task DeleteAppointmentAsync(int id);
         Task UpdateTimeSlotAsync(TimeSlot timeSlot);
 
-        // Supporting data
+        // supporting data
         Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync();
         Task<IEnumerable<Category>> GetCategoriesAsync();
         Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId);

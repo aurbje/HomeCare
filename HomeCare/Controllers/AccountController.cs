@@ -1,19 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HomeCare.ViewModels.Account; // where SignInViewModel og SignUpViewModel is
+using HomeCare.ViewModels.Account;
 using HomeCare.Models; 
 using HomeCare.Data;
 using System.Threading.Tasks;
-using HomeCare.Repositories;
+using HomeCare.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace HomeCare.Controllers
 {
     public class AccountController : Controller
     {
         private readonly IUserRepository _userRepo;
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IUserRepository userRepo, ILogger<UserController> logger)
+        public AccountController(IUserRepository userRepo, ILogger<AccountController> logger)
         {
             _userRepo = userRepo;
             _logger = logger;
@@ -30,7 +32,7 @@ namespace HomeCare.Controllers
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Login atempt failed validation for email {Email}", model.Email);
+                _logger.LogWarning("Login attempt failed validation for email {Email}", model.Email);
                 return View(model);
             }
 
@@ -40,20 +42,19 @@ namespace HomeCare.Controllers
 
                 if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
                 {
-                    _logger.LogWarning("Invalid login atempt for email {Email}", model.Email);
+                    _logger.LogWarning("Invalid login attempt for email {Email}", model.Email);
                     ModelState.AddModelError("", "Ugyldig e-post eller passord");
                     return View(model);
                 }
 
-                _logger.LogInformation("User {Email} logged inn successfully", model.Email);
+                _logger.LogInformation("User {Email} logged in successfully", model.Email);
 
-                // if login success, sent to homepage, can change this later
                 return RedirectToAction("Dashboard", "User");
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unexpected error during login for email {Email}", model.Email);
-                return View("Error"); 
+                return View("Error");
             }
         }
 
@@ -68,8 +69,11 @@ namespace HomeCare.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage);
+
                 _logger.LogWarning("Signup validation failed for email {Email}. Errors: {Errors}", model.Email, errors);
+
                 return View(model);
             }
 
@@ -77,7 +81,7 @@ namespace HomeCare.Controllers
             {
                 if (await _userRepo.EmailExistsAsync(model.Email))
                 {
-                    _logger.LogInformation("Signup atempt with already reg email {Email}", model.Email);
+                    _logger.LogInformation("Signup attempt with already registered email {Email}", model.Email);
                     ModelState.AddModelError("Email", "E-postadressen er allerede registrert");
                     return View(model);
                 }
@@ -99,10 +103,10 @@ namespace HomeCare.Controllers
 
                 return RedirectToAction("SignIn");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError(e, "Error occurred while registering new user {Email}", model.Email);
-                return View("Error"); // need an error side/popup 
+                return View("Error");
             }
         }
 

@@ -1,0 +1,10 @@
+@{
+    ViewData["Title"] = "Logg ut";
+}
+
+<h2 class="text-center mt-5">Vil du logge ut?</h2>
+
+<form asp-action="Logout" method="post" class="text-center mt-3">
+    <button type="submit" class="btn btn-danger">Logg ut</button>
+    <a asp-controller="Caregiver" asp-action="Dashboard" class="btn btn-secondary ms-2">Avbryt</a>
+</form>

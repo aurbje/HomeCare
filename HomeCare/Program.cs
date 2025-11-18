@@ -1,45 +1,79 @@
 using HomeCare.Data;
-using HomeCare.Repositories;
+using HomeCare.Models;
 using HomeCare.Repositories.Interfaces;
 using HomeCare.Repositories.Implementations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// cleared the default providers and added console + debug logging
+// ---------- Logging ----------
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+// ---------- MVC ----------
 builder.Services.AddControllersWithViews();
 
-// register repositories
+// ---------- Repositories ----------
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>(); // added booking repository here
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<ICaregiverRepository, CaregiverRepository>();
 
-// database connection (using sqlite)
+// ---------- Database (SQLite) ----------
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
+
+// ---------- Identity (Caregiver + roller) ----------
+builder.Services.AddIdentity<Caregiver, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedEmail = false;
+        // her kan du evt. legge på passordkrav osv.
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+// (valgfritt, men fint) – standard cookie-paths
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/CaregiverAccount/Login";
+    options.AccessDeniedPath = "/CaregiverAccount/AccessDenied";
+});
 
 var app = builder.Build();
 
-// database initialization
+// ---------- Database seeding + roller ----------
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
     try
     {
+        // egen seedinglogikk (tabeller, testdata osv.)
         DbInitializer.Seed(context);
+
+        // sørg for at rollene finnes
+        string[] roles = { "User", "Caregiver", "Admin" };
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
+        }
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Error while seeding the database");
     }
 }
 
-// in production mode we send the user to a friendly error page
+// ---------- Error pages ----------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -47,11 +81,10 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    // show full error details while developing
     app.UseDeveloperExceptionPage();
 }
 
-// catch all unhandled exceptions and log them
+// ---------- Exception logging middleware ----------
 app.Use(async (context, next) =>
 {
     try
@@ -61,20 +94,21 @@ app.Use(async (context, next) =>
     catch (Exception ex)
     {
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, $"Unexpected error on path: {context.Request.Path}");
+        logger.LogError(ex, "Unexpected error on path: {Path}", context.Request.Path);
         throw;
     }
 });
 
-// middleware setup 
+// ---------- Pipeline ----------
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// mvc route setup
+// ---------- Routing ----------
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

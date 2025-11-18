@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace HomeCare.Models
 {
     public class User
@@ -5,18 +7,22 @@ namespace HomeCare.Models
         public int Id { get; set; }
 
         // person info
-        public string FullName { get; set; } = string.Empty;     // combines name from de other version 
-        public string UserName { get; set; } = string.Empty;     // username for login
+        public string FullName { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
-        // autentification
-        public string PasswordHash { get; set; } = string.Empty; // safer save than just password
+        // authentication
+        public string PasswordHash { get; set; } = string.Empty;
 
-        //contact information
-        public string TlfNumber { get; set; } = string.Empty;    // keep as a string for flexibility (countrycodes etc.) 
+        // contact info
+        public string TlfNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
 
         // roles and access
-        public string Role { get; set; } = "user";               // standardrole for new users
+        public string Role { get; set; } = "user";
+
+        // relations
+        public ICollection<Visit> Visits { get; set; } = new List<Visit>();
+        public ICollection<CareTask> CareTasks { get; set; } = new List<CareTask>();
     }
 }

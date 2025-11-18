@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Ingen tilgang";
+}
+
+<h2 class="text-danger text-center mt-5">Ingen tilgang</h2>
+<p class="text-center mb-4">
+    Du har ikke rettigheter til å se denne siden.
+</p>
+
+<div class="text-center">
+    <a asp-controller="CaregiverAccount" asp-action="Login" class="btn btn-primary">
+        Logg inn som ansatt
+    </a>
+</div>

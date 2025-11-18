@@ -1,5 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using HomeCare.Models;
-
 
 namespace HomeCare.Data
 {
@@ -7,8 +9,12 @@ namespace HomeCare.Data
     {
         public static void Seed(AppDbContext context)
         {
-            // Skip if date already exists
-            if (context.AvailableDates.Any()) return;
+            // Sørg for at databasen er opprettet
+            context.Database.EnsureCreated();
+
+            // Hvis vi allerede har data, ikke seed på nytt
+            if (context.AvailableDates.Any())
+                return;
 
             // AvailableDate
             var dates = new List<AvailableDate>
@@ -23,11 +29,11 @@ namespace HomeCare.Data
             // TimeSlot
             var slots = new List<TimeSlot>
             {
-                new TimeSlot { Slot = "09:00–10:00", AvailableDateId = 1 },
-                new TimeSlot { Slot = "10:00–11:00", AvailableDateId = 1 },
-                new TimeSlot { Slot = "11:00–12:00", AvailableDateId = 2 },
-                new TimeSlot { Slot = "13:00–14:00", AvailableDateId = 3 },
-                new TimeSlot { Slot = "15:00–16:00", AvailableDateId = 3 }
+                new TimeSlot { Id = 1, Slot = "09:00–10:00", AvailableDateId = 1, IsBooked = false },
+                new TimeSlot { Id = 2, Slot = "10:00–11:00", AvailableDateId = 1, IsBooked = false },
+                new TimeSlot { Id = 3, Slot = "11:00–12:00", AvailableDateId = 2, IsBooked = false },
+                new TimeSlot { Id = 4, Slot = "13:00–14:00", AvailableDateId = 3, IsBooked = false },
+                new TimeSlot { Id = 5, Slot = "15:00–16:00", AvailableDateId = 3, IsBooked = false }
             };
             context.TimeSlots.AddRange(slots);
             context.SaveChanges();
@@ -35,10 +41,10 @@ namespace HomeCare.Data
             // Category
             var categories = new List<Category>
             {
-                new Category { Name = "Cleaning" },
-                new Category { Name = "Nursing" },
-                new Category { Name = "Cooking" },
-                new Category { Name = "Other" }
+                new Category { Id = 1, Name = "Cleaning" },
+                new Category { Id = 2, Name = "Nursing" },
+                new Category { Id = 3, Name = "Cooking" },
+                new Category { Id = 4, Name = "Other" }
             };
             context.Categories.AddRange(categories);
             context.SaveChanges();

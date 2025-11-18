@@ -1,0 +1,76 @@
+@model (List<HomeCare.Models.CareTask>, List<HomeCare.Models.Visit>)
+
+@{
+    ViewData["Title"] = "Ansatt Dashboard";
+}
+
+<div class="dashboard-header text-dark text-center py-4">
+    <h2>Hei, *ansattnavn*! 👋</h2>
+    <h4>La oss gjøre dagen enklere</h4>
+</div>
+
+<div class="dashboard-main d-flex flex-wrap">
+
+    @* // left side content *@
+    <div class="dashboard-left flex-fill p-3" style="min-width: 320px;">
+        
+        @* // active tasks *@
+        <div class="task-section mb-4 shadow p-3 rounded bg-light">
+            <h3 class="text-primary mb-3">Dagens oppgaver</h3>
+            <partial name="_TaskList" model="Model.Item1" />
+        </div>
+
+        @* // today's visits *@
+        <div class="visit-section shadow p-3 rounded bg-light">
+            <h3 class="text-success mb-3">Planlagte besøk</h3>
+            <partial name="_VisitList" model="Model.Item2" />
+
+            <div class="action-buttons mt-3">
+                <a asp-action="CreateVisit"
+                   asp-controller="Staff"
+                   class="btn btn-outline-success w-100">➕ Planlegg nytt besøk</a>
+            </div>
+        </div>
+
+    </div>
+
+    @* // right side content *@
+    <div class="dashboard-right flex-fill p-3" style="min-width: 320px;">
+
+        @* // KPI dashboard *@
+        <div class="stats-box shadow p-3 rounded bg-light mb-4">
+            <h3 class="text-info mb-3">Statistikk</h3>
+
+            <div class="d-flex justify-content-around text-center">
+                <div>
+                    <span class="h4 d-block">7</span>
+                    <small>Fullførte i dag</small>
+                </div>
+                <div>
+                    <span class="h4 d-block">3</span>
+                    <small>Gjenstår</small>
+                </div>
+                <div>
+                    <span class="h4 d-block">2</span>
+                    <small>Haster</small>
+                </div>
+            </div>
+        </div>
+
+        @* // map of today's route *@
+        <div class="route-map shadow p-3 rounded bg-light mb-4">
+            <h3 class="text-warning mb-3">Dagens rute</h3>
+            <partial name="_RouteMap" model="Model.Item2" />
+        </div>
+
+        @* // quick notes *@
+        <div class="notes-section shadow p-3 rounded bg-light">
+            <h3 class="text-secondary mb-3">Hurtignotater</h3>
+            <textarea class="form-control" rows="4"
+                      placeholder="Skriv kjappe notater om pasienter eller oppgaver..."></textarea>
+            <button class="btn btn-dark mt-2 w-100">Lagre notat</button>
+        </div>
+
+    </div>
+
+</div>
