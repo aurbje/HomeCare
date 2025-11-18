@@ -1,4 +1,4 @@
-@model (List<HomeCare.Models.CareTask>, List<HomeCare.Models.Visit>)
+@model (List<HomeCare.Models.CareTask>, List<HomeCare.Models.Visit>) // ViewModel for Caregivers Dashboard
 
 @{
     ViewData["Title"] = "Ansatt Dashboard";
@@ -11,7 +11,6 @@
 
 <div class="dashboard-main d-flex flex-wrap">
 
-    @* // left side content *@
     <div class="dashboard-left flex-fill p-3" style="min-width: 320px;">
         
         @* // active tasks *@
@@ -34,10 +33,9 @@
 
     </div>
 
-    @* // right side content *@
     <div class="dashboard-right flex-fill p-3" style="min-width: 320px;">
 
-        @* // KPI dashboard *@
+        @* // kpi dashboard *@
         <div class="stats-box shadow p-3 rounded bg-light mb-4">
             <h3 class="text-info mb-3">Statistikk</h3>
 
@@ -63,7 +61,7 @@
             <partial name="_RouteMap" model="Model.Item2" />
         </div>
 
-        @* // quick notes *@
+        @* // notes *@
         <div class="notes-section shadow p-3 rounded bg-light">
             <h3 class="text-secondary mb-3">Hurtignotater</h3>
             <textarea class="form-control" rows="4"

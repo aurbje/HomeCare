@@ -5,10 +5,11 @@ namespace HomeCare.Models
 {
     public class Caregiver : IdentityUser
     {
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
-        // connection to the caregivers and visits
-        public List<Task> Tasks { get; set; }
-        public List<Visit> Visits { get; set; }
+        // connection to the caregiver’s tasks and visits
+        public List<CareTask> Tasks { get; set; } = new();
+        public List<Visit> Visits { get; set; } = new();
     }
 }
+

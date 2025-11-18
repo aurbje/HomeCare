@@ -1,10 +1,7 @@
-@model HomeCare.ViewModels.Account.SignInViewModel
+@model HomeCare.ViewModels.Account.SignInViewModel // ViewModel for sign-in page
 @{
     ViewData["Title"] = "Logg inn";
 }
-
-// containers for the signin page
-
 <div class="signup-container container">
     <div class="signup-card">
         <a asp-controller="Home" asp-action="Index" class="back-btn">← Tilbake til forsiden</a>
@@ -41,6 +38,6 @@
     </div>
 </div>
 
-@section Scripts {
+@section Scripts { 
     <partial name="_ValidationScriptsPartial" />
 }

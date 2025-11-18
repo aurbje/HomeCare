@@ -6,15 +6,15 @@ namespace HomeCare.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User?> GetUserByIdAsync(int id);
-        Task<User?> GetByEmailAsync(string email);       // NEW
-        Task<bool> EmailExistsAsync(string email);       // NEW
+        Task<User?> GetUserByIdAsync(int id); // id
+        Task<User?> GetByEmailAsync(string email); // email
+        Task<bool> EmailExistsAsync(string email); // email exists
         
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task AddAsync(User user);                        // NEW (instead of AddUserAsync)
-        Task UpdateUserAsync(User user);
-        Task DeleteUserAsync(int id);
+        Task<IEnumerable<User>> GetAllUsersAsync(); // all users
+        Task AddAsync(User user); // add new user
+        Task UpdateUserAsync(User user); // update user
+        Task DeleteUserAsync(int id); // delete user by id
 
-        Task SaveChangesAsync();                         // NEW
+        Task SaveChangesAsync(); // save changes to db
     }
 }

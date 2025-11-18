@@ -1,4 +1,4 @@
-// Design
+// design
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using HomeCare.Models;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HomeCare.Repositories.Implementations
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : IUserRepository // user repository implementation
     {
         private readonly AppDbContext _context;
 
@@ -16,7 +16,7 @@ namespace HomeCare.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int id) // get user by id
         {
             return await _context.AppUsers
                 .Include(u => u.Visits)
@@ -24,19 +24,19 @@ namespace HomeCare.Repositories.Implementations
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<User?> GetByEmailAsync(string email)
+        public async Task<User?> GetByEmailAsync(string email) // get user by email
         {
             return await _context.AppUsers
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<bool> EmailExistsAsync(string email)
+        public async Task<bool> EmailExistsAsync(string email) // check if the email exists
         {
             return await _context.AppUsers
                 .AnyAsync(u => u.Email == email);
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAllUsersAsync() // get all users
         {
             return await _context.AppUsers
                 .Include(u => u.Visits)
@@ -44,7 +44,7 @@ namespace HomeCare.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task AddAsync(User user)
+        public async Task AddAsync(User user) // add new user
         {
             await _context.AppUsers.AddAsync(user);
         }
@@ -55,14 +55,14 @@ namespace HomeCare.Repositories.Implementations
     return Task.CompletedTask;
 }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task DeleteUserAsync(int id) // delete user by id
         {
             var user = await _context.AppUsers.FindAsync(id);
             if (user != null)
                 _context.AppUsers.Remove(user);
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync() // save changes to db
         {
             await _context.SaveChangesAsync();
         }

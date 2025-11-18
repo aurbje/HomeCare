@@ -1,10 +1,18 @@
 @{
-    ViewData["Title"] = "Logg ut";
+    ViewData["Title"] = "Logg ut"; //logout page for the caregivers
 }
 
-<h2 class="text-center mt-5">Vil du logge ut?</h2>
+<div class="container mt-5 text-center">
+    <div class="card p-4 shadow-sm mx-auto" style="max-width: 420px;">
+        <h2 class="mb-3">Du er nå logget ut</h2>
+        <p class="text-muted mb-4">Takk for innsatsen i dag!</p>
 
-<form asp-action="Logout" method="post" class="text-center mt-3">
-    <button type="submit" class="btn btn-danger">Logg ut</button>
-    <a asp-controller="Caregiver" asp-action="Dashboard" class="btn btn-secondary ms-2">Avbryt</a>
-</form>
+        <a asp-controller="CaregiverAccount" asp-action="Login" class="btn btn-primary w-100">
+            Logg inn igjen
+        </a>
+
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
+            Gå til forsiden
+        </a>
+    </div>
+</div>

@@ -24,7 +24,7 @@ namespace HomeCare.Controllers
             _logger = logger;
         }
 
-        // ---------- LOGIN ----------
+        // login already existing caregiver
 
         [HttpGet]
         [AllowAnonymous]
@@ -42,7 +42,7 @@ namespace HomeCare.Controllers
                 return View(model);
 
             var result = await _signInManager.PasswordSignInAsync(
-                userName: model.Email,            // vi bruker e-post som brukernavn
+                userName: model.Email,            // email as username
                 password: model.Password,
                 isPersistent: model.RememberMe,
                 lockoutOnFailure: false);
@@ -58,7 +58,7 @@ namespace HomeCare.Controllers
             return RedirectToAction("Dashboard", "Caregiver");
         }
 
-        // ---------- REGISTER ANSATT (valgfritt – typisk kun for Admin) ----------
+        // register new caregiver (admin only)
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -92,7 +92,7 @@ namespace HomeCare.Controllers
                 return View(model);
             }
 
-            // gi rollen "Caregiver"
+            // assign Caregiver role
             await _userManager.AddToRoleAsync(caregiver, "Caregiver");
 
             _logger.LogInformation("New caregiver {Email} registered", model.Email);
@@ -100,7 +100,7 @@ namespace HomeCare.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        // ---------- LOGOUT ----------
+        // logout caregiver
 
         [HttpPost]
         [Authorize]
@@ -112,7 +112,7 @@ namespace HomeCare.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        // ---------- ACCESS DENIED ----------
+        // denied access view
 
         [HttpGet]
         public IActionResult AccessDenied()

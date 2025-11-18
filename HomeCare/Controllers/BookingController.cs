@@ -19,7 +19,7 @@ namespace HomeCare.Controllers
             _logger = logger;
         }
 
-        // GET: Booking page with available dates and categories
+        // booking page with available dates and categories
         public async Task<IActionResult> Booking()
         {
             _logger.LogInformation("Loading booking page with available dates and categories.");
@@ -39,10 +39,10 @@ namespace HomeCare.Controllers
             ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
                 
 
-            return View(model); // Views/Booking/Booking.cshtml
+            return View(model);
         }
 
-        // POST: Handle booking submission
+        // handle booking submission
         [HttpPost]
         public async Task<IActionResult> Booking(BookingViewModel model)
         {
@@ -50,14 +50,14 @@ namespace HomeCare.Controllers
 
             var selectedCategory = await _bookingRepo.GetCategoryByIdAsync(model.CategoryId);
 
-            // Require notes if category is "OTHER"
+            // require notes if category is "OTHER"
             if (selectedCategory?.Name.ToUpper() == "OTHER" && string.IsNullOrWhiteSpace(model.Notes))
             {
                 _logger.LogWarning("Booking attempt failed validation: 'Other' category requires notes.");
                 ModelState.AddModelError("Notes", "Please provide details for 'Other' category.");
             }
 
-            // Retrieve selected time slot and ensure it's not already booked
+            // retrieve selected time slot and ensure it's not already booked
             var selectedSlot = await _bookingRepo.GetAvailableTimeSlotAsync(model.TimeSlotId);
 
             if (selectedSlot == null)
@@ -66,7 +66,7 @@ namespace HomeCare.Controllers
                 ModelState.AddModelError("TimeSlotId", "Selected time slot is no longer available.");
             }
 
-            // Attempt to parse start time from slot string
+            // attempt to parse start time from slot string
             TimeSpan startTime = default;
             bool validTime = false;
 
@@ -84,16 +84,16 @@ namespace HomeCare.Controllers
                 }
             }
 
-            // Save or update appointment if all validations pass
+            // save or update appointment if all validations pass
             if (ModelState.IsValid && validTime)
             {
                 if (model.AppointmentId > 0)
                 {
-                    // Editing existing appointment
+                    // editing existing appointment
                     var existing = await _bookingRepo.GetAppointmentByIdAsync(model.AppointmentId);
                     if (existing != null)
                     {
-                        // Update appointment details
+                        // update appointment details
                         existing.DateTime = selectedSlot!.AvailableDate.Date.Add(startTime);
                         existing.TimeSlotId = selectedSlot.Id;
                         existing.CategoryId = selectedCategory!.Id;
@@ -116,7 +116,7 @@ namespace HomeCare.Controllers
                 }
                 else
                 {
-                    // Creating new appointment
+                    // creating new appointments
                     var appointment = new Appointment
                     {
                         DateTime = selectedSlot.AvailableDate.Date.Add(startTime),
@@ -138,7 +138,7 @@ namespace HomeCare.Controllers
             }
 
             _logger.LogWarning("Booking failed: Model state invalid.");
-            // Reload view model if validation fails
+            // reload view model if validation fails
              model.AvailableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
             model.Categories = (await _bookingRepo.GetCategoriesAsync()).ToList();
             ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
@@ -146,7 +146,7 @@ namespace HomeCare.Controllers
             return View(model);
         }
 
-        // Cancel appointment
+        // cancel appointment
         public async Task<IActionResult> CancelAppointment(int id)
         {
             _logger.LogInformation("Attempting to cancel appointment {AppointmentId}.", id);
@@ -174,7 +174,7 @@ namespace HomeCare.Controllers
 
             return RedirectToAction("Booking");
         }
-        // Edit appointment
+        // edit appointment
         public async Task<IActionResult> EditAppointment(int id)
         {
             _logger.LogInformation("Loading edit view for appointment {AppointmentId}.", id);
@@ -195,10 +195,10 @@ namespace HomeCare.Controllers
                 Notes = appointment.Notes,
                 AvailableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList(),
                 Categories = (await _bookingRepo.GetCategoriesAsync()).ToList(),
-                AppointmentId = appointment.Id // Add this to your ViewModel
+                AppointmentId = appointment.Id
             };
 
-            // List of booked appointments
+            // list of booked appointments
             ViewBag.Appointments = await _bookingRepo.GetUpcomingAppointmentsAsync();
             ViewBag.EditingId = appointment.Id;
 
@@ -208,7 +208,6 @@ namespace HomeCare.Controllers
         }
 
 
-        // Convert HH:mm string to hour as double (e.g. "14:30" => 14.0)
         private double TimeToHour(string time)
         {
             return double.Parse(time.Split(':')[0]);

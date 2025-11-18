@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models
+namespace HomeCare.Models 
 {
-    public class Booking
+    public class Booking // bookingservice
     {
         public int Id { get; set; }
 

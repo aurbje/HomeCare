@@ -24,6 +24,6 @@ namespace HomeCare.Repositories.Interfaces
         Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId);
         Task<Category?> GetCategoryByIdAsync(int categoryId);
 
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(); // save to db
     }
 }

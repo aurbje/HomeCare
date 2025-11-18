@@ -1,11 +1,9 @@
 @{
-    ViewData["Title"] = "Feil oppstod";
+    ViewData["Title"] = "Feil oppstod"; // error handling 
 }
 
-// error handling 
-
 <div class="container mt-5">
-    <h2 class="text-danger">Oops! Noe gikk galt.</h2>
+    <h2 class="text-green">Oops! Noe gikk galt.</h2>
     <p>Vi beklager, men en feil oppstod under prosesseringen av forespørselen din.</p>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Tilbake til forsiden</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-main">Tilbake til forsiden</a>
 </div>

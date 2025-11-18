@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeCare.Repositories.Implementations
 {
-    public class BookingRepository : IBookingRepository
+    public class BookingRepository : IBookingRepository // booking repository implementation
     {
         private readonly AppDbContext _context;
 
-        public BookingRepository(AppDbContext context)
+        public BookingRepository(AppDbContext context) 
         {
             _context = context;
         }
@@ -28,19 +28,19 @@ namespace HomeCare.Repositories.Implementations
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task AddBookingAsync(Booking booking)
+        public async Task AddBookingAsync(Booking booking) // add new booking
         {
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateBookingAsync(Booking booking)
+        public async Task UpdateBookingAsync(Booking booking) // update existing booking
         {
             _context.Bookings.Update(booking);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteBookingAsync(int id)
+        public async Task DeleteBookingAsync(int id) // delete booking by id
         {
             var booking = await _context.Bookings.FindAsync(id);
             if (booking != null)
@@ -50,7 +50,7 @@ namespace HomeCare.Repositories.Implementations
             }
         }
 
-        public async Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync()
+        public async Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync() // get available dates with unbooked time slots
         {
             return await _context.AvailableDates
                 .Include(d => d.TimeSlots)
@@ -59,14 +59,14 @@ namespace HomeCare.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Category>> GetCategoriesAsync()
+        public async Task<IEnumerable<Category>> GetCategoriesAsync() // get all service categories
         {
             return await _context.Categories
                 .OrderBy(c => c.Name)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync()
+        public async Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync() // get upcoming appointments
         {
             return await _context.Appointments
                 .Include(a => a.TimeSlot)
@@ -76,7 +76,7 @@ namespace HomeCare.Repositories.Implementations
                 .ToListAsync();
         }
 
-         public async Task<Appointment?> GetAppointmentByIdAsync(int id)
+         public async Task<Appointment?> GetAppointmentByIdAsync(int id) // get appointment by id
         {
             return await _context.Appointments
                 .Include(a => a.TimeSlot)
@@ -84,19 +84,19 @@ namespace HomeCare.Repositories.Implementations
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task AddAppointmentAsync(Appointment appointment)
+        public async Task AddAppointmentAsync(Appointment appointment) // add new appointment
         {
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAppointmentAsync(Appointment appointment)
+        public async Task UpdateAppointmentAsync(Appointment appointment) // update existing appointment
         {
             _context.Appointments.Update(appointment);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAppointmentAsync(int id)
+        public async Task DeleteAppointmentAsync(int id) // delete appointment by id
         {
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment != null)
@@ -106,26 +106,26 @@ namespace HomeCare.Repositories.Implementations
             }
         }
 
-        public async Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId)
+        public async Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId) // get available time slot by id
         {
             return await _context.TimeSlots
                 .Include(ts => ts.AvailableDate)
                 .FirstOrDefaultAsync(ts => ts.Id == timeSlotId && !ts.IsBooked);
         }
 
-        public async Task<Category?> GetCategoryByIdAsync(int categoryId)
+        public async Task<Category?> GetCategoryByIdAsync(int categoryId) // category by id
         {
             return await _context.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
         }
 
-        public async Task UpdateTimeSlotAsync(TimeSlot timeSlot)
+        public async Task UpdateTimeSlotAsync(TimeSlot timeSlot) // update time slot
         {
             _context.TimeSlots.Update(timeSlot);
             await _context.SaveChangesAsync();
         }
 
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync() // save changes to the context
         {
             await _context.SaveChangesAsync();
         }

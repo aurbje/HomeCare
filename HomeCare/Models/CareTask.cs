@@ -18,7 +18,7 @@ namespace HomeCare.Models
         public string CaregiverId { get; set; }
         public Caregiver Caregiver { get; set; }
 
-        public bool IsCompleted { get; set; }
-        public bool IsUrgent { get; set; }
+        public bool IsCompleted { get; set; } // if the task is done
+        public bool IsUrgent { get; set; } // if the task is urgent
     }
 }
