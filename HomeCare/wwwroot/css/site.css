@@ -1,4 +1,3 @@
-
 :root {
   --hc-teal: #10B981; 
   --hc-green: #4ADE80;
@@ -16,8 +15,8 @@ body {
   background-color: var(--hc-bg-light);
   color: var(--hc-text-dark);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.7;
-  font-size: 1.1rem;
+  line-height: 1.8;
+  font-size: 1.15rem;
   margin: 0;
   padding: 0;
   padding-top: 65px;
@@ -56,7 +55,7 @@ a:hover {
   color: var(--hc-green);
 }
 
-
+/* navbar */
 .navbar {
   position: fixed;
   top: 0;
@@ -74,7 +73,67 @@ a:hover {
   background: rgba(255, 255, 255, 0.98);
 }
 
-/* Logoen */
+/* right-side custom hamburger dropdown button */
+.hc-more-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease,
+              border-color 0.15s ease;
+}
+
+.hc-more-toggle i {
+  font-size: 1.3rem;
+}
+
+.hc-more-toggle:hover {
+  background-color: #f9fafb;
+  border-color: var(--hc-teal);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+}
+
+.hc-more-toggle:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+}
+
+/* dropdown menu for the more-button */
+.hc-more-dropdown {
+  border-radius: 16px;
+  padding: 0.3rem 0;
+  min-width: 220px;
+}
+
+.hc-more-dropdown .dropdown-item {
+  font-size: 0.95rem;
+  padding: 0.5rem 0.9rem;
+}
+
+.hc-more-dropdown .dropdown-item:hover {
+  background-color: #f3f4f6;
+}
+
+.hc-more-dropdown .dropdown-header {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 576px) {
+  .hc-more-toggle {
+    margin-top: 0.5rem;
+  }
+}
+
+/* logo */
 .homecare-logo {
   height: 46px;
   width: auto;
@@ -82,7 +141,7 @@ a:hover {
   object-fit: contain;
 }
 
-/* Nav-links */
+/* nav links */
 .navbar-nav {
   display: flex;
   gap: 2rem;
@@ -91,8 +150,8 @@ a:hover {
 }
 
 .nav-link {
-  font-size: 1.05rem;
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #1a1a1a;
   display: flex;
   align-items: center;
@@ -105,7 +164,15 @@ a:hover {
   transform: translateY(-1px);
 }
 
-/* Knapper */
+/* button styling */
+.btn-success,
+.btn-outline-success,
+.btn-main {
+  padding: 0.7rem 1.6rem;
+  font-size: 1.05rem;
+  border-radius: 999px;
+}
+
 .btn-success {
   background-color: var(--hc-teal);
   border: none;
@@ -129,14 +196,8 @@ a:hover {
   color: white;
 }
 
-
+/* responsive navbar content (bootstrap handles layout) */
 @media (max-width: 900px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem 2rem;
-  }
-
   .navbar-nav {
     flex-direction: column;
     gap: 1rem;
@@ -152,7 +213,57 @@ a:hover {
   }
 }
 
-/* hero-seksjonen*/ 
+/* hero panel */
+
+section.hero-homecare {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hc-hero-panel {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.8rem 2.2rem;
+  z-index: 2;
+}
+
+.hero-homecare::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../images/forside1.png');
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.1);
+  animation: heroZoom 18s ease-out forwards;
+  z-index: 0;
+}
+
+/* strong readable title */
+.hc-hero-title {
+  font-size: 2.7rem;
+  font-weight: 800;
+  color: #f9fafb !important;
+  margin-bottom: 1rem;
+}
+
+/* larger subtitle for older eyes */
+.hc-hero-subtitle {
+  font-size: 1.2rem;
+  color: #e5e7eb;
+  margin-bottom: 1.8rem;
+}
+
+/* large hero button */
+.hc-hero-cta {
+  padding: 0.9rem 2.6rem;
+  font-size: 1.1rem;
+  border-radius: 999px;
+}
+
+/* hero section */ 
 .hero-homecare {
   height: 100vh;
   background-size: cover;
@@ -169,18 +280,19 @@ a:hover {
   padding: 10rem 2rem;
 }
 
-/* Lysere gradient som slipper mer av bildet gjennom */
+/* overlay gradient on hero images */
 .hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-      rgba(0, 40, 35, 0.251),
+      rgba(0, 40, 35, 0.25),
       rgba(3, 57, 34, 0.25),
       rgba(11, 11, 11, 0.55)
   );
   z-index: 1;
 }
 
+/* hero slideshow animation */
 @keyframes heroSlideshow {
   0%   { background-image: url('../images/forside1.png'); }
   25%  { background-image: url('../images/forside2.png'); }
@@ -189,19 +301,28 @@ a:hover {
   100% { background-image: url('../images/forside7.png'); }
 }
 
-/* Tekstbehandling for å bevare lesbarhet over lysere bilde */
+/* text readability improvements */
 .hero-homecare h1,
 .hero-homecare p {
   position: relative;
   z-index: 2;
-  text-shadow: 2 2px 10px rgba(4, 85, 26, 0.45);
+  text-shadow: 2px 2px 10px rgba(4, 85, 26, 0.45);
 }
 
 .hero-homecare p.lead {
   color: #fff !important;
 }
 
-/* Animasjoner */
+@keyframes heroZoom {
+  from {
+    transform: scale(1.15);
+  }
+  to {
+    transform: scale(1.02);
+  }
+}
+
+/* fade-in animations */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -221,7 +342,7 @@ a:hover {
   animation: fadeUp 1.5s ease-out;
 }
 
-/* Knapper */
+/* main buttons */
 .btn-main {
   background-color: var(--hc-teal);
   color: #fff;
@@ -236,6 +357,7 @@ a:hover {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
 }
 
+/* section layout */
 section {
   max-width: 1100px;
   margin: 0 auto;
@@ -243,6 +365,7 @@ section {
   text-align: center;
 }
 
+/* card grid */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -250,6 +373,7 @@ section {
   margin-top: 2rem;
 }
 
+/* card base */
 .card {
   background-color: var(--hc-white);
   border-radius: 16px;
@@ -268,7 +392,7 @@ section {
   font-weight: 700;
 }
 
-/* Kort-animasjon */
+/* subtle card hover */
 .service-card {
   transition: all 0.3s ease;
 }
@@ -278,6 +402,7 @@ section {
   box-shadow: 0 8px 20px rgba(0, 90, 75, 0.15);
 }
 
+/* form containers */
 .form-section {
   background-color: var(--hc-white);
   max-width: 520px;
@@ -287,6 +412,7 @@ section {
   box-shadow: var(--hc-shadow);
 }
 
+/* form labels */
 .form-label {
   display: block;
   text-align: left;
@@ -311,6 +437,7 @@ input.form-control:focus {
   outline: none;
 }
 
+/* submit buttons */
 .btn-form {
   background-color: var(--hc-teal);
   color: var(--hc-white);
@@ -327,14 +454,21 @@ input.form-control:focus {
   background-color: var(--hc-green);
 }
 
-/* footer */ 
-
+/* footer styling */
 footer {
-  background-color: var(--hc-darkgreen);
-  color: var(--hc-white);
+  background-color: transparent !important;
+  backdrop-filter: blur(0px);
+  color: var(--hc-text-dark);
   padding: 2rem;
   text-align: center;
   font-size: 1rem;
+}
+
+
+/* ensures bootstrap bg-light does not override footer */
+footer.bg-light {
+  background-color: transparent !important;
+  color: var(--hc-text-dark) !important;
 }
 
 footer a {
@@ -346,7 +480,7 @@ footer a:hover {
   color: var(--hc-white);
 }
 
-/* responsivt design */
+/* responsive text sizes */
 @media (max-width: 768px) {
   h1 {
     font-size: 2.2rem;
@@ -360,7 +494,8 @@ footer a:hover {
     font-size: 1.1rem;
   }
 }
-/* BOOKING PAGE BY @porridge86 */
+
+/* booking page layout */
 .booking-container {
   display: flex;
   flex-wrap: wrap;
@@ -380,6 +515,7 @@ footer a:hover {
   }
 }
 
+/* booking date selection */
 .date-options {
   display: flex;
   gap: 1rem;
@@ -400,12 +536,13 @@ footer a:hover {
   accent-color: #007bff;
 }
 
-/* booking  */
+/* booking warnings */
 #time-slot-buttons p {
   margin-top: 0.5rem;
   font-style: italic;
 }
 
+/* booking table */
 .table-booking-custom tr,
 .table-booking-custom td,
 .table-booking-custom th {
@@ -413,7 +550,7 @@ footer a:hover {
   background-color: transparent !important;
 }
 
-/*Calendar i dashboard*/
+/* calendar in caregiver dashboard */
 .calendar-container {
   margin-top: 1rem;
 }
@@ -440,6 +577,7 @@ footer a:hover {
   font-weight: bold;
 }
 
+/* appointment styling */
 .has-appointment {
   background-color: #f0f8ff;
 }
@@ -450,7 +588,7 @@ footer a:hover {
   color: #007bff;
 }
 
-/* sunday in red */
+/* sunday highlight */
 .table-calendar th:last-child {
   color: red;
 }
@@ -460,7 +598,7 @@ footer a:hover {
   font-weight: bold;
 }
 
-/* editing in booking*/
+/* editing row indicator */
 .editing-row {
   background-color: #fff3cd;
   border-left: 4px solid #ffc107;
@@ -472,8 +610,330 @@ footer a:hover {
   vertical-align: middle;
 }
 
+/* disabled link/button */
 button.disabled,
 a.disabled {
   pointer-events: none;
   opacity: 0.5;
+}
+
+/* sidemenu */
+/* slide-in side menu (from right side) */
+.hc-side-menu {
+  position: fixed;
+  inset: 0 0 0 auto; /* anchor to the right */
+  width: 320px;
+  max-width: 80%;
+  background: linear-gradient(160deg, #064e3b 0%, #022c22 60%, #01161e 100%);
+  color: #f9fafb;
+  transform: translateX(100%); /* hide off-screen to the right */
+  transition: transform 0.3s ease-out;
+  z-index: 1060;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.45); /* shadow on the left side */
+  padding-bottom: 5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+}
+
+/* menu visible state */
+.hc-side-menu.open {
+  transform: translateX(0);
+}
+
+.hc-side-menu-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #bbf7d0;
+  margin: 1.6rem 0 0.6rem;
+}
+
+.hc-side-menu-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem 1.75rem 2rem;
+}
+
+/* header area with logo and close button */
+.hc-side-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.hc-side-menu-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* big links column */
+.hc-side-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.hc-side-menu-links a {
+  color: #f9fafb;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.hc-side-menu-links a:hover {
+  color: #bbf7d0;
+  transform: translateX(4px);
+}
+
+/* employee link slightly highlighted */
+.hc-side-menu-employee {
+  font-weight: 700;
+}
+
+/* divider line */
+.hc-side-menu-divider {
+  border: 0;
+  border-top: 1px solid rgba(226, 232, 240, 0.35);
+  margin: 1.4rem 0 0.8rem;
+}
+
+/* close button styling */
+.hc-side-menu-close {
+  border: none;
+  background: transparent;
+  color: #f9fafb;
+  font-size: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.hc-side-menu-close:hover {
+  background-color: rgba(15, 23, 42, 0.35);
+  transform: rotate(5deg);
+}
+
+.hc-text-small {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* dark backdrop behind menu */
+.hc-side-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 1050;
+}
+
+.hc-side-menu-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* larger menu on wider screens */
+@media (min-width: 992px) {
+  .hc-side-menu {
+    width: 360px;
+  }
+
+  .hc-side-menu-links {
+    font-size: 1.2rem;
+  }
+}
+
+/* contact cards grid */
+.hc-contact-card {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 1.8rem 1.8rem 1.6rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  height: 100%;
+}
+
+.hc-contact-link {
+  color: #f97316;
+  font-weight: 600;
+}
+
+.hc-contact-link:hover {
+  color: #ea580c;
+}
+
+.hc-contact-phone {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.hc-contact-phone:hover {
+  color: #b91c1c;
+}
+
+/* survey section cards */
+.hc-survey-card {
+  background-color: #ffffff;
+  border-radius: 28px;
+  padding: 2.2rem 2.4rem 2.4rem;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.09);
+}
+
+/* simple semi-circle gauge */
+.hc-survey-gauge {
+  position: relative;
+  width: 260px;
+  max-width: 100%;
+  margin: 0 auto;
+  aspect-ratio: 2 / 1;
+  border-radius: 260px 260px 0 0;
+  background: conic-gradient(
+      #b91c1c 0deg,
+      #ea580c 150deg,
+      #f97316 210deg,
+      #e5e7eb 210deg,
+      #e5e7eb 180deg
+  );
+  overflow: hidden;
+}
+
+/* inner white half */
+.hc-survey-inner {
+  position: absolute;
+  inset: 45% 12%;
+  background-color: #f9fafb;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* value text inside gauge */
+.hc-survey-value {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* small shadow pad at bottom of gauge */
+.hc-survey-gauge::after {
+  content: "";
+  position: absolute;
+  inset: auto 16% -18%;
+  height: 26%;
+  background-color: #e5e7eb;
+  border-radius: 999px;
+}
+
+/* optional decorative "needle" */
+.hc-survey-needle {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  width: 8px;
+  height: 52%;
+  background: linear-gradient(to top, #4b5563, #111827);
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(-20deg);
+  border-radius: 999px;
+}
+
+.hc-survey-needle.needle-2 {
+  transform: translateX(-50%) rotate(10deg);
+}
+
+/* steps section */
+.hc-step-card {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 2.2rem 1.8rem 2rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+}
+
+.hc-step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin: 0 auto 1rem;
+}
+
+/* stats pills */
+.hc-stat-pill {
+  background-color: #f1f5f9;
+  border-radius: 999px;
+  padding: 0.9rem 1.6rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  min-width: 140px;
+}
+
+.hc-stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--hc-teal);
+}
+
+.hc-stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* testimonials */
+.hc-testimonial-card {
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 1.8rem 1.8rem 1.6rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* news cards */
+.news-card img {
+  height: 220px;
+  object-fit: cover;
+}
+
+.news-card {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* help form */
+.help-form-section .form-control {
+  border-radius: 12px;
+  font-size: 1.1rem;
+}
+
+.help-form-section label {
+  font-weight: 600;
+  font-size: 1.05rem;
 }

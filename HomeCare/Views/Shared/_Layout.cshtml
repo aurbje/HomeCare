@@ -19,74 +19,121 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg bg-white shadow-sm py-3 fixed-top">
-            <div class="container">
-                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logoen.jpg" alt="HomeCare Logo" class="homecare-logo me-2" />
-                    <span class="fw-semibold text-success fs-4">HomeCare</span>
-                </a>
+<header>
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm py-3 fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                <img src="~/images/logoen.jpg" alt="HomeCare logo" class="homecare-logo me-2" />
+                <span class="fw-semibold text-success fs-4">HomeCare</span>
+            </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav align-items-center">
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door me-1"></i> Hjem
+                        </a>
+                    </li>
+
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" asp-controller="Home" asp-action="About">
+                            <i class="bi bi-info-circle me-1"></i> Om oss
+                        </a>
+                    </li>
+
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
                         <li class="nav-item mx-2">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house-door me-1"></i> Hjem
+                            <a class="nav-link" asp-controller="Home" asp-action="BookTime">
+                                <i class="bi bi-calendar-check me-1"></i> Booking
                             </a>
                         </li>
+                    }
 
-                        <li class="nav-item mx-2">
-                            <a class="nav-link" asp-controller="Home" asp-action="About">
-                                <i class="bi bi-info-circle me-1"></i> Om oss
-                            </a>
-                        </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" asp-controller="Home" asp-action="Contact">
+                            <i class="bi bi-envelope me-1"></i> Kontakt
+                        </a>
+                    </li>
 
-                        @* Vis booking kun hvis noen er innlogget *@
-                        @if (User?.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item mx-2">
-                                <a class="nav-link" asp-controller="Home" asp-action="BookTime">
-                                    <i class="bi bi-calendar-check me-1"></i> Booking
-                                </a>
-                            </li>
-                        }
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-success px-3" asp-controller="Account" asp-action="SignIn">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Logg inn
+                        </a>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-outline-success px-3 me-2" asp-controller="Account" asp-action="SignUp">
+                            <i class="bi bi-person-plus me-1"></i> Registrer deg
+                        </a>
+                    </li>
 
-                        <li class="nav-item mx-2">
-                            <a class="nav-link" asp-controller="Home" asp-action="Contact">
-                                <i class="bi bi-envelope me-1"></i> Kontakt
-                            </a>
-                        </li>
-
-                        @* Vanlig bruker-login/registrer *@
-                        <li class="nav-item ms-3">
-                            <a class="btn btn-success px-3" asp-controller="Account" asp-action="SignIn">
-                                <i class="bi bi-box-arrow-in-right me-1"></i> Logg inn
-                            </a>
-                        </li>
-                        <li class="nav-item ms-3">
-                            <a class="btn btn-outline-success px-3 me-2" asp-controller="Account" asp-action="SignUp">
-                                <i class="bi bi-person-plus me-1"></i> Registrer deg
-                            </a>
-                        </li>
-
-                        @* (valgfritt) egen knapp for ansatt-login
-                        <li class="nav-item ms-3">
-                            <a class="btn btn-outline-secondary px-3"
-                               asp-controller="CaregiverAccount" asp-action="Login">
-                                <i class="bi bi-person-badge me-1"></i> Ansatt
-                            </a>
-                        </li>
-                        *@
-                    </ul>
-                </div>
+                
+                    <li class="nav-item ms-2">
+                        <button class="btn hc-more-toggle"
+                                id="hcMenuToggle"
+                                type="button"
+                                aria-label="åpne meny"
+                                aria-expanded="false"
+                                aria-controls="hcSideMenu">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </li>
+                </ul>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+
+    <div id="hcSideMenu" class="hc-side-menu" aria-hidden="true">
+        <div class="hc-side-menu-inner">
+            <div class="hc-side-menu-header">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="~/images/logoen.jpg" alt="HomeCare logo" class="homecare-logo me-1" />
+                </div>
+
+                <button type="button"
+                        class="hc-side-menu-close"
+                        aria-label="lukk meny">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <nav class="hc-side-menu-links" aria-label="hovedmeny">
+                <div class="hc-side-menu-section-title">HomeCare</div>
+                <a href="#">Nyheter</a>
+                <a asp-controller="Home" asp-action="About">Om Oss</a>
+                <hr class="hc-side-menu-divider" />
+                <div class="hc-side-menu-section-title">Våre tjenester</div>
+                <a href="#">Hjemmetjenester</a>
+                <a href="#">BPA</a>
+                <a href="#">Stasjonær hjemmesykepleie</a>
+                <a href="#">Fysioterapi</a>
+                <a href="#">Matbestilling</a>
+                <hr class="hc-side-menu-divider" />
+                <div class="hc-side-menu-section-title">Informasjon</div>
+                <a href="#">Pårørende</a>
+                <a href="#">Lover og regler</a>
+                <a asp-controller="Home" asp-action="Contact">Kontakt oss</a>
+                <hr class="hc-side-menu-divider" />
+                <div class="hc-side-menu-section-title">For Ansatte</div>
+                <a href="#">Jobb hos oss</a>
+                <a asp-controller="CaregiverAccount" asp-action="Login" class="hc-side-menu-employee">
+                    Logg inn
+                </a>
+                <hr class="hc-side-menu-divider" />
+                <div class="hc-side-menu-footer mt-4 pb-4">  
+                <small class="text-white">Personvern • © 2025 HomeCare</small>
+            </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="hc-side-menu-backdrop"></div>
+</header>
 
     <main role="main" class="pb-5 pt-4">
         @RenderBody()
