@@ -8,16 +8,17 @@ using HomeCare.Repositories;
 
 namespace HomeCare.Controllers
 {
-    public class AccountController : Controller
-    {
-        private readonly IUserRepository _userRepo;
-        private readonly ILogger<UserController> _logger;
+public class AccountController : Controller
+{
+    private readonly IUserRepository _userRepo;
+    private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IUserRepository userRepo, ILogger<UserController> logger)
-        {
-            _userRepo = userRepo;
-            _logger = logger;
-        }
+    public AccountController(IUserRepository userRepo, ILogger<AccountController> logger)
+    {
+        _userRepo = userRepo;
+        _logger = logger;
+    }
+
 
         [HttpGet]
         public IActionResult SignIn()
