@@ -5,7 +5,7 @@
 }
 
 <div class="dashboard-header text-dark text-center py-4">
-    <h2>Hei, *ansattnavn*! 👋</h2>
+    <h2>Hei, *ansattnavn*!</h2>
     <h4>La oss gjøre dagen enklere</h4>
 </div>
 
@@ -13,13 +13,11 @@
 
     <div class="dashboard-left flex-fill p-3" style="min-width: 320px;">
         
-        @* // active tasks *@
         <div class="task-section mb-4 shadow p-3 rounded bg-light">
             <h3 class="text-primary mb-3">Dagens oppgaver</h3>
             <partial name="_TaskList" model="Model.Item1" />
         </div>
 
-        @* // today's visits *@
         <div class="visit-section shadow p-3 rounded bg-light">
             <h3 class="text-success mb-3">Planlagte besøk</h3>
             <partial name="_VisitList" model="Model.Item2" />
@@ -35,7 +33,6 @@
 
     <div class="dashboard-right flex-fill p-3" style="min-width: 320px;">
 
-        @* // kpi dashboard *@
         <div class="stats-box shadow p-3 rounded bg-light mb-4">
             <h3 class="text-info mb-3">Statistikk</h3>
 
@@ -55,13 +52,11 @@
             </div>
         </div>
 
-        @* // map of today's route *@
         <div class="route-map shadow p-3 rounded bg-light mb-4">
             <h3 class="text-warning mb-3">Dagens rute</h3>
             <partial name="_RouteMap" model="Model.Item2" />
         </div>
 
-        @* // notes *@
         <div class="notes-section shadow p-3 rounded bg-light">
             <h3 class="text-secondary mb-3">Hurtignotater</h3>
             <textarea class="form-control" rows="4"

@@ -1,9 +1,0 @@
-@if (!ViewData.ModelState.IsValid) // validation summary for caregiver account views
-{
-    <div class="alert alert-danger">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <div>@error.ErrorMessage</div>
-        }
-    </div>
-}
