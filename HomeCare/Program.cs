@@ -5,6 +5,7 @@ using HomeCare.Repositories.Implementations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,15 @@ builder.Logging.AddDebug();
 
 // ---------- MVC ----------
 builder.Services.AddControllersWithViews();
+
+// session cookies for authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/SignIn";      // where to send unauthenticated users
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied"; // optional
+    });
 
 // ---------- Repositories ----------
 builder.Services.AddScoped<IUserRepository, UserRepository>();

@@ -46,6 +46,12 @@
                         </a>
                     </li>
 
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" asp-controller="Home" asp-action="Contact">
+                            <i class="bi bi-envelope me-1"></i> Kontakt
+                        </a>
+                    </li>
+
                     @if (User?.Identity?.IsAuthenticated == true)
                     {
                         <li class="nav-item mx-2">
@@ -53,24 +59,28 @@
                                 <i class="bi bi-calendar-check me-1"></i> Booking
                             </a>
                         </li>
+
+                        <li class="nav-item ms-3">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-danger px-3">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Logg ut
+                                </button>
+                            </form>
+                        </li>
                     }
-
-                    <li class="nav-item mx-2">
-                        <a class="nav-link" asp-controller="Home" asp-action="Contact">
-                            <i class="bi bi-envelope me-1"></i> Kontakt
-                        </a>
-                    </li>
-
-                    <li class="nav-item ms-3">
-                        <a class="btn btn-success px-3" asp-controller="Account" asp-action="SignIn">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Logg inn
-                        </a>
-                    </li>
-                    <li class="nav-item ms-3">
-                        <a class="btn btn-outline-success px-3 me-2" asp-controller="Account" asp-action="SignUp">
-                            <i class="bi bi-person-plus me-1"></i> Registrer deg
-                        </a>
-                    </li>
+                    else
+                    {
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-success px-3" asp-controller="Account" asp-action="SignIn">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Logg inn
+                            </a>
+                        </li>
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-outline-success px-3 me-2" asp-controller="Account" asp-action="SignUp">
+                                <i class="bi bi-person-plus me-1"></i> Registrer deg
+                            </a>
+                        </li>
+                    }
 
                 
                     <li class="nav-item ms-2">

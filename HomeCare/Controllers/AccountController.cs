@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using HomeCare.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace HomeCare.Controllers
 {
@@ -47,6 +50,27 @@ namespace HomeCare.Controllers
                     return View(model);
                 }
 
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.FullName),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role)  // "Admin", "Caregiver", "User" etc.
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme, principal,
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = true,            // remember after browser close (optional)
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
+
+                    }
+                );
+
                 _logger.LogInformation("User {Email} logged in successfully", model.Email);
 
                 return RedirectToAction("Dashboard", "User");
@@ -57,6 +81,16 @@ namespace HomeCare.Controllers
                 return View("Error");
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            _logger.LogInformation("User logged out");
+            return RedirectToAction("Index", "Home");
+        }
+
 
         [HttpGet]
         public IActionResult SignUp()
