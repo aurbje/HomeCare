@@ -8,7 +8,6 @@ namespace HomeCare.Models
 
         // person info
         public string FullName { get; set; } = string.Empty; // e.g. "Name Surname"
-        public string UserName { get; set; } = string.Empty; // e.g. "name.surname"
         public string Email { get; set; } = string.Empty; // email address
 
         // authentication

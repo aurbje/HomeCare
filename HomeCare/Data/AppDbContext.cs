@@ -27,6 +27,43 @@ namespace HomeCare.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // seed user data
+            modelBuilder.Entity<User>().HasData(
+                new User 
+                    {
+                        Id = 1, 
+                        FullName = "Admin", 
+                        Email = "admin@oslomet.no", 
+                        PasswordHash = "$2a$11$qvtrhsyDZ1MR9RdSIv11FeGSMZxOLUC4JizZMyBone4hRc1aA.WGm", // Admin123!
+                        TlfNumber = "12345678", 
+                        Address = "admingata 1", 
+                        Role = "Admin"
+                    },
+
+                    new User
+                    {
+                        Id = 2, 
+                        FullName = "Caregiver", 
+                        Email = "caregiver@oslomet.no", 
+                        PasswordHash = "$2a$11$/sLVDjSby9tYKkzocka7NOPOzHaJXsJK7naLEqkmfxw79hzPY07d.", // Caregiver123!
+                        TlfNumber = "87654321", 
+                        Address = "caregivergata 1", 
+                        Role = "Caregiver"
+                    },
+
+                    new User
+                    {
+                        Id = 3, 
+                        FullName = "User", 
+                        Email = "user@oslomet.no", 
+                        PasswordHash = "$2a$11$f73yjHkIJFhi05E.7lFjgOk7d2nlmDYKw3b7DIfKThnaBV3BSp3SK", // User123!
+                        TlfNumber = "12348765", 
+                        Address = "Usergata 1", 
+                        Role = "User"
+                    }
+
+            );
+
             // available Dates
             modelBuilder.Entity<AvailableDate>().HasData(
                 new AvailableDate { Id = 1, Date = new DateTime(2025, 12, 15) },
