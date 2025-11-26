@@ -1,8 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HomeCare.Models
 {
+    // small reminder item shown on the user dashboard
     public class Reminder
     {
-        public required string Time { get; set; }
-        public string? Message { get; set; } // message for the reminder
+        // time the reminder should pop up ("08:00")
+        [Required]
+        public string Time { get; set; } = string.Empty;
+
+        // optional message describing the reminder
+        public string? Message { get; set; }
     }
 }

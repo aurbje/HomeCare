@@ -8,44 +8,40 @@ using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------- Logging ----------
+// logging 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-// ---------- MVC ----------
-builder.Services.AddControllersWithViews();
+// controllers / api 
+// using controllers as api only, views are not needed anymore
+builder.Services.AddControllers();
 
-// ---------- Repositories ----------
+// cors for frontend 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173", "https://localhost:5173") // vite default port
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-builder.Services.AddScoped<ICaregiverRepository, CaregiverRepository>();
 
-// ---------- Database (SQLite) ----------
+// database (sqlite)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(
         builder.Configuration.GetConnectionString("DefaultConnection")
         ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 
-// ---------- Identity (Caregiver + roller) ----------
-builder.Services.AddIdentity<Caregiver, IdentityRole>(options =>
-    {
-        options.SignIn.RequireConfirmedEmail = false;
-        // her kan du evt. legge på passordkrav osv.
-    })
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-
-// (valgfritt, men fint) – standard cookie-paths
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/CaregiverAccount/Login";
-    options.AccessDeniedPath = "/CaregiverAccount/AccessDenied";
-});
-
 var app = builder.Build();
 
-// ---------- Database seeding + roller ----------
+// database seeding + roles
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -54,10 +50,10 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        // egen seedinglogikk (tabeller, testdata osv.)
+        // makes sure db exists and seed basic data
         DbInitializer.Seed(context);
 
-        // sørg for at rollene finnes
+        // makes sure required roles exist
         string[] roles = { "User", "Caregiver", "Admin" };
         foreach (var role in roles)
         {
@@ -69,14 +65,14 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Error while seeding the database");
+        logger.LogError(ex, "error while seeding the database");
     }
 }
 
-// ---------- Error pages ----------
+// error handling
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+// production setup, could be extended with custom error endpoint
     app.UseHsts();
 }
 else
@@ -84,7 +80,7 @@ else
     app.UseDeveloperExceptionPage();
 }
 
-// ---------- Exception logging middleware ----------
+// exception logging middleware
 app.Use(async (context, next) =>
 {
     try
@@ -94,23 +90,24 @@ app.Use(async (context, next) =>
     catch (Exception ex)
     {
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Unexpected error on path: {Path}", context.Request.Path);
+        logger.LogError(ex, "unexpected error on path: {Path}", context.Request.Path);
         throw;
     }
 });
 
-// ---------- Pipeline ----------
+// pipeline
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ---------- Routing ----------
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// endpoint mapping
+app.MapControllers();
 
 app.Run();

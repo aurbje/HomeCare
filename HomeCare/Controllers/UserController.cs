@@ -2,11 +2,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomeCare.Models;
 using HomeCare.Data;
-using HomeCare.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCare.Controllers
 {
-    public class UserController : Controller
+    // gives user dashboard info
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
 
@@ -15,48 +21,56 @@ namespace HomeCare.Controllers
             _context = context;
         }
 
-        // Display dashboard with today's reminders and upcoming appointments
-        public IActionResult Dashboard(int? year, int? month) // calandar
+        /// returns reminders, calendar info and upcoming appointments
+        [HttpGet("dashboard")]
+        public async Task<ActionResult<UserDashboardDto>> Dashboard(int? year, int? month)
         {
-            // after login
-            // return View(); // Login function in AccountController.cs
-
-            // Show username on dashboard
-            // string username = User.Identity.Name; // get username
-            // ViewBag.Username = username;
-            // return View();
-
-            // calander
+            // figuring out which month the user wants to see
             var targetDate = new DateTime(
-            year ?? DateTime.Today.Year,
-            month ?? DateTime.Today.Month,
-            1
-    );
+                year ?? DateTime.Today.Year,
+                month ?? DateTime.Today.Month,
+                1
+            );
 
-            // reminder
+            // fake reminders for now
             var reminders = GetTodayReminders();
 
-            // calander
-            ViewBag.CalendarYear = targetDate.Year;
-            ViewBag.CalendarMonth = targetDate.Month;
-
-            // booked appointments
-            var appointments = _context.Appointments
+            // loading upcoming appointments 
+            var appointments = await _context.Appointments
                 .Include(a => a.Category)
                 .Where(a => a.DateTime >= DateTime.Today)
                 .OrderBy(a => a.DateTime)
-                .ToList();
-            return View((reminders, appointments));
+                .ToListAsync();
+
+            var dto = new UserDashboardDto
+            {
+                CalendarYear = targetDate.Year,
+                CalendarMonth = targetDate.Month,
+                Reminders = reminders,
+                Appointments = appointments
+            };
+
+            return Ok(dto);
         }
 
-        // Generate dummy reminders for dashboard
+        // simple dummy reminders for dashboard
         private List<Reminder> GetTodayReminders()
         {
+            // just hardcoded reminders to show how it works
             return new List<Reminder>
             {
                 new Reminder { Time = "08:00", Message = "Medicine" },
                 new Reminder { Time = "14:00", Message = "Visit by staff A" }
             };
         }
+    }
+
+
+    public class UserDashboardDto
+    {
+        public int CalendarYear { get; set; }
+        public int CalendarMonth { get; set; }
+        public List<Reminder> Reminders { get; set; } = new();
+        public List<Appointment> Appointments { get; set; } = new();
     }
 }

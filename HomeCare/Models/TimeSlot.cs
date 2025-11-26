@@ -1,10 +1,22 @@
-public class TimeSlot
+using System.ComponentModel.DataAnnotations;
+
+namespace HomeCare.Models
 {
-    public int Id { get; set; }
-    public string Slot { get; set; } = string.Empty; // "09:00–10:00"
+    // a single slot of time the user can book ("09:00-10:00")
+    public class TimeSlot
+    {
+        public int Id { get; set; }
 
-    public int AvailableDateId { get; set; } 
-    public AvailableDate? AvailableDate { get; set; } 
+        // the time range shown to the user
+        [Required]
+        public string Slot { get; set; } = string.Empty;
 
-    public bool IsBooked { get; set; } = false; // default to false
+        // date this slot belongs to
+        [Required]
+        public int AvailableDateId { get; set; }
+        public AvailableDate? AvailableDate { get; set; }
+
+        // if someone already booked this slot
+        public bool IsBooked { get; set; } = false;
+    }
 }

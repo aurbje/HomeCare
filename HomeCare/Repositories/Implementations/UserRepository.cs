@@ -20,7 +20,6 @@ namespace HomeCare.Repositories.Implementations
         {
             return await _context.AppUsers
                 .Include(u => u.Visits)
-                .Include(u => u.CareTasks)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -40,7 +39,6 @@ namespace HomeCare.Repositories.Implementations
         {
             return await _context.AppUsers
                 .Include(u => u.Visits)
-                .Include(u => u.CareTasks)
                 .ToListAsync();
         }
 

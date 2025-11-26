@@ -1,22 +1,54 @@
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-public class HomeController : Controller
+namespace HomeCare.Controllers
 {
-    public IActionResult Index()
+    // api controller for basic public info endpoints
+    [ApiController]
+    [Route("api/[controller]")]
+    public class HomeController : ControllerBase
     {
-        ViewData["Title"] = "Home";
-        return View();
-    }
+        private readonly ILogger<HomeController> _logger;
 
-    public IActionResult About()
-    {
-        ViewData["Title"] = "About Us";
-        return View();
-    }
+        public HomeController(ILogger<HomeController> logger)
+        {
+            _logger = logger;
+        }
 
-    public IActionResult Contact()
-    {
-        return View();
+        [HttpGet]
+        public IActionResult Index()
+        {
+            // just giving the frontend some basic app info
+            _logger.LogInformation("home endpoint hit");
+            return Ok(new
+            {
+                title = "Home",
+                message = "welcome to the HomeCare API"
+            });
+        }
+
+        [HttpGet("about")]
+        public IActionResult About()
+        {
+            // simple about message to show on the frontend
+            _logger.LogInformation("about endpoint hit");
+            return Ok(new
+            {
+                title = "About Us",
+                message = "this project was made as part of the ITPE3200 course"
+            });
+        }
+
+        [HttpGet("contact")]
+        public IActionResult Contact()
+        {
+            // returning contact info the frontend might show
+            _logger.LogInformation("contact endpoint hit");
+            return Ok(new
+            {
+                email = "support@homecare.no",
+                phone = "+47 123 45 678"
+            });
+        }
     }
 }

@@ -1,19 +1,29 @@
+using System;
+using System.Collections.Generic;
+using HomeCare.Models;
+
 namespace HomeCare.ViewModels
 {
-    public class BookingViewModel // ViewModel for booking an appointment
+    // view model used when creating or editing a booking
+    public class BookingViewModel
     {
-        public required DateTime SelectedDate { get; set; } // date selected
+        // date selected by the user
+        public required DateTime SelectedDate { get; set; }
 
-        public int TimeSlotId { get; set; } = 0; // time slot selected
+        // time slot id selected
+        public int TimeSlotId { get; set; } = 0;
 
+        // selected category id
         public int CategoryId { get; set; } = 0;
-        public string? Notes { get; set; } // additional notes to category
 
+        // extra notes the user can write
+        public string? Notes { get; set; }
 
-        // to display
-        public List<AvailableDate> AvailableDates { get; set; } = new(); // available dates
+        // data we show in the dropdowns / lists
+        public List<AvailableDate> AvailableDates { get; set; } = new();
         public List<Category> Categories { get; set; } = new();
 
-        public int AppointmentId { get; set; } // appointment identifier
+        // used when editing an existing appointment
+        public int AppointmentId { get; set; }
     }
 }

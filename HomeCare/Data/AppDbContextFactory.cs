@@ -1,8 +1,5 @@
-// design
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using HomeCare.Models;
-using HomeCare.Data;
 
 namespace HomeCare.Data
 {
@@ -10,12 +7,14 @@ namespace HomeCare.Data
     {
         public AppDbContext CreateDbContext(string[] args)
         {
+            // creating simple options builder just for design-time db creation
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlite("Data Source=HomeCare.db"); // name database
 
+            // using sqlite as the database, since the app also uses this normally
+            optionsBuilder.UseSqlite("Data Source=HomeCare.db");
+
+            // returning a context instance so EF can run migrations
             return new AppDbContext(optionsBuilder.Options);
         }
-
-        public required DbSet<BookingOption> BookingOptions { get; set; }
     }
 }

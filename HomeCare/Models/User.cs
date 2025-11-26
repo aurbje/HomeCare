@@ -1,28 +1,40 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace HomeCare.Models
 {
+    // basic user model stored in our own user table (not identity)
     public class User
     {
         public int Id { get; set; }
 
-        // person info
-        public string FullName { get; set; } = string.Empty; // e.g. "Name Surname"
-        public string UserName { get; set; } = string.Empty; // e.g. "name.surname"
-        public string Email { get; set; } = string.Empty; // email address
+        // personal info for profile and dashboard
+        [Required]
+        public string FullName { get; set; } = string.Empty;
 
-        // authentication
-        public string PasswordHash { get; set; } = string.Empty; // hashed password
+        [Required]
+        public string UserName { get; set; } = string.Empty;
 
-        // contact info
-        public string TlfNumber { get; set; } = string.Empty; // telephone number
-        public string Address { get; set; } = string.Empty; // home address
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-        // roles and access
-        public string Role { get; set; } = "user"; // e.g. "admin", "caregiver", "user"
+        // hashed password so we never store plain text
+        [Required]
+        public string PasswordHash { get; set; } = string.Empty;
 
-        // relations
-        public ICollection<Visit> Visits { get; set; } = new List<Visit>(); // visits associated with the user
-        public ICollection<CareTask> CareTasks { get; set; } = new List<CareTask>(); // care tasks assigned to the user
+        // contact details
+        [Required]
+        public string TlfNumber { get; set; } = string.Empty;
+
+        [Required]
+        public string Address { get; set; } = string.Empty;
+
+        // user role (mainly "user", but can be expanded)
+        [Required]
+        public string Role { get; set; } = "user";
+
+        // visits assigned to this user
+        public ICollection<Visit> Visits { get; set; } = new List<Visit>();
+
     }
 }

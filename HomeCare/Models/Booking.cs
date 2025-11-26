@@ -1,23 +1,29 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models 
+namespace HomeCare.Models
 {
-    public class Booking // bookingservice
+    // simple booking model used for basic service bookings
+    public class Booking
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Dato må fylles ut")]
+        // when the booking should happen (just the date)
+        [Required]
         public DateTime Date { get; set; }
 
-        [Required(ErrorMessage = "Tid må fylles ut")]
+        // time chosen for the booking ("14:00")
+        [Required]
         public string? Time { get; set; }
 
-        [Required(ErrorMessage = "Tjenestetype må fylles ut")]
+        // what kind of service the user wants
+        [Required]
         public string? ServiceType { get; set; }
 
+        // optional message from the user
         public string? Notes { get; set; }
 
-        // future relation to the user (when we add the database)
+        // user who created the booking (optional until feature is complete)
         public int? UserId { get; set; }
         public User? User { get; set; }
     }
