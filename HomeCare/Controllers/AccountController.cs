@@ -73,7 +73,18 @@ namespace HomeCare.Controllers
 
                 _logger.LogInformation("User {Email} logged in successfully", model.Email);
 
-                return RedirectToAction("Dashboard", "User");
+                if (user.Role == "Admin")
+                {
+                    return RedirectToAction("AdminDashboard", "Admin");
+                }
+                else if (user.Role == "Caregiver")
+                {
+                    return RedirectToAction("Dashboard", "Caregiver");
+                }
+                else // default -> regular user
+                {
+                    return RedirectToAction("Dashboard", "User");
+                }
             }
             catch (Exception e)
             {
