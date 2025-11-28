@@ -11,10 +11,6 @@ namespace HomeCare.Models
         // person info
         [Required]
         public string FullName { get; set; } = string.Empty; // e.g. "Name Surname"
-        public string Email { get; set; } = string.Empty; // email address
-
-        [Required]
-        public string UserName { get; set; } = string.Empty;
 
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
