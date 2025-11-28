@@ -22,6 +22,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Account/SignIn";      // where to send unauthenticated users
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied"; // optional
+        options.ExpireTimeSpan = TimeSpan.FromHours(3);     // cookie lifetime
     });
 
 // ---------- Database (SQLite) ----------
