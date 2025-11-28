@@ -5,7 +5,9 @@ using HomeCare.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace HomeCare.Controllers
 {
@@ -61,22 +63,41 @@ namespace HomeCare.Controllers
                     });
                 }
 
-                _logger.LogInformation("User {Email} logged in successfully", model.Email);
-
-                // this is the basic user data we send back to the frontend
-                var response = new AuthResponseDto
+                var claims = new List<Claim>
                 {
-                    UserId = user.Id,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    Role = user.Role
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.FullName),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role)  // "Admin", "Caregiver", "User" etc.
                 };
 
-                return Ok(new
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme, principal,
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = true,            // remember after browser close (optional)
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
+
+                    }
+                );
+
+                _logger.LogInformation("User {Email} logged in successfully", model.Email);
+
+                if (user.Role == "Admin")
                 {
-                    message = "Login successful",
-                    user = response
-                });
+                    return RedirectToAction("AdminDashboard", "Admin");
+                }
+                else if (user.Role == "Caregiver")
+                {
+                    return RedirectToAction("Dashboard", "Caregiver");
+                }
+                else // default -> regular user
+                {
+                    return RedirectToAction("Dashboard", "User");
+                }
             }
             catch (Exception e)
             {
@@ -89,8 +110,24 @@ namespace HomeCare.Controllers
             }
         }
 
-        [HttpPost("signup")]
-        public async Task<ActionResult<AuthResponseDto>> SignUp([FromBody] SignUpViewModel model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            _logger.LogInformation("User logged out");
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpGet]
+        public IActionResult SignUp()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignUp(SignUpViewModel model)
         {
             // again, just checking if the input matches the validation rules
             if (!ModelState.IsValid)
