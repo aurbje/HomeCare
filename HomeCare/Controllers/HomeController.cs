@@ -14,6 +14,7 @@ namespace HomeCare.Controllers
         {
             _logger = logger;
         }
+        
 
         [HttpGet]
         public IActionResult Index()
