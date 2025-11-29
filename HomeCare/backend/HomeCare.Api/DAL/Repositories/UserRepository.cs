@@ -1,35 +1,68 @@
-using HomeCare.Api.Data;
-using HomeCare.Api.Models;
-using HomeCare.Api.Repositories.Interfaces;
+using HomeCare.Data;
+using HomeCare.Models;
+using HomeCare.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace HomeCare.Api.Repositories.Implementations;
-
-public class UserRepository : IUserRepository
+namespace HomeCare.Repositories.Implementations
 {
-    private readonly AppDbContext _context;
-
-    public UserRepository(AppDbContext context)
+    public class UserRepository : IUserRepository // user repository implementation
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<ApplicationUser?> GetByIdAsync(string id)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Id == id);
-    }
+        public UserRepository(AppDbContext context)
+        {
+            _context = context;
+        }
 
-    public async Task<ApplicationUser?> GetByEmailAsync(string email)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == email);
-    }
+        public async Task<User?> GetUserByIdAsync(int id) // get user by id
+        {
+            return await _context.AppUsers
+                .Include(u => u.Visits)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
 
-    public async Task<IEnumerable<ApplicationUser>> GetAllAsync()
-    {
-        return await _context.Users
-            .OrderBy(u => u.FullName)
-            .ToListAsync();
+        public async Task<User?> GetByEmailAsync(string email) // get user by email
+        {
+            return await _context.AppUsers
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email) // check if the email exists
+        {
+            return await _context.AppUsers
+                .AnyAsync(u => u.Email == email);
+        }
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync() // get all users
+        {
+            return await _context.AppUsers
+                .Include(u => u.Visits)
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(User user) // add new user
+        {
+            await _context.AppUsers.AddAsync(user);
+        }
+
+        public Task UpdateUserAsync(User user)
+{
+    _context.AppUsers.Update(user);
+    return Task.CompletedTask;
+}
+
+        public async Task DeleteUserAsync(int id) // delete user by id
+        {
+            var user = await _context.AppUsers.FindAsync(id);
+            if (user != null)
+                _context.AppUsers.Remove(user);
+        }
+
+        public async Task SaveChangesAsync() // save changes to db
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

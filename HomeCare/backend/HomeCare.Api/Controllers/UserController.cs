@@ -1,57 +1,76 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using HomeCare.Api.Models;
-using HomeCare.Api.Services;
+using Microsoft.EntityFrameworkCore;
+using HomeCare.Models;
+using HomeCare.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace HomeCare.Api.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class UserController : ControllerBase
+namespace HomeCare.Controllers
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly UserService _userService;
-
-    public UserController(UserManager<ApplicationUser> userManager, UserService userService)
+    // gives user dashboard info
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
     {
-        _userManager = userManager;
-        _userService = userService;
+        private readonly AppDbContext _context;
+
+        public UserController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        /// returns reminders, calendar info and upcoming appointments
+        [HttpGet("dashboard")]
+        public async Task<ActionResult<UserDashboardDto>> Dashboard(int? year, int? month)
+        {
+            // figuring out which month the user wants to see
+            var targetDate = new DateTime(
+                year ?? DateTime.Today.Year,
+                month ?? DateTime.Today.Month,
+                1
+            );
+
+            // fake reminders for now
+            var reminders = GetTodayReminders();
+
+            // loading upcoming appointments 
+            var appointments = await _context.Appointments
+                .Include(a => a.Category)
+                .Where(a => a.DateTime >= DateTime.Today)
+                .OrderBy(a => a.DateTime)
+                .ToListAsync();
+
+            var dto = new UserDashboardDto
+            {
+                CalendarYear = targetDate.Year,
+                CalendarMonth = targetDate.Month,
+                Reminders = reminders,
+                Appointments = appointments
+            };
+
+            return Ok(dto);
+        }
+
+        // simple dummy reminders for dashboard
+        private List<Reminder> GetTodayReminders()
+        {
+            // just hardcoded reminders to show how it works
+            return new List<Reminder>
+            {
+                new Reminder { Time = "08:00", Message = "Medicine" },
+                new Reminder { Time = "14:00", Message = "Visit by staff A" }
+            };
+        }
     }
 
-    [Authorize]
-    [HttpGet("me")]
-    public async Task<IActionResult> Me()
+
+    public class UserDashboardDto
     {
-        var user = await _userManager.GetUserAsync(User);
-        var roles = await _userManager.GetRolesAsync(user);
-
-        return Ok(new {
-            email = user.Email,
-            fullName = user.FullName,
-            roles
-        });
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var users = await _userService.GetAllUsersAsync();
-        return Ok(users);
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPatch("{id}/role")]
-    public async Task<IActionResult> UpdateRole(string id, [FromBody] string role)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-            return NotFound();
-
-        await _userManager.AddToRoleAsync(user, role);
-
-        return Ok(new { message = $"Role {role} added to user" });
+        public int CalendarYear { get; set; }
+        public int CalendarMonth { get; set; }
+        public List<Reminder> Reminders { get; set; } = new();
+        public List<Appointment> Appointments { get; set; } = new();
     }
 }

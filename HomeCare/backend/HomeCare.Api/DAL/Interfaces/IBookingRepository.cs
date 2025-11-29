@@ -1,22 +1,29 @@
-using HomeCare.Api.Models;
+using HomeCare.Models;
 
-namespace HomeCare.Api.Repositories.Interfaces;
-
-public interface IBookingRepository
+namespace HomeCare.Repositories.Interfaces
 {
-    // date & timeslot
-    Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync();
-    Task<IEnumerable<TimeSlot>> GetTimeSlotsForDateAsync(int dateId);
-    Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId);
-    Task UpdateTimeSlotAsync(TimeSlot slot);
+    public interface IBookingRepository
+    {
+        Task<IEnumerable<Booking>> GetAllBookingsAsync();   
+        Task<Booking?> GetBookingByIdAsync(int id);         // get a booking  by id
+        Task AddBookingAsync(Booking booking);              // add a new booking
+        Task UpdateBookingAsync(Booking booking);           // update existing booking
+        Task DeleteBookingAsync(int id);                    // delete a booking by id
 
-    // categories
-    Task<IEnumerable<Category>> GetCategoriesAsync();
-    Task<Category?> GetCategoryByIdAsync(int categoryId);
+        // appointments
+        Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync();
+        Task<Appointment?> GetAppointmentByIdAsync(int id);
+        Task AddAppointmentAsync(Appointment appointment);
+        Task UpdateAppointmentAsync(Appointment appointment);
+        Task DeleteAppointmentAsync(int id);
+        Task UpdateTimeSlotAsync(TimeSlot timeSlot);
 
-    // appointments (bookings)
-    Task<Appointment?> GetAppointmentByIdAsync(int id);
-    Task AddAppointmentAsync(Appointment appointment);
-    Task UpdateAppointmentAsync(Appointment appointment);
-    Task DeleteAppointmentAsync(int appointmentId);
+        // supporting data
+        Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync();
+        Task<IEnumerable<Category>> GetCategoriesAsync();
+        Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId);
+        Task<Category?> GetCategoryByIdAsync(int categoryId);
+
+        Task SaveChangesAsync(); // save to db
+    }
 }
