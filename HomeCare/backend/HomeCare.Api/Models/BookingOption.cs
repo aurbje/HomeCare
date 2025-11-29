@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Api.Models
+namespace HomeCare.Models
 {
     // simple option used for showing quick booking choices
     public class BookingOption

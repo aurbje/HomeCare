@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Api.Models
+namespace HomeCare.Models
 {
     // simple booking model used for basic service bookings
     public class Booking

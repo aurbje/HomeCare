@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Api.Models
+namespace HomeCare.Models
 {
     // only dates that are available for booking show up here
     public class AvailableDate

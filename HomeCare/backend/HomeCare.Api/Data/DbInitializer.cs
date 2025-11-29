@@ -1,21 +1,22 @@
 using System.Linq;
-namespace HomeCare.Api.Data
+using HomeCare.Models;
+
+namespace HomeCare.Data
 {
+    // makes sure the db exists
     public static class DbInitializer
     {
         public static void Seed(AppDbContext context)
         {
-            // make sure the database exists
+            // just making sure the database file is created
             context.Database.EnsureCreated();
 
-            // if there is already data, we skip seeding here
             if (context.AvailableDates.Any())
             {
+                // db already has seed data, so nothing more to do
                 return;
             }
 
-            // seeding is handled in onmodelcreating
         }
     }
 }
-

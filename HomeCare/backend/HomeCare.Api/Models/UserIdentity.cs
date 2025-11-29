@@ -1,19 +1,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Api.Models
+namespace HomeCare.Models
 {
     // basic user model stored in our own user table (not identity)
     public class User
     {
         public int Id { get; set; }
 
-        // personal info for profile and dashboard
+        // person info
         [Required]
-        public string FullName { get; set; } = string.Empty;
-
-        [Required]
-        public string UserName { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty; // e.g. "Name Surname"
 
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
