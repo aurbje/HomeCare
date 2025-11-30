@@ -1,29 +1,39 @@
-using HomeCare.Models;
+using HomeCare.Api.Models;
 
-namespace HomeCare.Repositories.Interfaces
+namespace HomeCare.Api.DAL.Interfaces
 {
     public interface IBookingRepository
     {
-        Task<IEnumerable<Booking>> GetAllBookingsAsync();   
-        Task<Booking?> GetBookingByIdAsync(int id);         // get a booking  by id
-        Task AddBookingAsync(Booking booking);              // add a new booking
-        Task UpdateBookingAsync(Booking booking);           // update existing booking
-        Task DeleteBookingAsync(int id);                    // delete a booking by id
+        // ------------------------------
+        // BOOKINGS
+        // ------------------------------
+        Task<IEnumerable<Booking>> GetAllBookingsAsync();
+        Task<Booking?> GetBookingByIdAsync(int id);
+        Task AddBookingAsync(Booking booking);
+        Task<bool> UpdateBookingAsync(Booking booking);
+        Task<bool> DeleteBookingAsync(int id);
 
-        // appointments
+        // ------------------------------
+        // APPOINTMENTS
+        // ------------------------------
         Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync();
         Task<Appointment?> GetAppointmentByIdAsync(int id);
         Task AddAppointmentAsync(Appointment appointment);
-        Task UpdateAppointmentAsync(Appointment appointment);
-        Task DeleteAppointmentAsync(int id);
-        Task UpdateTimeSlotAsync(TimeSlot timeSlot);
+        Task<bool> UpdateAppointmentAsync(Appointment appointment);
+        Task<bool> DeleteAppointmentAsync(int id);
 
-        // supporting data
+        // ------------------------------
+        // SUPPORT DATA
+        // ------------------------------
         Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync();
         Task<IEnumerable<Category>> GetCategoriesAsync();
         Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId);
         Task<Category?> GetCategoryByIdAsync(int categoryId);
+        Task<bool> UpdateTimeSlotAsync(TimeSlot timeSlot);
 
-        Task SaveChangesAsync(); // save to db
+        // ------------------------------
+        // DB OPERATIONS
+        // ------------------------------
+        Task SaveChangesAsync();
     }
 }

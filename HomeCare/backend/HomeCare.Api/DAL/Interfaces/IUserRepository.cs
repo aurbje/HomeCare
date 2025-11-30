@@ -1,8 +1,8 @@
-using HomeCare.Models;
+using HomeCare.Api.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HomeCare.Repositories.Interfaces
+namespace HomeCare.Api.DAL.Interfaces
 {
     public interface IUserRepository
     {
