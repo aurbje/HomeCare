@@ -48,3 +48,27 @@ TestResults/
 *.db
 *.bd-shm
 *.db-wal
+
+# Node
+frontend/node_modules/
+frontend/.env
+frontend/.cache
+frontend/build/
+frontend/dist/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Dependency directories
+node_modules/
+
+# Temporary files
+*.log
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
