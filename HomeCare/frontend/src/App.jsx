@@ -1,17 +1,25 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
+import React, { useEffect } from 'react';
+import api from './api/api';
 
 function App() {
+  useEffect(() => {
+    async function loadBookings() {
+      try {
+        const res = await api.get('/booking');
+        console.log('Bookings:', res.data);
+      } catch (err) {
+        console.error('Error fetching bookings:', err);
+      }
+    }
+
+    loadBookings();
+  }, []);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Routes>
-    </Router>
+    <div className="container mt-4">
+      <h1>HomeCare Dashboard</h1>
+      <p>Open the browser console to view booking data.</p>
+    </div>
   );
 }
 
