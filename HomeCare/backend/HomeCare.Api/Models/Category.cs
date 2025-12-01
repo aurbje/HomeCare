@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models
+namespace HomeCare.Api.Models
 {
     // category used for appointments and booking
     public class Category

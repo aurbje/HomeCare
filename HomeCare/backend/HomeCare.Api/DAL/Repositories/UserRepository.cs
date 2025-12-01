@@ -20,11 +20,11 @@ namespace HomeCare.Api.DAL.Repositories
         // BASIC CRUD
         // ------------------------------
 
-        public async Task<ApplicationUser?> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             try
             {
-                return await _context.Users
+                return await _context.AppUsers
                     .Include(u => u.Visits)
                     .FirstOrDefaultAsync(u => u.Id == id);
             }
@@ -35,11 +35,11 @@ namespace HomeCare.Api.DAL.Repositories
             }
         }
 
-        public async Task<ApplicationUser?> GetByEmailAsync(string email)
+        public async Task<User?> GetByEmailAsync(string email)
         {
             try
             {
-                return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                return await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
             }
             catch (Exception ex)
             {
@@ -52,7 +52,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                return await _context.Users.AnyAsync(u => u.Email == email);
+                return await _context.AppUsers.AnyAsync(u => u.Email == email);
             }
             catch (Exception ex)
             {
@@ -61,11 +61,11 @@ namespace HomeCare.Api.DAL.Repositories
             }
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
             try
             {
-                return await _context.Users
+                return await _context.AppUsers
                     .Include(u => u.Visits)
                     .ToListAsync();
             }
@@ -76,11 +76,11 @@ namespace HomeCare.Api.DAL.Repositories
             }
         }
 
-        public async Task AddAsync(ApplicationUser user)
+        public async Task AddAsync(User user)
         {
             try
             {
-                await _context.Users.AddAsync(user);
+                await _context.AppUsers.AddAsync(user);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -90,11 +90,11 @@ namespace HomeCare.Api.DAL.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserAsync(ApplicationUser user)
+        public async Task<bool> UpdateUserAsync(User user)
         {
             try
             {
-                _context.Users.Update(user);
+                _context.AppUsers.Update(user);
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception ex)
@@ -108,10 +108,10 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.AppUsers.FindAsync(id);
                 if (user == null) return false;
 
-                _context.Users.Remove(user);
+                _context.AppUsers.Remove(user);
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception ex)

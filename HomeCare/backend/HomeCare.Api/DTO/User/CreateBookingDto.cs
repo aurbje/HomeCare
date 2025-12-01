@@ -1,29 +1,29 @@
 using System;
 using System.Collections.Generic;
-using HomeCare.Models;
+using HomeCare.Api.Models;
 
-namespace HomeCare.ViewModels
+namespace HomeCare.Api.DTO.User
 {
-    // view model used when creating or editing a booking
-    public class BookingViewModel
+    // DTO used when creating or editing a booking from the frontend
+    public class CreateBookingDto
     {
-        // date selected by the user
+        // Date selected by the user
         public required DateTime SelectedDate { get; set; }
 
-        // time slot id selected
+        // Selected time slot ID
         public int TimeSlotId { get; set; } = 0;
 
-        // selected category id
+        // Selected service category ID
         public int CategoryId { get; set; } = 0;
 
-        // extra notes the user can write
+        // Optional notes provided by the user
         public string? Notes { get; set; }
 
-        // data we show in the dropdowns / lists
+        // Data returned to help populate dropdowns / lists
         public List<AvailableDate> AvailableDates { get; set; } = new();
         public List<Category> Categories { get; set; } = new();
 
-        // used when editing an existing appointment
-        public int AppointmentId { get; set; }
+        // Used when editing an existing booking
+        public int BookingId { get; set; }
     }
 }

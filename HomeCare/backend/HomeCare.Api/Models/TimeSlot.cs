@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models
+namespace HomeCare.Api.Models
 {
     // a single slot of time the user can book ("09:00-10:00")
     public class TimeSlot

@@ -19,14 +19,14 @@ namespace HomeCare.Api.DAL.Repositories
         /// <summary>
         /// Gets all clients assigned to a specific caregiver.
         /// </summary>
-        public async Task<IEnumerable<ApplicationUser>> GetClientsForCaregiverAsync(string caregiverId)
+        public async Task<IEnumerable<User>> GetClientsForCaregiverAsync(string caregiverId)
         {
             try
             {
                 _logger.LogInformation("Fetching clients for caregiver {CaregiverId}", caregiverId);
 
-                return await _context.Users
-                    .Where(u => u.CaregiverId == caregiverId)
+                return await _context.AppUsers
+                    .Where(u => u.Role == "User") // Only fetch normal users
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -37,24 +37,23 @@ namespace HomeCare.Api.DAL.Repositories
         }
 
         /// <summary>
-        /// Gets all scheduled appointments for a caregiver.
+        /// Gets all scheduled bookings for a caregiver.
         /// </summary>
-        public async Task<IEnumerable<Appointment>> GetAppointmentsForCaregiverAsync(string caregiverId)
+        public async Task<IEnumerable<Booking>> GetBookingsForCaregiverAsync(string caregiverId)
         {
             try
             {
-                _logger.LogInformation("Fetching appointments for caregiver {CaregiverId}", caregiverId);
+                _logger.LogInformation("Fetching bookings for caregiver {CaregiverId}", caregiverId);
 
-                return await _context.Appointments
-                    .Include(a => a.TimeSlot)
-                    .Include(a => a.Category)
-                    .Where(a => a.CaregiverId == caregiverId)
-                    .OrderBy(a => a.DateTime)
+                return await _context.Bookings
+                    .Include(b => b.TimeSlot)
+                    .Where(b => b.CaregiverId == caregiverId)
+                    .OrderBy(b => b.Date)
                     .ToListAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching appointments for caregiver {CaregiverId}", caregiverId);
+                _logger.LogError(ex, "Error fetching bookings for caregiver {CaregiverId}", caregiverId);
                 throw;
             }
         }

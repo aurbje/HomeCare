@@ -1,12 +1,12 @@
 using System;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using HomeCare.Models;
+using HomeCare.Api.Models;
 
-namespace HomeCare.Data
+namespace HomeCare.Api.Data
 {
     // main db context for both identity and app data
-    public class AppDbContext : IdentityDbContext<Caregiver>
+    public class AppDbContext : IdentityDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -15,12 +15,10 @@ namespace HomeCare.Data
 
         // visits and tasks for caregivers
         public DbSet<Visit> Visits { get; set; } = default!;
-        public DbSet<CareTask> CareTasks { get; set; } = default!;
 
         // booking related data
         public DbSet<Booking> Bookings { get; set; } = default!;
         public DbSet<BookingOption> BookingOptions { get; set; } = default!;
-        public DbSet<Appointment> Appointments { get; set; } = default!;
         public DbSet<AvailableDate> AvailableDates { get; set; } = default!;
         public DbSet<TimeSlot> TimeSlots { get; set; } = default!;
         public DbSet<Category> Categories { get; set; } = default!;

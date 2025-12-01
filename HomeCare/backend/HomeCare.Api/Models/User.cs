@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models
+namespace HomeCare.Api.Models
 {
     // basic user model stored in our own user table (not identity)
     public class User

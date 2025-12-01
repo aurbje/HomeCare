@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HomeCare.Api.Services;
+using Microsoft.Extensions.Logging;
 
 namespace HomeCare.Api.Controllers
 {
@@ -9,12 +10,12 @@ namespace HomeCare.Api.Controllers
     [Authorize(Roles = "Caregiver")]
     public class CaregiverController : ControllerBase
     {
-        private readonly BookingService _bookingService;
+        private readonly CaregiverService _caregiverService;
         private readonly ILogger<CaregiverController> _logger;
 
-        public CaregiverController(BookingService bookingService, ILogger<CaregiverController> logger)
+        public CaregiverController(CaregiverService caregiverService, ILogger<CaregiverController> logger)
         {
-            _bookingService = bookingService;
+            _caregiverService = caregiverService;
             _logger = logger;
         }
 
@@ -24,14 +25,15 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var clients = await _bookingService.GetClientsForCaregiverAsync(User);
-                if (clients == null || !clients.Any())
+                var response = await _caregiverService.GetClientsAsync(User);
+
+                if (response == null || response.Data == null || !response.Data.Any())
                 {
                     _logger.LogInformation("No clients found for caregiver {User}.", User.Identity?.Name);
                     return NotFound(new { message = "No assigned clients found." });
                 }
 
-                return Ok(clients);
+                return Ok(response.Data);
             }
             catch (Exception ex)
             {
@@ -46,14 +48,15 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var schedule = await _bookingService.GetScheduleForCaregiverAsync(User);
-                if (schedule == null || !schedule.Any())
+                var response = await _caregiverService.GetScheduleAsync(User);
+
+                if (response == null || response.Data == null || !response.Data.Any())
                 {
                     _logger.LogInformation("No schedule found for caregiver {User}.", User.Identity?.Name);
-                    return NotFound(new { message = "No scheduled visits found." });
+                    return NotFound(new { message = "No scheduled bookings found." });
                 }
 
-                return Ok(schedule);
+                return Ok(response.Data);
             }
             catch (Exception ex)
             {
@@ -68,18 +71,17 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var result = await _bookingService.CompleteVisitAsync(bookingId);
-                if (!result.Success)
-                {
-                    return BadRequest(new { message = result.Message ?? "Unable to complete visit." });
-                }
+                var result = await _caregiverService.CompleteVisitAsync(bookingId);
 
-                _logger.LogInformation("Caregiver {User} completed visit {BookingId}.", User.Identity?.Name, bookingId);
-                return Ok(new { message = "Visit marked as completed." });
+                if (result == null || !result.Success)
+                    return NotFound(new { message = "Booking not found or could not be completed." });
+
+                _logger.LogInformation("Caregiver {User} completed booking {BookingId}.", User.Identity?.Name, bookingId);
+                return Ok(new { message = "Visit marked as completed.", data = result.Data });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error completing visit {BookingId} for caregiver {User}.", bookingId, User.Identity?.Name);
+                _logger.LogError(ex, "Error completing booking {BookingId} for caregiver {User}.", bookingId, User.Identity?.Name);
                 return StatusCode(500, new { message = "Unexpected error while completing visit." });
             }
         }

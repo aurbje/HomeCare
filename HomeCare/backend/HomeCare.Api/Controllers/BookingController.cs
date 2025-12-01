@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using HomeCare.Models;
-using HomeCare.ViewModels;
-using HomeCare.Repositories.Interfaces;
-using Microsoft.Extensions.Logging;
+using HomeCare.Api.Models;
+using HomeCare.Api.DTO;
+using HomeCare.Api.DAL.Interfaces;
+using HomeCare.Api.DTO.User;
 
-namespace HomeCare.Controllers
+namespace HomeCare.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -29,7 +29,7 @@ namespace HomeCare.Controllers
             {
                 var availableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
                 var categories = (await _bookingRepo.GetCategoriesAsync()).ToList();
-                var appointments = (await _bookingRepo.GetUpcomingAppointmentsAsync()).ToList();
+                var bookings = (await _bookingRepo.GetAllBookingsAsync()).ToList();
 
                 var model = new BookingPageDto
                 {
@@ -37,7 +37,7 @@ namespace HomeCare.Controllers
                     CategoryId = categories.FirstOrDefault()?.Id ?? 0,
                     AvailableDates = availableDates,
                     Categories = categories,
-                    Appointments = appointments
+                    Bookings = bookings
                 };
 
                 return Ok(model);
@@ -51,7 +51,7 @@ namespace HomeCare.Controllers
 
         // POST: /api/booking
         [HttpPost]
-        public async Task<IActionResult> CreateOrUpdateBooking([FromBody] BookingViewModel model)
+        public async Task<IActionResult> CreateOrUpdateBooking([FromBody] CreateBookingDto model)
         {
             _logger.LogInformation("Booking request for category {CategoryId} on {Date}", model.CategoryId, model.SelectedDate);
 
@@ -70,57 +70,56 @@ namespace HomeCare.Controllers
                 if (selectedCategory == null)
                     return BadRequest(new { message = "Invalid category." });
 
-                if (selectedCategory.Name.Equals("OTHER", StringComparison.OrdinalIgnoreCase) &&
-                    string.IsNullOrWhiteSpace(model.Notes))
-                {
-                    return BadRequest(new { message = "Please provide details for 'Other' category." });
-                }
-
                 var selectedSlot = await _bookingRepo.GetAvailableTimeSlotAsync(model.TimeSlotId);
                 if (selectedSlot == null)
                     return BadRequest(new { message = "Selected time slot is no longer available." });
 
+                // Parse slot time string (e.g. "10:00-11:00")
                 if (!TimeSpan.TryParse(selectedSlot.Slot.Split('-')[0].Trim(), out TimeSpan startTime))
                     return BadRequest(new { message = "Invalid time slot format." });
 
-                if (model.AppointmentId > 0)
+                if (model.BookingId > 0)
                 {
-                    var existing = await _bookingRepo.GetAppointmentByIdAsync(model.AppointmentId);
+                    var existing = await _bookingRepo.GetBookingByIdAsync(model.BookingId);
                     if (existing == null)
-                        return NotFound(new { message = "Appointment not found." });
+                        return NotFound(new { message = "Booking not found." });
 
-                    existing.DateTime = selectedSlot.AvailableDate.Date.Add(startTime);
+                    existing.Date = selectedSlot.AvailableDate.Date;
+                    existing.Time = selectedSlot.Slot;
                     existing.TimeSlotId = selectedSlot.Id;
-                    existing.CategoryId = selectedCategory.Id;
+                    existing.ServiceType = selectedCategory.Name;
                     existing.Notes = model.Notes;
 
                     selectedSlot.IsBooked = true;
                     await _bookingRepo.UpdateTimeSlotAsync(selectedSlot);
-                    await _bookingRepo.UpdateAppointmentAsync(existing);
+                    await _bookingRepo.UpdateBookingAsync(existing);
 
                     return Ok(new
                     {
-                        message = $"Appointment updated to {existing.DateTime:yyyy-MM-dd} {selectedSlot.Slot}.",
-                        appointment = existing
+                        message = $"Booking updated for {existing.Date:yyyy-MM-dd} at {existing.Time}.",
+                        booking = existing
                     });
                 }
                 else
                 {
-                    var appointment = new Appointment
+                    var booking = new Booking
                     {
-                        DateTime = selectedSlot.AvailableDate.Date.Add(startTime),
+                        Date = selectedSlot.AvailableDate.Date,
+                        Time = selectedSlot.Slot,
                         TimeSlotId = selectedSlot.Id,
                         CategoryId = selectedCategory.Id,
-                        Notes = model.Notes
+                        ServiceType = selectedCategory.Name,
+                        Notes = model.Notes,
+                        Status = "Booked"
                     };
 
                     selectedSlot.IsBooked = true;
-                    await _bookingRepo.AddAppointmentAsync(appointment);
+                    await _bookingRepo.AddBookingAsync(booking);
 
                     return StatusCode(201, new
                     {
-                        message = $"Appointment booked for {appointment.DateTime:yyyy-MM-dd} {selectedSlot.Slot}.",
-                        appointment
+                        message = $"Booking created for {booking.Date:yyyy-MM-dd} {booking.Time}.",
+                        booking
                     });
                 }
             }
@@ -133,67 +132,67 @@ namespace HomeCare.Controllers
 
         // DELETE: /api/booking/{id}
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> CancelAppointment(int id)
+        public async Task<IActionResult> CancelBooking(int id)
         {
-            _logger.LogInformation("Attempting to cancel appointment {AppointmentId}.", id);
+            _logger.LogInformation("Attempting to cancel booking {BookingId}.", id);
 
             try
             {
-                var appointment = await _bookingRepo.GetAppointmentByIdAsync(id);
-                if (appointment == null)
-                    return NotFound(new { message = "Appointment not found." });
+                var booking = await _bookingRepo.GetBookingByIdAsync(id);
+                if (booking == null)
+                    return NotFound(new { message = "Booking not found." });
 
-                var slot = await _bookingRepo.GetAvailableTimeSlotAsync(appointment.TimeSlotId);
+                var slot = await _bookingRepo.GetAvailableTimeSlotAsync(booking.TimeSlotId);
                 if (slot != null)
                 {
                     slot.IsBooked = false;
                     await _bookingRepo.UpdateTimeSlotAsync(slot);
                 }
 
-                await _bookingRepo.DeleteAppointmentAsync(id);
-                return Ok(new { message = "Appointment cancelled successfully." });
+                await _bookingRepo.DeleteBookingAsync(id);
+                return Ok(new { message = "Booking cancelled successfully." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while cancelling appointment {AppointmentId}.", id);
-                return StatusCode(500, new { message = "Unexpected error while cancelling appointment." });
+                _logger.LogError(ex, "Error while cancelling booking {BookingId}.", id);
+                return StatusCode(500, new { message = "Unexpected error while cancelling booking." });
             }
         }
 
         // GET: /api/booking/{id}
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<BookingEditDto>> GetAppointmentForEdit(int id)
+        public async Task<ActionResult<BookingEditDto>> GetBookingForEdit(int id)
         {
-            _logger.LogInformation("Loading data for editing appointment {AppointmentId}.", id);
+            _logger.LogInformation("Loading data for editing booking {BookingId}.", id);
 
             try
             {
-                var appointment = await _bookingRepo.GetAppointmentByIdAsync(id);
-                if (appointment == null)
-                    return NotFound(new { message = "Appointment not found." });
+                var booking = await _bookingRepo.GetBookingByIdAsync(id);
+                if (booking == null)
+                    return NotFound(new { message = "Booking not found." });
 
                 var availableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
                 var categories = (await _bookingRepo.GetCategoriesAsync()).ToList();
-                var appointments = (await _bookingRepo.GetUpcomingAppointmentsAsync()).ToList();
+                var bookings = (await _bookingRepo.GetAllBookingsAsync()).ToList();
 
                 var model = new BookingEditDto
                 {
-                    AppointmentId = appointment.Id,
-                    SelectedDate = appointment.DateTime.Date,
-                    TimeSlotId = appointment.TimeSlotId,
-                    CategoryId = appointment.CategoryId,
-                    Notes = appointment.Notes,
+                    BookingId = booking.Id,
+                    SelectedDate = booking.Date,
+                    TimeSlotId = booking.TimeSlotId,
+                    CategoryId = booking.CategoryId,
+                    Notes = booking.Notes,
                     AvailableDates = availableDates,
                     Categories = categories,
-                    Appointments = appointments
+                    Bookings = bookings
                 };
 
                 return Ok(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while loading appointment {AppointmentId}.", id);
-                return StatusCode(500, new { message = "Unexpected error while loading appointment." });
+                _logger.LogError(ex, "Error while loading booking {BookingId}.", id);
+                return StatusCode(500, new { message = "Unexpected error while loading booking." });
             }
         }
     }
@@ -205,18 +204,18 @@ namespace HomeCare.Controllers
         public int CategoryId { get; set; }
         public List<AvailableDate> AvailableDates { get; set; } = new();
         public List<Category> Categories { get; set; } = new();
-        public List<Appointment> Appointments { get; set; } = new();
+        public List<Booking> Bookings { get; set; } = new();
     }
 
     public class BookingEditDto
     {
-        public int AppointmentId { get; set; }
+        public int BookingId { get; set; }
         public DateTime SelectedDate { get; set; }
         public int TimeSlotId { get; set; }
         public int CategoryId { get; set; }
         public string? Notes { get; set; }
         public List<AvailableDate> AvailableDates { get; set; } = new();
         public List<Category> Categories { get; set; } = new();
-        public List<Appointment> Appointments { get; set; } = new();
+        public List<Booking> Bookings { get; set; } = new();
     }
 }

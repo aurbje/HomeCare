@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HomeCare.Models;
-using HomeCare.Data;
+using HomeCare.Api.Models;
+using HomeCare.Api.Data;
 
 namespace HomeCare.Api.Controllers
 {
@@ -32,19 +32,19 @@ namespace HomeCare.Api.Controllers
 
                 _logger.LogInformation("Loading dashboard data for {Year}-{Month}", targetDate.Year, targetDate.Month);
 
-                // Fake reminders for now (can later come from DB)
+                // Temporary hardcoded reminders (can later come from DB)
                 var reminders = GetTodayReminders();
 
-                // Retrieve upcoming appointments (can later filter by logged-in user)
-                var appointments = await _context.Appointments
-                    .Include(a => a.Category)
-                    .Where(a => a.DateTime >= DateTime.Today)
-                    .OrderBy(a => a.DateTime)
+                // Fetch upcoming bookings instead of appointments
+                var bookings = await _context.Bookings
+                    .Include(b => b.Category)
+                    .Where(b => b.Date >= DateTime.Today)
+                    .OrderBy(b => b.Date)
                     .ToListAsync();
 
-                if (!appointments.Any())
+                if (!bookings.Any())
                 {
-                    _logger.LogInformation("No upcoming appointments found for dashboard view.");
+                    _logger.LogInformation("No upcoming bookings found for dashboard view.");
                 }
 
                 var dto = new UserDashboardDto
@@ -52,7 +52,7 @@ namespace HomeCare.Api.Controllers
                     CalendarYear = targetDate.Year,
                     CalendarMonth = targetDate.Month,
                     Reminders = reminders,
-                    Appointments = appointments
+                    Bookings = bookings
                 };
 
                 return Ok(dto);
@@ -64,7 +64,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // Temporary dummy reminders
+        // Temporary dummy reminders for dashboard
         private List<Reminder> GetTodayReminders()
         {
             return new List<Reminder>
@@ -81,6 +81,6 @@ namespace HomeCare.Api.Controllers
         public int CalendarYear { get; set; }
         public int CalendarMonth { get; set; }
         public List<Reminder> Reminders { get; set; } = new();
-        public List<Appointment> Appointments { get; set; } = new();
+        public List<Booking> Bookings { get; set; } = new();
     }
 }

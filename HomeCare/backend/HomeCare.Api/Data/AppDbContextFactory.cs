@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace HomeCare.Data
+namespace HomeCare.Api.Data
 {
     public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {

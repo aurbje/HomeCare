@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models
+namespace HomeCare.Api.Models
 {
     // a scheduled visit from a caregiver to a user
     public class Visit

@@ -1,30 +1,47 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models
+namespace HomeCare.Api.Models
 {
-    // simple booking model used for basic service bookings
+    // Represents a booking made by a user for a service
     public class Booking
     {
         public int Id { get; set; }
 
-        // when the booking should happen (just the date)
+        // When the booking should happen (just the date)
         [Required]
         public DateTime Date { get; set; }
 
-        // time chosen for the booking ("14:00")
-        [Required]
-        public string? Time { get; set; }
+        // Time chosen for the booking ("14:00")
+        [Required, StringLength(20)]
+        public string Time { get; set; } = string.Empty;
 
-        // what kind of service the user wants
+        // Time slot this booking is linked to
         [Required]
-        public string? ServiceType { get; set; }
+        public int TimeSlotId { get; set; }
+        public TimeSlot TimeSlot { get; set; } = null!;
 
-        // optional message from the user
+        [Required]
+        public int CategoryId { get; set; }
+        public Category Category { get; set; } = null!;
+
+        // Type of service booked (cleaning, nursing, etc.)
+        [Required, StringLength(100)]
+        public string ServiceType { get; set; } = string.Empty;
+
+        // Optional message or special request from the user
+        [StringLength(500)]
         public string? Notes { get; set; }
 
-        // user who created the booking (optional until feature is complete)
+        // The user who made the booking
         public int? UserId { get; set; }
-        public User? User { get; set; }
+        public User? User {get; set; }
+
+        // Optional caregiver assigned to this booking (if used later)
+        public string CaregiverId { get; set; } = string.Empty;
+
+        // Current booking status
+        [Required, StringLength(20)]
+        public string Status { get; set; } = "Booked";
     }
 }

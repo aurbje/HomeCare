@@ -1,6 +1,7 @@
-using HomeCare.Data;
-using HomeCare.Repositories.Interfaces;
-using HomeCare.Repositories.Implementations;
+using HomeCare.Api.Data;
+using HomeCare.Api.DAL.Interfaces;
+using HomeCare.Api.DAL.Repositories;
+using HomeCare.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.Cookies;

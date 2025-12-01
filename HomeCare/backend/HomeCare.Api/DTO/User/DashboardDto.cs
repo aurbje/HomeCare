@@ -1,34 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using HomeCare.Models;
+using HomeCare.Api.Models;
 
-namespace HomeCare.ViewModels.User
+namespace HomeCare.Api.DTO.User
 {
-    // data shown on the user dashboard
-    public class DashboardViewModel
+    // DTO representing all data shown on the user's dashboard
+    public class DashboardDto
     {
-        // basic user info
+        // Basic user info
         [Required]
         public string FullName { get; set; } = string.Empty;
 
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        // summary numbers for dashboard cards
+        // Summary numbers for dashboard cards
         public int UpcomingBookings { get; set; }
         public int CompletedBookings { get; set; }
 
-        // when the user logged in the last time
+        // Last login timestamp
         public DateTime LastLogin { get; set; }
 
-        // simple text notifications for the user
+        // Simple text notifications for the user
         public List<string> Notifications { get; set; } = new();
 
-        // reminders the user should see today
+        // Reminders the user should see today
         public List<Reminder> Reminders { get; set; } = new();
 
-        // all upcoming appointments tied to the user
-        public List<Appointment> Appointments { get; set; } = new();
+        // All upcoming appointments tied to the user
+        public List<Booking> Bookings { get; set; } = new();
     }
 }

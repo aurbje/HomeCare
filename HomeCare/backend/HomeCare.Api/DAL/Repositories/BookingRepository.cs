@@ -17,7 +17,7 @@ namespace HomeCare.Api.DAL.Repositories
         }
 
         // ------------------------------
-        // BOOKING CRUD
+        // BOOKINGS CRUD
         // ------------------------------
         public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
         {
@@ -25,6 +25,7 @@ namespace HomeCare.Api.DAL.Repositories
             {
                 return await _context.Bookings
                     .Include(b => b.User)
+                    .Include(b => b.TimeSlot)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -40,6 +41,7 @@ namespace HomeCare.Api.DAL.Repositories
             {
                 return await _context.Bookings
                     .Include(b => b.User)
+                    .Include(b => b.TimeSlot)
                     .FirstOrDefaultAsync(b => b.Id == id);
             }
             catch (Exception ex)
@@ -96,90 +98,7 @@ namespace HomeCare.Api.DAL.Repositories
         }
 
         // ------------------------------
-        // APPOINTMENTS
-        // ------------------------------
-        public async Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync()
-        {
-            try
-            {
-                return await _context.Appointments
-                    .Include(a => a.TimeSlot)
-                    .Include(a => a.Category)
-                    .Where(a => a.DateTime >= DateTime.Today)
-                    .OrderBy(a => a.DateTime)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving upcoming appointments");
-                throw;
-            }
-        }
-
-        public async Task<Appointment?> GetAppointmentByIdAsync(int id)
-        {
-            try
-            {
-                return await _context.Appointments
-                    .Include(a => a.TimeSlot)
-                    .Include(a => a.Category)
-                    .FirstOrDefaultAsync(a => a.Id == id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving appointment by ID {Id}", id);
-                throw;
-            }
-        }
-
-        public async Task AddAppointmentAsync(Appointment appointment)
-        {
-            try
-            {
-                _context.Appointments.Add(appointment);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding appointment");
-                throw;
-            }
-        }
-
-        public async Task<bool> UpdateAppointmentAsync(Appointment appointment)
-        {
-            try
-            {
-                _context.Appointments.Update(appointment);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating appointment {Id}", appointment.Id);
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteAppointmentAsync(int id)
-        {
-            try
-            {
-                var appointment = await _context.Appointments.FindAsync(id);
-                if (appointment == null) return false;
-
-                _context.Appointments.Remove(appointment);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting appointment {Id}", id);
-                return false;
-            }
-        }
-
-        // ------------------------------
-        // TIMESLOTS, DATES, CATEGORIES
+        // DATES, TIMESLOTS, CATEGORIES
         // ------------------------------
         public async Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync()
         {

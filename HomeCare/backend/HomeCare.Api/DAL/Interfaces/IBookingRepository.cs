@@ -14,15 +14,6 @@ namespace HomeCare.Api.DAL.Interfaces
         Task<bool> DeleteBookingAsync(int id);
 
         // ------------------------------
-        // APPOINTMENTS
-        // ------------------------------
-        Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync();
-        Task<Appointment?> GetAppointmentByIdAsync(int id);
-        Task AddAppointmentAsync(Appointment appointment);
-        Task<bool> UpdateAppointmentAsync(Appointment appointment);
-        Task<bool> DeleteAppointmentAsync(int id);
-
-        // ------------------------------
         // SUPPORT DATA
         // ------------------------------
         Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync();

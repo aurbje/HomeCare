@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Models
+namespace HomeCare.Api.Models
 {
     // small reminder item shown on the user dashboard
     public class Reminder

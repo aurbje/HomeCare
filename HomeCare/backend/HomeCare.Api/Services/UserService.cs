@@ -1,5 +1,6 @@
 using HomeCare.Api.Models;
-using HomeCare.Api.Repositories.Interfaces;
+using HomeCare.Api.DAL.Interfaces;
+using HomeCare.Api.DTO.Shared;
 
 namespace HomeCare.Api.Services
 {
@@ -14,7 +15,10 @@ namespace HomeCare.Api.Services
             _logger = logger;
         }
 
-        public async Task<ServiceResponse<ApplicationUser?>> GetByEmailAsync(string email)
+        // ------------------------------
+        // GET USER BY EMAIL
+        // ------------------------------
+        public async Task<ServiceResponse<User?>> GetByEmailAsync(string email)
         {
             try
             {
@@ -23,53 +27,42 @@ namespace HomeCare.Api.Services
                 if (user == null)
                 {
                     _logger.LogWarning("No user found with email {Email}", email);
-                    return ServiceResponse<ApplicationUser?>.Fail("User not found");
+                    return ServiceResponse<User?>.FailResponse("User not found");
                 }
 
                 _logger.LogInformation("User {Email} retrieved successfully", email);
-                return ServiceResponse<ApplicationUser?>.Success(user);
+                return ServiceResponse<User?>.SuccessResponse(user);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving user by email {Email}", email);
-                return ServiceResponse<ApplicationUser?>.Fail("Error retrieving user");
+                return ServiceResponse<User?>.FailResponse("Error retrieving user");
             }
         }
 
-        public async Task<ServiceResponse<ApplicationUser?>> GetByIdAsync(string id)
+        // ------------------------------
+        // GET USER BY ID
+        // ------------------------------
+        public async Task<ServiceResponse<User?>> GetByIdAsync(int id)
         {
             try
             {
-                var user = await _repo.GetByIdAsync(id);
+                var user = await _repo.GetUserByIdAsync(id);
 
                 if (user == null)
                 {
                     _logger.LogWarning("No user found with ID {Id}", id);
-                    return ServiceResponse<ApplicationUser?>.Fail("User not found");
+                    return ServiceResponse<User?>.FailResponse("User not found");
                 }
 
                 _logger.LogInformation("User {Id} retrieved successfully", id);
-                return ServiceResponse<ApplicationUser?>.Success(user);
+                return ServiceResponse<User?>.SuccessResponse(user);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving user by ID {Id}", id);
-                return ServiceResponse<ApplicationUser?>.Fail("Error retrieving user");
+                return ServiceResponse<User?>.FailResponse("Error retrieving user");
             }
         }
-    }
-
-    // Reuse the same ServiceResponse<T> helper from BookingService & CaregiverService
-    public class ServiceResponse<T>
-    {
-        public bool Success { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public T? Data { get; set; }
-
-        public static ServiceResponse<T> Success(T data, string message = "") =>
-            new() { Success = true, Data = data, Message = message };
-
-        public static ServiceResponse<T> Fail(string message) =>
-            new() { Success = false, Message = message };
     }
 }

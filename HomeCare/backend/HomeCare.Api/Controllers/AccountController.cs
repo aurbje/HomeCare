@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using HomeCare.ViewModels.Account;
-using HomeCare.Models;
-using HomeCare.Repositories.Interfaces;
+using HomeCare.Api.Models;
+using HomeCare.Api.DAL.Interfaces;
+using HomeCare.Api.DTO.Account;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace HomeCare.Controllers
+namespace HomeCare.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -25,7 +25,7 @@ namespace HomeCare.Controllers
 
         // POST: /api/account/signin
         [HttpPost("signin")]
-        public async Task<ActionResult<AuthResponseDto>> SignIn([FromBody] SignInViewModel model)
+        public async Task<ActionResult<AuthResponseDto>> SignIn([FromBody] LoginDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -49,7 +49,6 @@ namespace HomeCare.Controllers
                     return Unauthorized(new { message = "Invalid email or password" });
                 }
 
-                // Claims & cookie (optional)
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -61,7 +60,9 @@ namespace HomeCare.Controllers
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
 
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
                     new AuthenticationProperties
                     {
                         IsPersistent = true,
@@ -70,7 +71,6 @@ namespace HomeCare.Controllers
 
                 _logger.LogInformation("User {Email} logged in successfully", model.Email);
 
-                // Frontend will handle redirection based on role
                 var response = new AuthResponseDto
                 {
                     UserId = user.Id,
@@ -99,7 +99,7 @@ namespace HomeCare.Controllers
 
         // POST: /api/account/signup
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp([FromBody] SignUpViewModel model)
+        public async Task<IActionResult> SignUp([FromBody] RegisterDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -124,7 +124,7 @@ namespace HomeCare.Controllers
                 {
                     FullName = model.FullName,
                     Email = model.Email,
-                    PasswordHash = HashPassword(model.Password),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
                     Role = "User",
                     TlfNumber = model.TlfNumber,
                     Address = model.Address
@@ -150,11 +150,6 @@ namespace HomeCare.Controllers
                 _logger.LogError(e, "Error during user registration for {Email}", model.Email);
                 return StatusCode(500, new { message = "Unexpected error during registration." });
             }
-        }
-
-        private string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
 

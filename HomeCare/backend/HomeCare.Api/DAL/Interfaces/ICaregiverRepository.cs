@@ -6,9 +6,9 @@ namespace HomeCare.Api.DAL.Interfaces
     public interface ICaregiverRepository
     {
         // Gets all clients assigned to a specific caregiver
-        Task<IEnumerable<ApplicationUser>> GetClientsForCaregiverAsync(string caregiverId);
+        Task<IEnumerable<User>> GetClientsForCaregiverAsync(string caregiverId);
 
-        // Gets all appointments scheduled for a specific caregiver
-        Task<IEnumerable<Appointment>> GetAppointmentsForCaregiverAsync(string caregiverId);
+        // Gets all bookings scheduled for a specific caregiver
+        Task<IEnumerable<Booking>> GetBookingsForCaregiverAsync(string caregiverId);
     }
 }

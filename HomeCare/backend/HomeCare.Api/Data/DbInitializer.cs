@@ -1,7 +1,7 @@
 using System.Linq;
-using HomeCare.Models;
+using HomeCare.Api.Models;
 
-namespace HomeCare.Data
+namespace HomeCare.Api.Data
 {
     // makes sure the db exists
     public static class DbInitializer

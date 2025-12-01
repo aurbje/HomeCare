@@ -1,32 +1,33 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.ViewModels.Account
+namespace HomeCare.Api.DTO.Account
 {
-    public class SignUpViewModel // ViewModel for user sign-up
+    // DTO used for user registration (sign-up) from the React frontend
+    public class RegisterDto
     {
-        [Required(ErrorMessage = "Fullt navn må fylles ut")] // error for full name
+        [Required(ErrorMessage = "Fullt navn må fylles ut")]
         [Display(Name = "Fullt navn")]
         public string FullName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "E-post må fylles ut")] // error for email
+        [Required(ErrorMessage = "E-post må fylles ut")]
         [EmailAddress(ErrorMessage = "Ugyldig e-postadresse")]
         [Display(Name = "E-postadresse")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Telefonnummer må fylles ut")] // error for phone number
+        [Required(ErrorMessage = "Telefonnummer må fylles ut")]
         [Display(Name = "Telefonnummer")]
         public string TlfNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Adresse må fylles ut")] // error for address
+        [Required(ErrorMessage = "Adresse må fylles ut")]
         [Display(Name = "Adresse")]
         public string Address { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Passord må fylles ut")] // error for password
+        [Required(ErrorMessage = "Passord må fylles ut")]
         [DataType(DataType.Password)]
         [Display(Name = "Passord")]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Bekreft passord må fylles ut")] // error for confirm password
+        [Required(ErrorMessage = "Bekreft passord må fylles ut")]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Passordene stemmer ikke overens")]
         [Display(Name = "Bekreft passord")]
