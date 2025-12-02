@@ -1,78 +1,80 @@
 import React, { useEffect, useState } from "react";
-import ReminderList from "../../components/ReminderList";
+import { getBookingPage } from "../../api/bookingApi";
+
 import AppointmentList from "../../components/AppointmentList";
+import ReminderList from "../../components/ReminderList";
 import Calendar from "../../components/Calendar";
-import { getUserAppointments, getUserReminders } from "../../api/bookingApi"; 
-import { Link } from "react-router-dom";
 
-export default function DashboardPage() {
-  const [reminders, setReminders] = useState([]);
+const DashboardPage = () => {
   const [appointments, setAppointments] = useState([]);
-  const [userName, setUserName] = useState("");
+  const [reminders, setReminders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Hent innlogget bruker (fra localStorage, JWT, eller API)
   useEffect(() => {
-    const storedName = localStorage.getItem("userName");
-    if (storedName) setUserName(storedName);
-  }, []);
-
-  // Hente påminnelser + avtaler
-  useEffect(() => {
-    async function fetchData() {
+    async function loadData() {
       try {
-        const reminderData = await getUserReminders();
-        const appointmentData = await getUserAppointments();
+        const page = await getBookingPage();
 
-        setReminders(reminderData || []);
-        setAppointments(appointmentData || []);
-      } catch (error) {
-        console.error("Feil ved henting av dashboard-data:", error);
+        const allAppointments = page.bookings || [];
+
+        // Reminders = de neste 3 kommende avtalene
+        const upcoming = allAppointments
+          .filter((a) => new Date(a.date) >= new Date())
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .slice(0, 3);
+
+        setAppointments(allAppointments);
+        setReminders(upcoming);
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+      } finally {
+        setLoading(false);
       }
     }
 
-    fetchData();
+    loadData();
   }, []);
+
+  if (loading) return <p className="text-center mt-5">Laster...</p>;
 
   return (
     <div className="container py-4">
-      {/* HEADER */}
-      <div className="dashboard-header text-center py-3">
-        <h2 className="text-green">Velkommen til din side</h2>
-        <h2>{userName ? `${userName}!` : "Bruker"}</h2>
+
+      <div className="dashboard-header text-green text-center mb-4">
+        <h2>Velkommen til din side</h2>
+        {/* Tilpass hvis dere har auth-løsning */}
+        <h4>Bruker</h4>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div className="dashboard-main d-flex flex-wrap gap-4 mt-4">
+      <div className="dashboard-main d-flex flex-wrap">
 
         {/* LEFT SIDE */}
-        <div className="dashboard-left flex-fill p-3 shadow-sm bg-white rounded-4" style={{ minWidth: "320px" }}>
-          
-          {/* Reminders */}
+        <div className="dashboard-left flex-fill p-3" style={{ minWidth: "300px" }}>
           <div className="reminder-section mb-4">
-            <h3 className="mb-3">Påminnelser</h3>
+            <h3>Påminnelser</h3>
             <ReminderList reminders={reminders} />
           </div>
 
-          {/* Appointments */}
           <div className="appointment-section">
-            <h3 className="mb-3">Dine timer</h3>
+            <h3>Dine timer</h3>
             <AppointmentList appointments={appointments} />
 
-            <div className="mt-3">
-              <Link to="/booking" className="btn btn-main">
+            <div className="action-button mt-3">
+              <a href="/booking" className="btn btn-primary">
                 Book time her
-              </Link>
+              </a>
             </div>
           </div>
         </div>
 
-        {/* RIGHT SIDE – Calendar */}
-        <div className="dashboard-right flex-fill p-3 shadow-sm bg-white rounded-4" style={{ minWidth: "320px" }}>
-          <h3 className="mb-3">Kalender</h3>
+        {/* RIGHT SIDE */}
+        <div className="dashboard-right flex-fill p-3" style={{ minWidth: "300px" }}>
+          <h3>Kalender</h3>
           <Calendar appointments={appointments} />
         </div>
-
       </div>
     </div>
   );
-}
+};
+
+export default DashboardPage;

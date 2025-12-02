@@ -1,55 +1,156 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  getBookingPage,
+  createOrUpdateBooking,
+  cancelBooking,
+  getBookingForEdit
+} from "../../api/bookingApi";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function BookingPage() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
-    appointmentId: null,
+    bookingId: null,
     selectedDate: "",
     timeSlotId: "",
     categoryId: "",
     notes: "",
   });
 
-  const [editingId, setEditingId] = useState(null);
-
-  const availableDates = mockData.availableDates;
-  const categories = mockData.categories;
-  const appointments = mockData.appointments;
-
-  const handleDateChange = (dateId, dateValue) => {
-    setForm({ ...form, selectedDate: dateValue, timeSlotId: "" });
-    setAvailableSlots(
-      availableDates.find((d) => d.id === dateId)?.timeSlots || []
-    );
-  };
-
+  const [availableDates, setAvailableDates] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
 
-  const handleSubmit = (e) => {
+  const [editingId, setEditingId] = useState(null);
+
+  // -------------------------------
+  // 1️⃣ Load full booking page data
+  // -------------------------------
+  useEffect(() => {
+    loadBookingData();
+  }, []);
+
+  const loadBookingData = async () => {
+    try {
+      const data = await getBookingPage();
+      setAvailableDates(data.availableDates);
+      setCategories(data.categories);
+      setAppointments(data.bookings);
+    } catch (err) {
+      console.error("Feil ved henting av bookingside-data:", err);
+    }
+  };
+
+  // ------------------------------------
+  // 2️⃣ Change date → update available slots
+  // ------------------------------------
+  const handleDateChange = (dateId, dateValue) => {
+    setForm({ ...form, selectedDate: dateValue, timeSlotId: "" });
+
+    const dateObj = availableDates.find((d) => d.id === dateId);
+    setAvailableSlots(dateObj?.timeSlots.filter((ts) => !ts.isBooked) || []);
+  };
+
+  // ------------------------------------
+  // 3️⃣ Handle booking submit (create/update)
+  // ------------------------------------
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Booking:", form);
-    // TODO: Send form til backend
+
+    const payload = {
+      bookingId: form.bookingId || 0,
+      selectedDate: form.selectedDate,
+      timeSlotId: form.timeSlotId,
+      categoryId: form.categoryId,
+      notes: form.notes,
+    };
+
+    try {
+      await createOrUpdateBooking(payload);
+      await loadBookingData();
+
+      alert(
+        form.bookingId
+          ? "Timen ble oppdatert!"
+          : "Timen ble booket!"
+      );
+
+      resetForm();
+    } catch (err) {
+      console.error("Feil ved lagring:", err);
+      alert("Kunne ikke lagre booking.");
+    }
   };
 
-  const handleEdit = (appointmentId) => {
-    setEditingId(appointmentId);
-    // TODO: Last inn booking og sett verdier
+  const resetForm = () => {
+    setForm({
+      bookingId: null,
+      selectedDate: "",
+      timeSlotId: "",
+      categoryId: "",
+      notes: "",
+    });
+    setAvailableSlots([]);
+    setEditingId(null);
   };
 
-  const handleCancel = (id) => {
-    if (window.confirm("Vil du avlyse denne timen?")) {
-      // TODO: kall backend for sletting
-      console.log("Avlyser ID:", id);
+  // ------------------------------------
+  // 4️⃣ Edit booking → load booking into form
+  // ------------------------------------
+  const handleEdit = async (id) => {
+    setEditingId(id);
+
+    try {
+      const data = await getBookingForEdit(id);
+
+      setForm({
+        bookingId: data.bookingId,
+        selectedDate: data.selectedDate,
+        timeSlotId: data.timeSlotId,
+        categoryId: data.categoryId,
+        notes: data.notes || "",
+      });
+
+      const dateObj = data.availableDates.find(
+        (d) => d.date === data.selectedDate
+      );
+
+      setAvailableSlots(
+        dateObj?.timeSlots.filter((ts) => !ts.isBooked || ts.id === data.timeSlotId) || []
+      );
+
+      setAvailableDates(data.availableDates);
+      setCategories(data.categories);
+      setAppointments(data.bookings);
+    } catch (err) {
+      console.error("Feil ved lasting av booking:", err);
+    }
+  };
+
+  // ------------------------------------
+  // 5️⃣ Cancel booking
+  // ------------------------------------
+  const handleCancel = async (id) => {
+    if (!window.confirm("Vil du avlyse denne timen?")) return;
+
+    try {
+      await cancelBooking(id);
+      await loadBookingData();
+    } catch (err) {
+      console.error("Feil ved avbestilling:", err);
     }
   };
 
   return (
     <div className="booking-container">
+      {/* FORM SIDE */}
       <div className="booking-form">
         <h2>Book time her</h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Date picker */}
+          {/* Dato */}
           <div className="form-group">
             <label>Dato</label>
             <div className="date-options">
@@ -62,10 +163,10 @@ export default function BookingPage() {
                     <input
                       type="radio"
                       name="selectedDate"
-                      value={date.date}
+                      checked={form.selectedDate === date.date}
                       onChange={() => handleDateChange(date.id, date.date)}
                     />
-                    {new Date(date.date).toLocaleDateString("no-NO", {
+                    {new Date(date.date).toLocaleDateString("nb-NO", {
                       day: "2-digit",
                       month: "short",
                     })}
@@ -107,7 +208,7 @@ export default function BookingPage() {
               className="form-control"
               value={form.categoryId}
               onChange={(e) =>
-                setForm({ ...form, categoryId: e.target.value })
+                setForm({ ...form, categoryId: Number(e.target.value) })
               }
             >
               <option value="">Velg kategori</option>
@@ -119,27 +220,30 @@ export default function BookingPage() {
             </select>
           </div>
 
-          {/* Notes hvis "OTHER" */}
+          {/* Notes hvis OTHER */}
           {categories.find((c) => c.id == form.categoryId)?.name === "OTHER" && (
             <div className="form-group">
               <label>Notater</label>
               <textarea
                 className="form-control"
                 value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, notes: e.target.value })
+                }
               />
             </div>
           )}
 
           <button type="submit" className="btn btn-primary mt-3">
-            {form.appointmentId ? "Oppdater timen" : "Book Time"}
+            {form.bookingId ? "Oppdater timen" : "Book Time"}
           </button>
         </form>
       </div>
 
-      {/* Fremtidige avtaler */}
+      {/* LISTE OVER FREMTIDIGE TIMER */}
       <div className="booking-list">
         <h2>Fremtidige Timer</h2>
+
         {appointments.length > 0 ? (
           <table className="table table-custom">
             <thead>
@@ -152,19 +256,19 @@ export default function BookingPage() {
             </thead>
             <tbody>
               {appointments.map((a) => (
-                <tr key={a.id} className={editingId === a.id ? "editing-row" : ""}>
+                <tr
+                  key={a.id}
+                  className={editingId === a.id ? "editing-row" : ""}
+                >
                   <td>
-                    {new Date(a.dateTime).toLocaleString("no-NO", {
-                      dateStyle: "short",
-                      timeStyle: "short",
-                    })}
+                    {new Date(a.date).toLocaleDateString("nb-NO")} {a.time}
                     {editingId === a.id && (
                       <span className="badge bg-warning text-dark ms-2">
-                        Endre timen
+                        Endrer denne timen
                       </span>
                     )}
                   </td>
-                  <td>{a.category.name}</td>
+                  <td>{a.serviceType}</td>
                   <td>{a.notes}</td>
                   <td className="text-end">
                     <button

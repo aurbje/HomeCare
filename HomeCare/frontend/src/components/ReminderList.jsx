@@ -1,21 +1,25 @@
 import React from "react";
 
-export default function ReminderList({ reminders = [] }) {
-  if (!reminders.length)
-    return <p className="text-muted">Du har ingen påminnelser.</p>;
+const ReminderList = ({ reminders }) => {
+  if (!reminders || reminders.length === 0) {
+    return <p className="text-muted">Ingen kommende avtaler.</p>;
+  }
 
   return (
     <ul className="list-group">
       {reminders.map((r) => (
         <li key={r.id} className="list-group-item d-flex justify-content-between">
-          <span>
-            {new Date(r.dateTime).toLocaleDateString("nb-NO")} –{" "}
-            {new Date(r.dateTime).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" })}
-          </span>
-
-          <span className="fw-semibold">{r.category?.name}</span>
+          <div>
+            <strong>{r.serviceType}</strong>
+            <div className="text-muted small">
+              {new Date(r.date).toLocaleDateString("nb-NO")} – {r.time}
+            </div>
+          </div>
+          <span className="badge bg-success align-self-center">Kommer</span>
         </li>
       ))}
     </ul>
   );
-}
+};
+
+export default ReminderList;
