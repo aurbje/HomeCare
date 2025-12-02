@@ -16,7 +16,7 @@ export default function Layout() {
           <div className="container">
             <Link className="navbar-brand d-flex align-items-center" to="/">
               <img
-                src="/public/images/logoen.jpg"
+                src="/images/logoen.jpg"
                 alt="HomeCare logo"
                 className="homecare-logo me-2"
               />
@@ -98,7 +98,7 @@ export default function Layout() {
             <div className="hc-side-menu-header">
               <div className="d-flex align-items-center gap-2">
                 <img
-                  src="/public/images/logoen.jpg"
+                  src="/images/logoen.jpg"
                   alt="HomeCare logo"
                   className="homecare-logo me-1"
                 />
