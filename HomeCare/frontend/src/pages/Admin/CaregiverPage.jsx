@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getPersonnel, deletePersonnel } from '../../api/adminApi';
+import { getCaregiver, deleteCaregiver } from '../../api/adminApi';
 
-function PersonnelPage() {
-  const [personnel, setPersonnel] = useState([]);
+function CaregiverPage() {
+  const [caregivers, setCaregivers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,17 +11,17 @@ function PersonnelPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchPersonnel();
+    fetchCaregivers();
   }, []);
 
-  const fetchPersonnel = async (search = '') => {
+  const fetchCaregivers = async (search = '') => {
     try {
       setLoading(true);
-      const data = await getPersonnel(search);
-      setPersonnel(data);
+      const data = await getCaregiver(search);
+      setCaregivers(data);
       setError(null);
     } catch (err) {
-      setError('Kunne ikke laste personell');
+      setError('Kunne ikke laste ansatte');
       console.error(err);
     } finally {
       setLoading(false);
@@ -30,12 +30,12 @@ function PersonnelPage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchPersonnel(searchTerm);
+    fetchCaregivers(searchTerm);
   };
 
   const handleReset = () => {
     setSearchTerm('');
-    fetchPersonnel('');
+    fetchCaregivers('');
   };
 
   const handleDelete = async (id, fullName) => {
@@ -44,19 +44,19 @@ function PersonnelPage() {
     }
 
     try {
-      await deletePersonnel(id);
-      setSuccess('Personell slettet');
-      fetchPersonnel(searchTerm);
+      await deleteCaregiver(id);
+      setSuccess('Ansatt slettet');
+      fetchCaregivers(searchTerm);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError('Kunne ikke slette personell');
+      setError('Kunne ikke slette ansatt');
       console.error(err);
       setTimeout(() => setError(null), 3000);
     }
   };
 
   const handleEdit = (id) => {
-    navigate(`/admin/personnel/edit/${id}`);
+    navigate(`/admin/caregivers/edit/${id}`);
   };
 
   if (loading) {
@@ -65,7 +65,7 @@ function PersonnelPage() {
 
   return (
     <div className="container py-4">
-      <h1 className="h4 mb-3">Ansatte ({personnel.length})</h1>
+      <h1 className="h4 mb-3">Ansatte ({caregivers.length})</h1>
 
       {success && (
         <div className="alert alert-success alert-dismissible fade show" role="alert">
@@ -116,25 +116,25 @@ function PersonnelPage() {
           </tr>
         </thead>
         <tbody>
-          {personnel.length === 0 ? (
+          {caregivers.length === 0 ? (
             <tr>
-              <td colSpan="9" className="text-muted">Ingen personell funnet.</td>
+              <td colSpan="9" className="text-muted">Ingen ansatte funnet.</td>
             </tr>
           ) : (
-            personnel.map((person) => (
-              <tr key={person.id}>
-                <td>{person.id}</td>
-                <td>{person.personnelId}</td>
-                <td>{person.fullName}</td>
-                <td>{person.email}</td>
-                <td>{person.tlfNumber}</td>
-                <td>{person.address}</td>
+            caregivers.map((caregiver) => (
+              <tr key={caregiver.id}>
+                <td>{caregiver.id}</td>
+                <td>{caregiver.caregiverId}</td>
+                <td>{caregiver.fullName}</td>
+                <td>{caregiver.email}</td>
+                <td>{caregiver.tlfNumber}</td>
+                <td>{caregiver.address}</td>
                 <td>
                   <span className="badge bg-info">{person.role}</span>
                 </td>
                 <td>
                   <button
-                    onClick={() => handleEdit(person.id)}
+                    onClick={() => handleEdit(caregiver.id)}
                     className="btn btn-sm btn-primary"
                   >
                     Endre
@@ -143,7 +143,7 @@ function PersonnelPage() {
                 <td>
                   <button
                     type="button"
-                    onClick={() => handleDelete(person.id, person.fullName)}
+                    onClick={() => handleDelete(caregiver.id, caregiver.fullName)}
                     className="btn btn-sm btn-danger"
                   >
                     Slette
@@ -162,4 +162,4 @@ function PersonnelPage() {
   );
 }
 
-export default PersonnelPage;
+export default CaregiverPage;

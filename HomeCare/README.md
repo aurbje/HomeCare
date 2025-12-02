@@ -10,5 +10,10 @@ Slik kjører du prosjektet:
 3. Start deretter applikasjonen ved å kjøre kommandoen "dotnet run".
 4. Når applikasjonen starter, åpne nettleseren og gå til adressen som vises i terminalen (for eksempel http://localhost:5000).
 
+Testbrukere:
+Admin - Brukernavn: admin@oslomet.no - Passord: Admin123!
+Ansatt - Brukernavn: caregiver@oslomet.no - Passord: Caregiver123!
+Bruker - Brukernavn: user@oslomet.no - Passord: User123!
+
 Node.js-versjon:
 - Prosjektet bruker Node.js v20.12.0 for håndtering av Bootstrap og tilhørende avhengigheter.

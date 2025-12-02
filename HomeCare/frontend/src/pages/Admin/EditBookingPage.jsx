@@ -8,10 +8,10 @@ function EditBookingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [clients, setClients] = useState([]);
-  const [personnel, setPersonnel] = useState([]);
+  const [caregivers, setCaregivers] = useState([]);
   const [formData, setFormData] = useState({
     clientId: '',
-    personnelId: '',
+    caregiverId: '',
     date: '',
     time: '',
     serviceType: '',
@@ -32,7 +32,7 @@ function EditBookingPage() {
 
       setFormData({
         clientId: bookingData.clientId || '',
-        personnelId: bookingData.personnelId || '',
+        caregiverId: bookingData.caregiverId || '',
         date: bookingData.date ? bookingData.date.split('T')[0] : '',
         time: bookingData.time || '',
         serviceType: bookingData.serviceType || '',
@@ -40,7 +40,7 @@ function EditBookingPage() {
       });
 
       setClients(dropdownData.clients || []);
-      setPersonnel(dropdownData.personnel || []);
+      setCaregivers(dropdownData.caregivers || []);
       setError(null);
     } catch (err) {
       setError('Kunne ikke laste booking');
@@ -86,7 +86,7 @@ function EditBookingPage() {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="clientId" className="form-label">Kunde</label>
+          <label htmlFor="clientId" className="form-label">Bruker</label>
           <select
             className="form-select"
             id="clientId"
@@ -95,7 +95,7 @@ function EditBookingPage() {
             onChange={handleChange}
             required
           >
-            <option value="">-- Velg kunde --</option>
+            <option value="">-- Velg bruker --</option>
             {clients.map((client) => (
               <option key={client.id} value={client.id}>
                 {client.fullName} ({client.email})
@@ -105,18 +105,18 @@ function EditBookingPage() {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="personnelId" className="form-label">Ansatt</label>
+          <label htmlFor="caregiverId" className="form-label">Ansatt</label>
           <select
             className="form-select"
-            id="personnelId"
-            name="personnelId"
-            value={formData.personnelId}
+            id="caregiverId"
+            name="caregiverId"
+            value={formData.caregiverId}
             onChange={handleChange}
           >
             <option value="">-- Velg ansatt --</option>
-            {personnel.map((person) => (
-              <option key={person.id} value={person.id}>
-                {person.fullName} ({person.email})
+            {caregivers.map((caregiver) => (
+              <option key={caregiver.id} value={caregiver.id}>
+                {caregiver.fullName} ({caregiver.email})
               </option>
             ))}
           </select>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getPersonnelById, updatePersonnel } from '../../api/adminApi';
+import { getCaregiverById, updateCaregiver } from '../../api/adminApi';
 
-function EditPersonnelPage() {
+function EditCaregiverPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -17,13 +17,13 @@ function EditPersonnelPage() {
   });
 
   useEffect(() => {
-    fetchPersonnel();
+    fetchCaregiver();
   }, [id]);
 
-  const fetchPersonnel = async () => {
+  const fetchCaregiver = async () => {
     try {
       setLoading(true);
-      const data = await getPersonnelById(id);
+      const data = await getCaregiverById(id);
       setFormData({
         fullName: data.fullName || '',
         userName: data.userName || '',
@@ -34,7 +34,7 @@ function EditPersonnelPage() {
       });
       setError(null);
     } catch (err) {
-      setError('Kunne ikke laste personell');
+      setError('Kunne ikke laste ansatt');
       console.error(err);
     } finally {
       setLoading(false);
@@ -52,10 +52,10 @@ function EditPersonnelPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updatePersonnel(id, formData);
-      navigate('/admin/personnel');
+      await updateCaregiver(id, formData);
+      navigate('/admin/caregivers');
     } catch (err) {
-      setError('Kunne ikke oppdatere personell');
+      setError('Kunne ikke oppdatere ansatt');
       console.error(err);
     }
   };
@@ -66,7 +66,7 @@ function EditPersonnelPage() {
 
   return (
     <div className="container py-4">
-      <h1 className="h4 mb-3">Rediger personell: {formData.fullName}</h1>
+      <h1 className="h4 mb-3">Rediger ansatt: {formData.fullName}</h1>
 
       {error && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
@@ -140,13 +140,13 @@ function EditPersonnelPage() {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="personnelId" className="form-label">Personell ID</label>
+          <label htmlFor="caregiverId" className="form-label">Ansatt ID</label>
           <input
             type="number"
             className="form-control"
-            id="personnelId"
-            name="personnelId"
-            value={formData.personnelId}
+            id="caregiverId"
+            name="caregiverId"
+            value={formData.caregiverId}
             onChange={handleChange}
             readOnly
           />
@@ -156,7 +156,7 @@ function EditPersonnelPage() {
         <button type="submit" className="btn btn-primary">Lagre endringer</button>
         <button
           type="button"
-          onClick={() => navigate('/admin/personnel')}
+          onClick={() => navigate('/admin/caregiver')}
           className="btn btn-outline-secondary ms-2"
         >
           Avbryt
@@ -166,4 +166,4 @@ function EditPersonnelPage() {
   );
 }
 
-export default EditPersonnelPage;
+export default EditCaregiverPage;
