@@ -1,383 +1,152 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using HomeCare.Api.DAL.Interfaces;
 using HomeCare.Api.Data;
-using Microsoft.EntityFrameworkCore;
 using HomeCare.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace HomeCare.Api.Controllers
+namespace HomeCare.Api.DAL.Repositories
 {
-    [Authorize(Roles = "Admin")] // Restricts access to users with Admin role
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AdminController : ControllerBase
+    public class AdminRepository : IAdminRepository
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<AdminController> _logger;
-        
-        public AdminController(AppDbContext context, ILogger<AdminController> logger)
+        private readonly ILogger<AdminRepository> _logger;
+
+        public AdminRepository(AppDbContext context, ILogger<AdminRepository> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        //Users endpoints     
-        [HttpGet("users")]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers(string? q)
+        // Users
+        public async Task<IEnumerable<User>> GetUsersAsync(string? searchTerm)
         {
-            try
+            IQueryable<User> q = _context.AppUsers;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                IQueryable<User> query = _context.AppUsers;
-
-                if (!string.IsNullOrWhiteSpace(q))
-                {
-                    var term = q.Trim().ToLower();
-                    query = query.Where(u =>
-                        u.Email.ToLower().Contains(term) ||
-                        u.FullName.ToLower().Contains(term));
-                }
-
-                var users = await query
-                    .OrderBy(u => u.Id)
-                    .Take(500)
-                    .ToListAsync();
-
-                return Ok(users);
+                var term = searchTerm.Trim().ToLower();
+                q = q.Where(u =>
+                    u.FullName.ToLower().Contains(term) ||
+                    u.Email.ToLower().Contains(term) ||
+                    u.Address.ToLower().Contains(term) ||
+                    u.TlfNumber.ToLower().Contains(term) ||
+                    u.Role.ToLower().Contains(term));
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching users");
-                return StatusCode(500, new { message = "Error fetching users" });
-            }
-        }
-        
-        [HttpGet("users/{id}")]// Route for getting user by ID
-        public async Task<ActionResult<User>> GetUser(int id)
-        {
-            try
-            {
-                var user = await _context.AppUsers.FindAsync(id); //Get user by id
-                if (user == null) //Error handling if user not found
-                {
-                    return NotFound(new { message = "Bruker ikke funnet" });
-                }
-                return Ok(user);
-            }
-            catch (Exception ex) //Errorhandling for any other exceptions
-            {
-                _logger.LogError(ex, "Error fetching user {Id}", id);
-                return StatusCode(500, new { message = "Error fetching user" });
-            }
+            return await q.OrderBy(u => u.Id).ToListAsync();
         }
 
-        // Update user
-        [HttpPut("users/{id}")] 
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User model)
+        public async Task<User?> GetUserByIdAsync(int id) =>
+            await _context.AppUsers.FirstOrDefaultAsync(u => u.Id == id);
+
+        public async Task<User> AddUserAsync(User user)
         {
-            try
-            {
-                var user = await _context.AppUsers.FindAsync(id);
-                if (user == null)
-                {
-                    return NotFound(new { message = "Bruker ikke funnet" });
-                }
-
-                user.FullName = model.FullName;
-                user.Email = model.Email;
-                user.TlfNumber = model.TlfNumber;
-                user.Address = model.Address;
-                user.Role = model.Role;
-
-                await _context.SaveChangesAsync(); //Saving changes to DB
-                return Ok(new { message = $"Bruker {user.FullName} ble oppdatert", user });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating user {Id}", id);
-                return StatusCode(500, new { message = "Error updating user" });
-            }
-        }
-        
-        //Delete user
-        [HttpDelete("users/{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            try
-            {
-                var user = await _context.AppUsers.FindAsync(id);
-                if (user == null)
-                {
-                    return NotFound(new { message = "Bruker ikke funnet" });
-                }
-
-                //safetyguard - Do not delete the last admin
-                if (user.Role == "Admin" && await _context.AppUsers.CountAsync(u => u.Role == "Admin") <= 1)
-                {
-                    return BadRequest(new { message = "Kan ikke slette den siste admin-brukeren" });
-                }
-
-                //checking if user have active bookings
-                var hasBookings = await _context.Bookings.AnyAsync(b => b.UserId == id);
-                if (hasBookings)
-                {
-                    return BadRequest(new { message = "Kan ikke slette bruker som er knyttet til bookinger" });
-                }
-
-                _context.AppUsers.Remove(user);
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = $"Bruker {user.FullName} ble slettet" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting user {Id}", id);
-                return StatusCode(500, new { message = "Error deleting user" });
-            }
+            _context.AppUsers.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
-        //Caregiver endpoints
-        
-        [HttpGet("caregiver")]
-        public async Task<ActionResult<IEnumerable<User>>> GetCaregiver(string? q)
+        public async Task<bool> UpdateUserAsync(User user)
         {
-            try
-            {
-                IQueryable<User> query = _context.AppUsers.Where(u => u.Role == "Caregiver");//Filter by role
-
-                if (!string.IsNullOrWhiteSpace(q))
-                {
-                    var term = q.Trim().ToLower();
-                    query = query.Where(u =>
-                        u.Email.ToLower().Contains(term) ||
-                        u.FullName.ToLower().Contains(term));
-                }
-
-                var users = await query
-                    .OrderBy(u => u.Id)
-                    .Take(500)
-                    .ToListAsync();
-
-                return Ok(users);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching caregiver");
-                return StatusCode(500, new { message = "Error fetching caregiver" });
-            }
+            _context.AppUsers.Update(user);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        //Get caregiver by id
-        [HttpGet("caregiver/{id}")]
-        public async Task<ActionResult<User>> GetCaregiverById(int id)
+        public async Task<bool> DeleteUserAsync(int id)
         {
-            try
-            {
-                var user = await _context.AppUsers.FindAsync(id);
-                
-                if (user == null || user.Role != "Caregiver")
-                {
-                    return NotFound(new { message = "Caregiver ikke funnet" });
-                }
+            var user = await _context.AppUsers.FindAsync(id);
+            if (user == null) return false;
 
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching caregiver {Id}", id);
-                return StatusCode(500, new { message = "Error fetching caregiver" });
-            }
+            // block deleting last admin
+            if (user.Role == "Admin" && await CountAdminsAsync() <= 1) return false;
+
+            // block if referenced in bookings
+            if (await HasClientBookingsAsync(id)) return false;
+            if (await HasCaregiverBookingsAsync(id)) return false;
+
+            _context.AppUsers.Remove(user);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        //Update caregiver
-        [HttpPut("caregiver/{id}")]
-        public async Task<IActionResult> UpdateCaregiver(int id, [FromBody] User model)
+        // Caregivers
+        public async Task<IEnumerable<User>> GetCaregiversAsync(string? searchTerm)
         {
-            try
+            IQueryable<User> q = _context.AppUsers.Where(u => u.Role == "Caregiver");
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                var user = await _context.AppUsers.FindAsync(id);
-                if (user == null || user.Role != "Caregiver")
-                {
-                    return NotFound(new { message = "Caregiver ikke funnet" });
-                }
-
-                user.FullName = model.FullName;
-                user.Email = model.Email;
-                user.TlfNumber = model.TlfNumber;
-                user.Address = model.Address;
-
-                await _context.SaveChangesAsync();
-                return Ok(new { message = $"Caregiver {user.FullName} ble oppdatert", user });
+                var term = searchTerm.Trim().ToLower();
+                q = q.Where(u =>
+                    u.FullName.ToLower().Contains(term) ||
+                    u.Email.ToLower().Contains(term));
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating caregiver {Id}", id);
-                return StatusCode(500, new { message = "Error updating caregiver" });
-            }
+            return await q.OrderBy(u => u.Id).ToListAsync();
         }
 
-        //Delete caregiver
-        [HttpDelete("caregiver/{id}")]
-        public async Task<IActionResult> DeleteCaregiver(int id)
+        public async Task<bool> DeleteCaregiverAsync(int id)
         {
-            try
-            {
-                var user = await _context.AppUsers.FindAsync(id);
-                if (user == null)
-                {
-                    return NotFound(new { message = "Caregiver ikke funnet" });
-                }
+            var caregiver = await _context.AppUsers.FirstOrDefaultAsync(u => u.Id == id && u.Role == "Caregiver");
+            if (caregiver == null) return false;
 
-                //Checking if caregiver has active bookings
-                var hasBookings = await _context.Bookings.AnyAsync(b => b.CaregiverId == id.ToString());
-                if (hasBookings)
-                {
-                    return BadRequest(new { message = "Kan ikke slette caregiver som er knyttet til bookinger" });
-                }
+            if (await HasCaregiverBookingsAsync(id)) return false;
 
-                _context.AppUsers.Remove(user);
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = $"Caregiver {user.FullName} ble slettet" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting caregiver {Id}", id);
-                return StatusCode(500, new { message = "Error deleting caregiver" });
-            }
+            _context.AppUsers.Remove(caregiver);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        //Bookings endpoints
-        [HttpGet("bookings")]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetBookings(string? q)
+        // Bookings
+        public async Task<IEnumerable<Booking>> GetBookingsAsync(string? searchTerm)
         {
-            try
+            IQueryable<Booking> q = _context.Bookings
+                .Include(b => b.TimeSlot);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                IQueryable<Booking> query = _context.Bookings.Include(b => b.User);
-
-                if (!string.IsNullOrWhiteSpace(q))
-                {
-                    var term = q.Trim().ToLower();
-                    query = query.Where(b =>
-                        (b.User != null && (
-                            b.User.FullName.ToLower().Contains(term) ||
-                            b.User.Email.ToLower().Contains(term))) ||
-                        (b.ServiceType != null && b.ServiceType.ToLower().Contains(term)) ||
-                        (b.CaregiverId != null && b.CaregiverId.Contains(term)));
-                }
-
-                var bookings = await query
-                    .OrderByDescending(b => b.Date)
-                    .ThenBy(b => b.Time)
-                    .Take(500)
-                    .ToListAsync();
-
-                return Ok(bookings);
+                var term = searchTerm.Trim().ToLower();
+                q = q.Where(b =>
+                    b.ServiceType.ToLower().Contains(term) ||
+                    (b.TimeSlot != null && b.TimeSlot.Label.ToLower().Contains(term)) ||
+                    b.CaregiverId.ToLower().Contains(term) ||
+                    b.ClientId.ToString().Contains(term));
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching bookings");
-                return StatusCode(500, new { message = "Error fetching bookings" });
-            }
+
+            return await q
+                .OrderByDescending(b => b.Date)
+                .ThenBy(b => b.TimeSlotId)
+                .ToListAsync();
         }
 
-        //Get booking by id
-        [HttpGet("bookings/{id}")]
-        public async Task<ActionResult<Booking>> GetBooking(int id)
+        public async Task<Booking?> GetBookingByIdAsync(int id) =>
+            await _context.Bookings
+                .Include(b => b.TimeSlot)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+        public async Task<Booking> AddBookingAsync(Booking booking)
         {
-            try
-            {
-                var booking = await _context.Bookings
-                    .Include(b => b.User)
-                    .FirstOrDefaultAsync(b => b.Id == id);
-
-                if (booking == null)
-                {
-                    return NotFound(new { message = "Booking ikke funnet" });
-                }
-
-                return Ok(booking);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching booking {Id}", id);
-                return StatusCode(500, new { message = "Error fetching booking" });
-            }
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
+            return booking;
         }
 
-        //Get data for booking form
-        [HttpGet("booking-data")]
-        public async Task<IActionResult> GetBookingData()
+        public async Task<bool> UpdateBookingAsync(Booking booking)
         {
-            try
-            {
-                var clients = await _context.AppUsers.Where(u => u.Role == "User").ToListAsync();
-                var personnel = await _context.AppUsers.Where(u => u.Role == "Caregiver").ToListAsync();
-
-                return Ok(new { clients, personnel });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching booking data");
-                return StatusCode(500, new { message = "Error fetching booking data" });
-            }
+            _context.Bookings.Update(booking);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        //Update booking
-        [HttpPut("bookings/{id}")]
-        public async Task<IActionResult> UpdateBooking(int id, [FromBody] Booking model)
+        public async Task<bool> DeleteBookingAsync(int id)
         {
-            try
-            {
-                var booking = await _context.Bookings.FindAsync(id);
-                if (booking == null)
-                {
-                    return NotFound(new { message = "Booking ikke funnet" });
-                }
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking == null) return false;
 
-                booking.Date = model.Date;
-                booking.Time = model.Time;
-                booking.ServiceType = model.ServiceType;
-                booking.Notes = model.Notes;
-                booking.CaregiverId = model.CaregiverId;
-                booking.UserId = model.UserId;
-
-                await _context.SaveChangesAsync();
-                return Ok(new { message = $"Booking {booking.Id} ble oppdatert", booking });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating booking {Id}", id);
-                return StatusCode(500, new { message = "Error updating booking" });
-            }
+            _context.Bookings.Remove(booking);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        //Delete booking
-        [HttpDelete("bookings/{id}")]
-        public async Task<IActionResult> DeleteBooking(int id)
-        {
-            try
-            {
-                var booking = await _context.Bookings.FindAsync(id);
-                if (booking == null)
-                {
-                    return NotFound(new { message = "Booking ikke funnet" });
-                }
+        // helpers
+        public async Task<int> CountAdminsAsync() =>
+            await _context.AppUsers.CountAsync(u => u.Role == "Admin");
 
-                //Prevent deleting past bookings
-                if (booking.Date.Date < DateTime.Today)
-                {
-                    return BadRequest(new { message = "Kan ikke slette tidligere booking" });
-                }
+        public async Task<bool> HasClientBookingsAsync(int userId) =>
+            await _context.Bookings.AnyAsync(b => b.ClientId == userId);
 
-                _context.Bookings.Remove(booking);
-                await _context.SaveChangesAsync();
-                
-                return Ok(new { message = $"Booking {booking.Id} ble slettet" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting booking {Id}", id);
-                return StatusCode(500, new { message = "Error deleting booking" });
-            }
-        }
+        public async Task<bool> HasCaregiverBookingsAsync(int caregiverUserId) =>
+            await _context.Bookings.AnyAsync(b => b.CaregiverId == caregiverUserId.ToString());
     }
 }
