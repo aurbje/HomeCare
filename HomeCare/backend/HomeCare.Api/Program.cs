@@ -86,6 +86,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// CORS must come before Authentication/Authorization
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
