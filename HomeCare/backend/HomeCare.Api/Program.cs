@@ -17,6 +17,18 @@ builder.Logging.AddDebug();
 // using controllers as api only, views are not needed anymore
 builder.Services.AddControllers();
 
+// CORS - Allow React frontend to communicate with API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://localhost:3001") // React dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Important for cookies
+    });
+});
+
 // session cookies for authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -90,6 +102,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// CORS must come before Authentication/Authorization
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
