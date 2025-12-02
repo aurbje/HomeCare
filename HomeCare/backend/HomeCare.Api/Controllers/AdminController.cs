@@ -6,7 +6,7 @@ using HomeCare.Api.Models;
 
 namespace HomeCare.Api.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")] // Restricts access to users with Admin role
     [ApiController]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase
@@ -20,9 +20,7 @@ namespace HomeCare.Api.Controllers
             _logger = logger;
         }
 
-        // ========== USERS ENDPOINTS ==========
-
-        // GET: api/admin/users?q=search
+        //Users endpoints     
         [HttpGet("users")]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers(string? q)
         {
@@ -52,28 +50,27 @@ namespace HomeCare.Api.Controllers
             }
         }
         
-        // GET: api/admin/users/{id}
-        [HttpGet("users/{id}")]
+        [HttpGet("users/{id}")]// Route for getting user by ID
         public async Task<ActionResult<User>> GetUser(int id)
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
-                if (user == null)
+                var user = await _context.AppUsers.FindAsync(id); //Get user by id
+                if (user == null) //Error handling if user not found
                 {
                     return NotFound(new { message = "Bruker ikke funnet" });
                 }
                 return Ok(user);
             }
-            catch (Exception ex)
+            catch (Exception ex) //Errorhandling for any other exceptions
             {
                 _logger.LogError(ex, "Error fetching user {Id}", id);
                 return StatusCode(500, new { message = "Error fetching user" });
             }
         }
 
-        // PUT: api/admin/users/{id}
-        [HttpPut("users/{id}")]
+        // Update user
+        [HttpPut("users/{id}")] 
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User model)
         {
             try
@@ -90,7 +87,7 @@ namespace HomeCare.Api.Controllers
                 user.Address = model.Address;
                 user.Role = model.Role;
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); //Saving changes to DB
                 return Ok(new { message = $"Bruker {user.FullName} ble oppdatert", user });
             }
             catch (Exception ex)
@@ -100,7 +97,7 @@ namespace HomeCare.Api.Controllers
             }
         }
         
-        // DELETE: api/admin/users/{id}
+        //Delete user
         [HttpDelete("users/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -112,13 +109,13 @@ namespace HomeCare.Api.Controllers
                     return NotFound(new { message = "Bruker ikke funnet" });
                 }
 
-                // safetyguard - Do not delete the last admin
+                //safetyguard - Do not delete the last admin
                 if (user.Role == "Admin" && await _context.AppUsers.CountAsync(u => u.Role == "Admin") <= 1)
                 {
                     return BadRequest(new { message = "Kan ikke slette den siste admin-brukeren" });
                 }
 
-                // check references
+                //checking if user have active bookings
                 var hasBookings = await _context.Bookings.AnyAsync(b => b.UserId == id);
                 if (hasBookings)
                 {
@@ -137,15 +134,14 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // ========== PERSONNEL ENDPOINTS ==========
-
-        // GET: api/admin/personnel?q=search
+        //Caregiver endpoints
+        
         [HttpGet("personnel")]
         public async Task<ActionResult<IEnumerable<User>>> GetPersonnel(string? q)
         {
             try
             {
-                IQueryable<User> query = _context.AppUsers.Where(u => u.Role == "Caregiver");
+                IQueryable<User> query = _context.AppUsers.Where(u => u.Role == "Caregiver");//Filter by role
 
                 if (!string.IsNullOrWhiteSpace(q))
                 {
@@ -169,7 +165,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // GET: api/admin/personnel/{id}
+        //Get caregiver by id
         [HttpGet("personnel/{id}")]
         public async Task<ActionResult<User>> GetPersonnelById(int id)
         {
@@ -191,7 +187,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // PUT: api/admin/personnel/{id}
+        //Update caregiver
         [HttpPut("personnel/{id}")]
         public async Task<IActionResult> UpdatePersonnel(int id, [FromBody] User model)
         {
@@ -218,7 +214,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // DELETE: api/admin/personnel/{id}
+        //Delete caregiver
         [HttpDelete("personnel/{id}")]
         public async Task<IActionResult> DeletePersonnel(int id)
         {
@@ -230,7 +226,7 @@ namespace HomeCare.Api.Controllers
                     return NotFound(new { message = "Personell ikke funnet" });
                 }
 
-                // Checks references - CaregiverId is a string containing the user ID
+                //Checking if caregiver has active bookings
                 var hasBookings = await _context.Bookings.AnyAsync(b => b.CaregiverId == id.ToString());
                 if (hasBookings)
                 {
@@ -249,9 +245,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // ========== BOOKINGS ENDPOINTS ==========
-
-        // GET: api/admin/bookings?q=search
+        //Bookings endpoints
         [HttpGet("bookings")]
         public async Task<ActionResult<IEnumerable<Booking>>> GetBookings(string? q)
         {
@@ -285,7 +279,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // GET: api/admin/bookings/{id}
+        //Get booking by id
         [HttpGet("bookings/{id}")]
         public async Task<ActionResult<Booking>> GetBooking(int id)
         {
@@ -309,7 +303,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // GET: api/admin/booking-data (for dropdowns)
+        //Get data for booking form
         [HttpGet("booking-data")]
         public async Task<IActionResult> GetBookingData()
         {
@@ -327,7 +321,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // PUT: api/admin/bookings/{id}
+        //Update booking
         [HttpPut("bookings/{id}")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] Booking model)
         {
@@ -356,7 +350,7 @@ namespace HomeCare.Api.Controllers
             }
         }
 
-        // DELETE: api/admin/bookings/{id}
+        //Delete booking
         [HttpDelete("bookings/{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
@@ -368,7 +362,7 @@ namespace HomeCare.Api.Controllers
                     return NotFound(new { message = "Booking ikke funnet" });
                 }
 
-                // Optional safety: block deletion of past bookings
+                //Prevent deleting past bookings
                 if (booking.Date.Date < DateTime.Today)
                 {
                     return BadRequest(new { message = "Kan ikke slette tidligere booking" });
