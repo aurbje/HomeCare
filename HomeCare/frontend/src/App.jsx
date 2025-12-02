@@ -1,32 +1,17 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginPage from './pages/Account/LoginPage';
+import Dashboard from './pages/User/DashboardPage';
 
-import LoginPage from "./pages/Account/LoginPage";
-import DashboardPage from "./pages/User/DashboardPage";
-import HomePage from "./pages/Home/HomePage";
-import AboutPage from "./pages/Home/AboutPage";
-import contactPage from "./pages/Home/ContactPage";
-
-export default function App() {
+function App() {
   return (
     <Router>
       <Routes>
-
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="contact" element={<h1>Contact Page</h1>} />
-          <Route path="booking" element={<h1>Booking Page</h1>} />
-
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<h1>Register Page</h1>} />
-
-          <Route path="dashboard" element={<DashboardPage />} />
-        </Route>
-
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
 }
+
+export default App;
