@@ -1,57 +1,80 @@
-const API_BASE = "https://localhost:7139/api/booking"; 
-// → Bytt port hvis backend bruker en annen
+// src/api/bookingApi.js
 
-// Helper for handling requests
-async function request(url, options = {}) {
-  const config = {
-    headers: { "Content-Type": "application/json" },
-    credentials: "include", // viktig for cookies/session
-    ...options,
-  };
+const API_BASE = "https://localhost:7016/api/booking"; 
+// Endre til riktig port hvis din backend kjører på en annen adresse
 
-  const res = await fetch(url, config);
+// Helper: converts Fetch errors into readable exceptions
+async function handleResponse(response) {
+  if (!response.ok) {
+    let error = "Ukjent feil";
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`API Error ${res.status}: ${text}`);
+    try {
+      const data = await response.json();
+      error = data.message || JSON.stringify(data);
+    } catch {
+      error = response.statusText;
+    }
+
+    throw new Error(error);
   }
 
-  // 204 No Content
-  if (res.status === 204) return null;
+  // Hvis det ikke finnes body
+  if (response.status === 204) return null;
 
-  return res.json();
+  return response.json();
 }
 
-/* ---------------------------------------------------
-   GET BOOKING PAGE (dates, categories, bookings)
------------------------------------------------------- */
-export function getBookingPage() {
-  return request(`${API_BASE}`); // GET /api/booking
+/* =============================================
+   GET: Hent komplett bookingside-data
+   GET /api/booking
+============================================= */
+export async function getBookingPage() {
+  const response = await fetch(API_BASE, {
+    method: "GET",
+    credentials: "include", // hvis cookies skal brukes
+  });
+  return handleResponse(response);
 }
 
-/* ---------------------------------------------------
-   GET BOOKING DETAILS FOR EDIT
------------------------------------------------------- */
-export function getBookingForEdit(id) {
-  return request(`${API_BASE}/${id}`); // GET /api/booking/{id}
+/* =============================================
+   GET: Hent booking for redigering
+   GET /api/booking/{id}
+============================================= */
+export async function getBookingForEdit(id) {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return handleResponse(response);
 }
 
-/* ---------------------------------------------------
-   CREATE or UPDATE BOOKING
-   Backend determines action based on model.BookingId
------------------------------------------------------- */
-export function createOrUpdateBooking(payload) {
-  return request(`${API_BASE}`, {
+/* =============================================
+   POST: Opprett eller oppdater booking
+   POST /api/booking
+============================================= */
+export async function createOrUpdateBooking(model) {
+  const response = await fetch(API_BASE, {
     method: "POST",
-    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(model),
   });
+
+  return handleResponse(response);
 }
 
-/* ---------------------------------------------------
-   CANCEL BOOKING
------------------------------------------------------- */
-export function cancelBooking(id) {
-  return request(`${API_BASE}/${id}`, {
+/* =============================================
+   DELETE: Avbryt booking
+   DELETE /api/booking/{id}
+============================================= */
+export async function cancelBooking(id) {
+  const response = await fetch(`${API_BASE}/${id}`, {
     method: "DELETE",
+    credentials: "include",
   });
+
+  return handleResponse(response);
 }

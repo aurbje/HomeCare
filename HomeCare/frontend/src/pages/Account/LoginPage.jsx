@@ -1,16 +1,28 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../../api/authApi";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", { email, password });
+    setError("");
 
-    // TODO: koble til backend:
-    // await accountApi.login({ email, password });
+    try {
+      const result = await loginUser({ email, password });
+
+      console.log("Login success:", result);
+
+      // Etter login → videresend bruker til dashboard
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || "Innlogging feilet.");
+    }
   };
 
   return (
@@ -22,6 +34,8 @@ export default function LoginPage() {
         <p className="text-center text-muted mb-4">
           Velkommen tilbake! Logg inn for å få tilgang til dine tjenester og varsler.
         </p>
+
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="mb-3">

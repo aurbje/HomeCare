@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "../../api/authApi";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -11,16 +14,30 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registrering:", form);
+    setError("");
 
-    // TODO: koble mot backend:
-    // await accountApi.register(form)
+    if (form.password !== form.confirmPassword) {
+      return setError("Passordene matcher ikke.");
+    }
+
+    try {
+      const result = await registerUser(form);
+
+      console.log("Registration success:", result);
+
+      // Send brukeren til login etter registrering
+      navigate("/login");
+    } catch (err) {
+      setError(err.message || "Registrering feilet.");
+    }
   };
 
   return (
@@ -33,6 +50,8 @@ export default function RegisterPage() {
           Fyll inn informasjonen under for å komme i gang.
           <br />Vi hjelper deg med å holde hjemmet trygt og komfortabelt.
         </p>
+
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="mb-3">

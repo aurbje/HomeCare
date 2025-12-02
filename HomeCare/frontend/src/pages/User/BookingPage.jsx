@@ -1,184 +1,187 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   getBookingPage,
   createOrUpdateBooking,
   cancelBooking,
-  getBookingForEdit
+  getBookingForEdit,
 } from "../../api/bookingApi";
-import { Link, useNavigate } from "react-router-dom";
 
 export default function BookingPage() {
-  const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    bookingId: null,
-    selectedDate: "",
-    timeSlotId: "",
-    categoryId: "",
-    notes: "",
-  });
-
+  const [loading, setLoading] = useState(true);
   const [availableDates, setAvailableDates] = useState([]);
   const [categories, setCategories] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
 
   const [editingId, setEditingId] = useState(null);
+  const [message, setMessage] = useState(null);
 
-  // -------------------------------
-  // 1️⃣ Load full booking page data
-  // -------------------------------
-  useEffect(() => {
-    loadBookingData();
-  }, []);
+  const [form, setForm] = useState({
+    appointmentId: null,
+    selectedDate: "",
+    timeSlotId: "",
+    categoryId: "",
+    notes: "",
+  });
 
-  const loadBookingData = async () => {
+  // ----------------------------------------------------
+  // LOAD BOOKING DATA FROM API
+  // ----------------------------------------------------
+  async function loadBookingPage() {
     try {
+      setLoading(true);
       const data = await getBookingPage();
+
       setAvailableDates(data.availableDates);
       setCategories(data.categories);
       setAppointments(data.bookings);
+
+      setLoading(false);
     } catch (err) {
-      console.error("Feil ved henting av bookingside-data:", err);
+      console.error("Feil ved henting av bookingdata:", err);
+      setMessage("Kunne ikke laste bookingdata.");
+      setLoading(false);
     }
-  };
+  }
 
-  // ------------------------------------
-  // 2️⃣ Change date → update available slots
-  // ------------------------------------
+  useEffect(() => {
+    loadBookingPage();
+  }, []);
+
+  // ----------------------------------------------------
+  // HANDLE DATE SELECTION
+  // ----------------------------------------------------
   const handleDateChange = (dateId, dateValue) => {
-    setForm({ ...form, selectedDate: dateValue, timeSlotId: "" });
+    setForm({
+      ...form,
+      selectedDate: dateValue,
+      timeSlotId: "",
+    });
 
-    const dateObj = availableDates.find((d) => d.id === dateId);
-    setAvailableSlots(dateObj?.timeSlots.filter((ts) => !ts.isBooked) || []);
+    const date = availableDates.find((d) => d.id === dateId);
+    setAvailableSlots(
+      date?.timeSlots.filter((s) => s.isBooked === false) || []
+    );
   };
 
-  // ------------------------------------
-  // 3️⃣ Handle booking submit (create/update)
-  // ------------------------------------
+  // ----------------------------------------------------
+  // SUBMIT BOOKING (CREATE OR UPDATE)
+  // ----------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      bookingId: form.bookingId || 0,
-      selectedDate: form.selectedDate,
-      timeSlotId: form.timeSlotId,
-      categoryId: form.categoryId,
-      notes: form.notes,
-    };
-
     try {
-      await createOrUpdateBooking(payload);
-      await loadBookingData();
+      const payload = {
+        bookingId: form.appointmentId || 0,
+        selectedDate: form.selectedDate,
+        timeSlotId: Number(form.timeSlotId),
+        categoryId: Number(form.categoryId),
+        notes: form.notes,
+      };
 
-      alert(
-        form.bookingId
-          ? "Timen ble oppdatert!"
-          : "Timen ble booket!"
-      );
+      const response = await createOrUpdateBooking(payload);
 
-      resetForm();
+      setMessage(response.message || "Bestilling lagret!");
+
+      // Reset form
+      setForm({
+        appointmentId: null,
+        selectedDate: "",
+        timeSlotId: "",
+        categoryId: "",
+        notes: "",
+      });
+      setAvailableSlots([]);
+      setEditingId(null);
+
+      // Refresh UI
+      await loadBookingPage();
     } catch (err) {
-      console.error("Feil ved lagring:", err);
-      alert("Kunne ikke lagre booking.");
+      console.error("Booking-feil:", err);
+      setMessage(err.message || "En feil oppstod under lagring.");
     }
   };
 
-  const resetForm = () => {
-    setForm({
-      bookingId: null,
-      selectedDate: "",
-      timeSlotId: "",
-      categoryId: "",
-      notes: "",
-    });
-    setAvailableSlots([]);
-    setEditingId(null);
-  };
-
-  // ------------------------------------
-  // 4️⃣ Edit booking → load booking into form
-  // ------------------------------------
+  // ----------------------------------------------------
+  // EDIT BOOKING
+  // ----------------------------------------------------
   const handleEdit = async (id) => {
-    setEditingId(id);
-
     try {
+      setEditingId(id);
+
       const data = await getBookingForEdit(id);
 
       setForm({
-        bookingId: data.bookingId,
+        appointmentId: data.bookingId,
         selectedDate: data.selectedDate,
         timeSlotId: data.timeSlotId,
         categoryId: data.categoryId,
         notes: data.notes || "",
       });
 
-      const dateObj = data.availableDates.find(
-        (d) => d.date === data.selectedDate
-      );
-
       setAvailableSlots(
-        dateObj?.timeSlots.filter((ts) => !ts.isBooked || ts.id === data.timeSlotId) || []
+        data.availableDates
+          .find((d) => d.id === data.availableDates.find((x) => x.date === data.selectedDate)?.id)
+          ?.timeSlots.filter((s) => s.isBooked === false) || []
       );
-
-      setAvailableDates(data.availableDates);
-      setCategories(data.categories);
-      setAppointments(data.bookings);
     } catch (err) {
       console.error("Feil ved lasting av booking:", err);
+      setMessage("Kunne ikke laste booking for redigering.");
     }
   };
 
-  // ------------------------------------
-  // 5️⃣ Cancel booking
-  // ------------------------------------
+  // ----------------------------------------------------
+  // CANCEL BOOKING
+  // ----------------------------------------------------
   const handleCancel = async (id) => {
     if (!window.confirm("Vil du avlyse denne timen?")) return;
 
     try {
       await cancelBooking(id);
-      await loadBookingData();
+      setMessage("Timen ble kansellert.");
+      await loadBookingPage();
     } catch (err) {
-      console.error("Feil ved avbestilling:", err);
+      console.error("Avbestilling feilet:", err);
+      setMessage("Kunne ikke kansellere timen.");
     }
   };
 
+  // ----------------------------------------------------
+  // UI RENDER
+  // ----------------------------------------------------
+  if (loading) return <p>Laster booking...</p>;
+
   return (
     <div className="booking-container">
-      {/* FORM SIDE */}
       <div className="booking-form">
         <h2>Book time her</h2>
 
+        {message && <div className="alert alert-info">{message}</div>}
+
         <form onSubmit={handleSubmit}>
-          {/* Dato */}
+          {/* DATE PICKER */}
           <div className="form-group">
             <label>Dato</label>
             <div className="date-options">
-              {availableDates.length > 0 ? (
-                availableDates.map((date) => (
-                  <label
-                    key={date.id}
-                    className="date-option btn btn-outline-secondary m-1"
-                  >
-                    <input
-                      type="radio"
-                      name="selectedDate"
-                      checked={form.selectedDate === date.date}
-                      onChange={() => handleDateChange(date.id, date.date)}
-                    />
-                    {new Date(date.date).toLocaleDateString("nb-NO", {
-                      day: "2-digit",
-                      month: "short",
-                    })}
-                  </label>
-                ))
-              ) : (
-                <p className="text-danger">Ingen ledige datoer funnet.</p>
-              )}
+              {availableDates.map((date) => (
+                <label key={date.id} className="date-option btn btn-outline-secondary m-1">
+                  <input
+                    type="radio"
+                    name="selectedDate"
+                    checked={form.selectedDate === date.date}
+                    onChange={() => handleDateChange(date.id, date.date)}
+                  />
+                  {new Date(date.date).toLocaleDateString("no-NO", {
+                    day: "2-digit",
+                    month: "short",
+                  })}
+                </label>
+              ))}
             </div>
           </div>
 
-          {/* Time slots */}
+          {/* TIME SLOTS */}
           <div className="form-group">
             <label>Tidspunkt</label>
             <div className="mt-2">
@@ -188,7 +191,7 @@ export default function BookingPage() {
                     key={slot.id}
                     type="button"
                     className={`btn btn-outline-primary mb-1 ${
-                      form.timeSlotId === slot.id ? "active" : ""
+                      form.timeSlotId == slot.id ? "active" : ""
                     }`}
                     onClick={() => setForm({ ...form, timeSlotId: slot.id })}
                   >
@@ -201,15 +204,13 @@ export default function BookingPage() {
             </div>
           </div>
 
-          {/* Kategori */}
+          {/* CATEGORY */}
           <div className="form-group">
             <label>Kategori</label>
             <select
               className="form-control"
               value={form.categoryId}
-              onChange={(e) =>
-                setForm({ ...form, categoryId: Number(e.target.value) })
-              }
+              onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
             >
               <option value="">Velg kategori</option>
               {categories.map((cat) => (
@@ -220,31 +221,31 @@ export default function BookingPage() {
             </select>
           </div>
 
-          {/* Notes hvis OTHER */}
+          {/* NOTES */}
           {categories.find((c) => c.id == form.categoryId)?.name === "OTHER" && (
             <div className="form-group">
               <label>Notater</label>
               <textarea
                 className="form-control"
                 value={form.notes}
-                onChange={(e) =>
-                  setForm({ ...form, notes: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
               />
             </div>
           )}
 
           <button type="submit" className="btn btn-primary mt-3">
-            {form.bookingId ? "Oppdater timen" : "Book Time"}
+            {form.appointmentId ? "Oppdater timen" : "Book Time"}
           </button>
         </form>
       </div>
 
-      {/* LISTE OVER FREMTIDIGE TIMER */}
+      {/* FUTURE APPOINTMENTS */}
       <div className="booking-list">
         <h2>Fremtidige Timer</h2>
 
-        {appointments.length > 0 ? (
+        {appointments.length === 0 ? (
+          <p>Ingen avtaler funnet.</p>
+        ) : (
           <table className="table table-custom">
             <thead>
               <tr>
@@ -256,15 +257,13 @@ export default function BookingPage() {
             </thead>
             <tbody>
               {appointments.map((a) => (
-                <tr
-                  key={a.id}
-                  className={editingId === a.id ? "editing-row" : ""}
-                >
+                <tr key={a.id} className={editingId === a.id ? "editing-row" : ""}>
                   <td>
-                    {new Date(a.date).toLocaleDateString("nb-NO")} {a.time}
+                    {new Date(a.date).toLocaleDateString("no-NO")}{" "}
+                    {a.time}
                     {editingId === a.id && (
                       <span className="badge bg-warning text-dark ms-2">
-                        Endrer denne timen
+                        Endre timen
                       </span>
                     )}
                   </td>
@@ -278,6 +277,7 @@ export default function BookingPage() {
                     >
                       Endre timen
                     </button>
+
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => handleCancel(a.id)}
@@ -290,8 +290,6 @@ export default function BookingPage() {
               ))}
             </tbody>
           </table>
-        ) : (
-          <p>Ingen avtaler funnet.</p>
         )}
       </div>
 
