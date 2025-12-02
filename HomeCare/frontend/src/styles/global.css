@@ -233,7 +233,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url('../images/forside1.png');
+    background-image: url('/public/images/forside1.png');
     background-size: cover;
     background-position: center;
     transform: scale(1.1);
@@ -294,11 +294,11 @@
   
   /* hero slideshow animation */
   @keyframes heroSlideshow {
-    0%   { background-image: url('../images/forside1.png'); }
-    25%  { background-image: url('../images/forside2.png'); }
-    50%  { background-image: url('../images/forside4.png'); }
-    75%  { background-image: url('../images/about1.png'); }
-    100% { background-image: url('../images/forside7.png'); }
+    0%   { background-image: url('/public/images/forside1.png'); }
+    25%  { background-image: url('/public/images/forside2.png'); }
+    50%  { background-image: url('/public/images/forside4.png'); }
+    75%  { background-image: url('/public/images/about1.png'); }
+    100% { background-image: url('/public/images/forside7.png'); }
   }
   
   /* text readability improvements */
