@@ -23,6 +23,8 @@ namespace HomeCare.Api.Data
         public DbSet<TimeSlot> TimeSlots { get; set; } = default!;
         public DbSet<Category> Categories { get; set; } = default!;
 
+        //Reset passwrod function - Deactivated for now
+        //public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }    
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // still calling base so identity config is applied
