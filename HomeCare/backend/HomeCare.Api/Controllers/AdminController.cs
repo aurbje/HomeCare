@@ -1,20 +1,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HomeCare.Data;
+using HomeCare.Api.Data;
 using Microsoft.EntityFrameworkCore;
-using HomeCare.Models;
-using HomeCare.ViewModels.Admin;
+using HomeCare.Api.Models;
+using HomeCare.Api.DTO;
 using System.Linq;
 
-namespace HomeCare.Controllers
+namespace HomeCare.Api.Controllers
 {
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         [HttpGet]
         public IActionResult Dashboard()
         {
-            return View("Admin"); // Admin.cshtml
+            return View("Admin"); 
         }
         
     private readonly AppDbContext _context;
@@ -26,15 +26,14 @@ namespace HomeCare.Controllers
     [HttpGet]
     public async Task<IActionResult> Users(string? q)
     {
-        IQueryable<User> query = _context.Users;
+        IQueryable<User> query = _context.AppUsers;
 
         if (!string.IsNullOrWhiteSpace(q))
         {
             var term = q.Trim().ToLower();
             query = query.Where(u =>
                 u.Email.ToLower().Contains(term) ||
-                u.FullName.ToLower().Contains(term) ||
-                u.UserName.ToLower().Contains(term));
+                u.FullName.ToLower().Contains(term));
         }
 
         var users = await query
@@ -43,13 +42,13 @@ namespace HomeCare.Controllers
             .ToListAsync();
 
         ViewBag.SearchTerm = q ?? string.Empty;
-        return View("_Users", users);
+        return View("Users", users);
     }
     
     [HttpGet]
 public async Task<IActionResult> EditUser(int id)
 {
-    var user = await _context.Users.FindAsync(id);
+    var user = await _context.AppUsers.FindAsync(id);
     if (user == null)
     {
         TempData["Error"] = "Bruker ikke funnet.";
@@ -63,7 +62,7 @@ public async Task<IActionResult> EditUser(int id)
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> EditUser(int id, User model)
 {
-    var user = await _context.Users.FindAsync(id);
+    var user = await _context.AppUsers.FindAsync(id);
     if (user == null)
     {
         TempData["Error"] = "Bruker ikke funnet.";
@@ -86,7 +85,7 @@ public async Task<IActionResult> EditUser(int id, User model)
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteUser(int id)
     {
-    var user = await _context.Users.FindAsync(id);
+    var user = await _context.AppUsers.FindAsync(id);
     if (user == null)
     {
         TempData["Error"] = "Bruker ikke funnet.";
@@ -94,24 +93,22 @@ public async Task<IActionResult> EditUser(int id, User model)
     }
 
     // safetyguard - Do not delete the last admin
-    if (user.Role == "admin" && await _context.Users.CountAsync(u => u.Role == "admin") <= 1)
+    if (user.Role == "Admin" && await _context.AppUsers.CountAsync(u => u.Role == "Admin") <= 1)
     {
         TempData["Error"] = "Kan ikke slette den siste admin-brukeren.";
         return RedirectToAction("Users");
     }
 
     // check references
-    var hasClientBookings = await _context.Bookings.AnyAsync(b => b.ClientId == id);
-    var hasPersonnelBookings = await _context.Bookings.AnyAsync(b => b.PersonnelId == id);
-    var hasAppointments = await _context.PersonnelAppointments.AnyAsync(pa => pa.ClientId == id || pa.PersonnelId == id);
+    var hasBookings = await _context.Bookings.AnyAsync(b => b.UserId == id);
 
-    if (hasClientBookings || hasPersonnelBookings || hasAppointments)
+    if (hasBookings)
     {
-        TempData["Error"] = "Kan ikke slette bruker som er knyttet til bookinger/avtaler.";
+        TempData["Error"] = "Kan ikke slette bruker som er knyttet til bookinger.";
         return RedirectToAction("Users");
     }
 
-    _context.Users.Remove(user);
+    _context.AppUsers.Remove(user);
     await _context.SaveChangesAsync();
 
     TempData["Success"] = $"Bruker {user.FullName} ble slettet.";
@@ -120,16 +117,14 @@ public async Task<IActionResult> EditUser(int id, User model)
         [HttpGet]
     public async Task<IActionResult> Personnel(string? q)
     {
-        IQueryable<User> query = _context.Users.Where(u => u.Role == "Ansatt");
+        IQueryable<User> query = _context.AppUsers.Where(u => u.Role == "Caregiver");
 
         if (!string.IsNullOrWhiteSpace(q))
         {
             var term = q.Trim().ToLower();
             query = query.Where(u =>
                 u.Email.ToLower().Contains(term) ||
-                u.FullName.ToLower().Contains(term) ||
-                u.UserName.ToLower().Contains(term) ||
-                (u.PersonnelId.HasValue && u.PersonnelId.Value.ToString().Contains(term)));
+                u.FullName.ToLower().Contains(term));
         }
 
             var users = await query
@@ -138,7 +133,7 @@ public async Task<IActionResult> EditUser(int id, User model)
             .ToListAsync();
 
         ViewBag.SearchTerm = q ?? string.Empty;
-        return View("_Personnel", users);
+        return View("Personnel", users);
     }
 
     [HttpGet]
@@ -147,7 +142,7 @@ public async Task<IActionResult> EditUser(int id, User model)
         // Add debugging
         Console.WriteLine($"EditPersonnel GET called with id: {id}");
         
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.AppUsers.FindAsync(id);
         
         // More detailed debugging
         Console.WriteLine($"User found: {user != null}");
@@ -156,7 +151,7 @@ public async Task<IActionResult> EditUser(int id, User model)
             Console.WriteLine($"User role: {user.Role}");
         }
         
-        if (user == null || user.Role != "Ansatt")
+        if (user == null || user.Role != "Caregiver")
         {
             TempData["Error"] = "Personell ikke funnet.";
             return RedirectToAction("Personnel");
@@ -169,8 +164,8 @@ public async Task<IActionResult> EditUser(int id, User model)
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditPersonnel(int id, User model)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null || user.Role != "Ansatt")
+        var user = await _context.AppUsers.FindAsync(id);
+        if (user == null || user.Role != "Caregiver")
         {
             TempData["Error"] = "Personell ikke funnet.";
             return RedirectToAction("Personnel");
@@ -191,24 +186,23 @@ public async Task<IActionResult> EditUser(int id, User model)
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeletePersonnel(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.AppUsers.FindAsync(id);
         if (user == null)
         {
             TempData["Error"] = "Personell ikke funnet.";
             return RedirectToAction("Personnel");
         }
 
-        // Checks references
-        var hasPersonnelBookings = await _context.Bookings.AnyAsync(b => b.PersonnelId == id);
-        var hasAppointments = await _context.PersonnelAppointments.AnyAsync(pa => pa.PersonnelId == id);
+        // Checks references - CaregiverId is a string containing the user ID
+        var hasBookings = await _context.Bookings.AnyAsync(b => b.CaregiverId == id.ToString());
 
-        if (hasPersonnelBookings || hasAppointments)
+        if (hasBookings)
         {
-            TempData["Error"] = "Kan ikke slette personell som er knyttet til bookinger/avtaler.";
+            TempData["Error"] = "Kan ikke slette personell som er knyttet til bookinger.";
             return RedirectToAction("Personnel");
         }
 
-        _context.Users.Remove(user);
+        _context.AppUsers.Remove(user);
         await _context.SaveChangesAsync();
 
         TempData["Success"] = $"Personell {user.FullName} ble slettet.";
@@ -219,20 +213,17 @@ public async Task<IActionResult> EditUser(int id, User model)
     public async Task<IActionResult> Bookings(string? q)
     {
         IQueryable<Booking> query = _context.Bookings
-            .Include(b => b.Client)
-            .Include(b => b.Personnel);
+            .Include(b => b.User);
 
         if (!string.IsNullOrWhiteSpace(q))
         {
             var term = q.Trim().ToLower();
             query = query.Where(b =>
-                (b.Client != null && (
-                    b.Client.FullName.ToLower().Contains(term) ||
-                    b.Client.Email.ToLower().Contains(term))) ||
-                (b.Personnel != null && (
-                    b.Personnel.FullName.ToLower().Contains(term) ||
-                    b.Personnel.Email.ToLower().Contains(term))) ||
-                (b.ServiceType != null && b.ServiceType.ToLower().Contains(term)));
+                (b.User != null && (
+                    b.User.FullName.ToLower().Contains(term) ||
+                    b.User.Email.ToLower().Contains(term))) ||
+                (b.ServiceType != null && b.ServiceType.ToLower().Contains(term)) ||
+                (b.CaregiverId != null && b.CaregiverId.Contains(term)));
         }
 
         var bookings = await query
@@ -242,15 +233,14 @@ public async Task<IActionResult> EditUser(int id, User model)
             .ToListAsync();
 
         ViewBag.SearchTerm = q ?? string.Empty;
-        return View("_Bookings", bookings);
+        return View("Bookings", bookings);
     }
 
     [HttpGet]
     public async Task<IActionResult> EditBooking(int id)
     {
         var booking = await _context.Bookings
-            .Include(b => b.Client)
-            .Include(b => b.Personnel)
+            .Include(b => b.User)
             .FirstOrDefaultAsync(b => b.Id == id);
 
         if (booking == null)
@@ -259,9 +249,9 @@ public async Task<IActionResult> EditUser(int id, User model)
             return RedirectToAction("Bookings");
         }
 
-        // Get all users and personnel for dropdowns
-        ViewBag.Clients = await _context.Users.Where(u => u.Role == "User").ToListAsync();
-        ViewBag.Personnel = await _context.Users.Where(u => u.Role == "Ansatt").ToListAsync();
+        // Get all users and caregivers for dropdowns
+        ViewBag.Clients = await _context.AppUsers.Where(u => u.Role == "User").ToListAsync();
+        ViewBag.Personnel = await _context.AppUsers.Where(u => u.Role == "Caregiver").ToListAsync();
 
         return View("EditBookings", booking);
     }
@@ -282,7 +272,7 @@ public async Task<IActionResult> EditUser(int id, User model)
         booking.Time = model.Time;
         booking.ServiceType = model.ServiceType;
         booking.Notes = model.Notes;
-        booking.PersonnelId = model.PersonnelId;
+        booking.CaregiverId = model.CaregiverId;
 
         await _context.SaveChangesAsync();
         TempData["Success"] = $"Booking {booking.Id} ble oppdatert.";

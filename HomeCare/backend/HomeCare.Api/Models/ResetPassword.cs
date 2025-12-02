@@ -1,6 +1,6 @@
 using System;
 
-namespace HomeCare.Models
+namespace HomeCare.Api.Models
 {
     public class PasswordResetToken
     {
