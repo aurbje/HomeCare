@@ -136,8 +136,8 @@ namespace HomeCare.Api.Controllers
 
         //Caregiver endpoints
         
-        [HttpGet("personnel")]
-        public async Task<ActionResult<IEnumerable<User>>> GetPersonnel(string? q)
+        [HttpGet("caregiver")]
+        public async Task<ActionResult<IEnumerable<User>>> GetCaregiver(string? q)
         {
             try
             {
@@ -160,14 +160,14 @@ namespace HomeCare.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching personnel");
-                return StatusCode(500, new { message = "Error fetching personnel" });
+                _logger.LogError(ex, "Error fetching caregiver");
+                return StatusCode(500, new { message = "Error fetching caregiver" });
             }
         }
 
         //Get caregiver by id
-        [HttpGet("personnel/{id}")]
-        public async Task<ActionResult<User>> GetPersonnelById(int id)
+        [HttpGet("caregiver/{id}")]
+        public async Task<ActionResult<User>> GetCaregiverById(int id)
         {
             try
             {
@@ -175,28 +175,28 @@ namespace HomeCare.Api.Controllers
                 
                 if (user == null || user.Role != "Caregiver")
                 {
-                    return NotFound(new { message = "Personell ikke funnet" });
+                    return NotFound(new { message = "Caregiver ikke funnet" });
                 }
 
                 return Ok(user);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching personnel {Id}", id);
-                return StatusCode(500, new { message = "Error fetching personnel" });
+                _logger.LogError(ex, "Error fetching caregiver {Id}", id);
+                return StatusCode(500, new { message = "Error fetching caregiver" });
             }
         }
 
         //Update caregiver
-        [HttpPut("personnel/{id}")]
-        public async Task<IActionResult> UpdatePersonnel(int id, [FromBody] User model)
+        [HttpPut("caregiver/{id}")]
+        public async Task<IActionResult> UpdateCaregiver(int id, [FromBody] User model)
         {
             try
             {
                 var user = await _context.AppUsers.FindAsync(id);
                 if (user == null || user.Role != "Caregiver")
                 {
-                    return NotFound(new { message = "Personell ikke funnet" });
+                    return NotFound(new { message = "Caregiver ikke funnet" });
                 }
 
                 user.FullName = model.FullName;
@@ -205,43 +205,43 @@ namespace HomeCare.Api.Controllers
                 user.Address = model.Address;
 
                 await _context.SaveChangesAsync();
-                return Ok(new { message = $"Personell {user.FullName} ble oppdatert", user });
+                return Ok(new { message = $"Caregiver {user.FullName} ble oppdatert", user });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating personnel {Id}", id);
-                return StatusCode(500, new { message = "Error updating personnel" });
+                _logger.LogError(ex, "Error updating caregiver {Id}", id);
+                return StatusCode(500, new { message = "Error updating caregiver" });
             }
         }
 
         //Delete caregiver
-        [HttpDelete("personnel/{id}")]
-        public async Task<IActionResult> DeletePersonnel(int id)
+        [HttpDelete("caregiver/{id}")]
+        public async Task<IActionResult> DeleteCaregiver(int id)
         {
             try
             {
                 var user = await _context.AppUsers.FindAsync(id);
                 if (user == null)
                 {
-                    return NotFound(new { message = "Personell ikke funnet" });
+                    return NotFound(new { message = "Caregiver ikke funnet" });
                 }
 
                 //Checking if caregiver has active bookings
                 var hasBookings = await _context.Bookings.AnyAsync(b => b.CaregiverId == id.ToString());
                 if (hasBookings)
                 {
-                    return BadRequest(new { message = "Kan ikke slette personell som er knyttet til bookinger" });
+                    return BadRequest(new { message = "Kan ikke slette caregiver som er knyttet til bookinger" });
                 }
 
                 _context.AppUsers.Remove(user);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = $"Personell {user.FullName} ble slettet" });
+                return Ok(new { message = $"Caregiver {user.FullName} ble slettet" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting personnel {Id}", id);
-                return StatusCode(500, new { message = "Error deleting personnel" });
+                _logger.LogError(ex, "Error deleting caregiver {Id}", id);
+                return StatusCode(500, new { message = "Error deleting caregiver" });
             }
         }
 
