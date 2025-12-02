@@ -3,10 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 
 import LoginPage from "./pages/Account/LoginPage";
+import RegisterPage from "./pages/Account/RegisterPage";
 import DashboardPage from "./pages/User/DashboardPage";
 import HomePage from "./pages/Home/HomePage";
 import AboutPage from "./pages/Home/AboutPage";
-import contactPage from "./pages/Home/ContactPage";
+import ContactPage from "./pages/Home/ContactPage";
+import BookingPage from "./pages/User/BookingPage";
 
 export default function App() {
   return (
@@ -17,11 +19,10 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="about" element={<AboutPage />} />
-          <Route path="contact" element={<h1>Contact Page</h1>} />
-          <Route path="booking" element={<h1>Booking Page</h1>} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="booking" element={<BookingPage />} />
 
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<h1>Register Page</h1>} />
+          <Route path="register" element={<RegisterPage />} />
 
           <Route path="dashboard" element={<DashboardPage />} />
         </Route>
