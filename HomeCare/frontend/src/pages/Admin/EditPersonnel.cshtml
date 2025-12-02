@@ -1,0 +1,47 @@
+@model HomeCare.Models.User
+
+@{
+    ViewData["Title"] = "Rediger personell";
+}
+
+<div class="container py-4">
+    <h1 class="h4 mb-3">Rediger personell: @Model.FullName</h1>
+
+    <form method="post" action="/Admin/EditPersonnel/@Model.Id">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label for="FullName" class="form-label">Fullt navn</label>
+            <input type="text" class="form-control" id="FullName" name="FullName" value="@Model.FullName" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="UserName" class="form-label">Brukernavn</label>
+            <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.UserName" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="Email" class="form-label">E-post</label>
+            <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="TlfNumber" class="form-label">Telefon</label>
+            <input type="text" class="form-control" id="TlfNumber" name="TlfNumber" value="@Model.TlfNumber" />
+        </div>
+
+        <div class="mb-3">
+            <label for="Address" class="form-label">Adresse</label>
+            <input type="text" class="form-control" id="Address" name="Address" value="@Model.Address" />
+        </div>
+
+        <div class="mb-3">
+            <label for="PersonnelId" class="form-label">Personell ID</label>
+            <input type="number" class="form-control" id="PersonnelId" name="PersonnelId" value="@Model.PersonnelId" readonly />
+            <small class="text-muted">Dette feltet kan ikke endres.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lagre endringer</button>
+        <a href="/Admin/Personnel" class="btn btn-outline-secondary">Avbryt</a>
+    </form>
+</div>

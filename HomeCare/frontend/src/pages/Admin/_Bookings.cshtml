@@ -1,0 +1,85 @@
+@model IEnumerable<HomeCare.Models.Booking>
+@{
+    ViewData["Title"] = "Administrer bookinger";
+    var search = ViewBag.SearchTerm as string ?? string.Empty;
+}
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+<div class="container py-4">
+    <h1 class="h4 mb-3">Bookinger (@Model.Count())</h1>
+
+    <form method="get" action="/Admin/Bookings" class="row g-2 mb-3">
+        <div class="col-auto">
+            <input name="q" value="@search" class="form-control form-control-sm" placeholder="Søk (kunde / ansatt / tjeneste)" />
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-sm btn-primary">Søk</button>
+        </div>
+        <div class="col-auto">
+            <a href="/Admin/Bookings" class="btn btn-sm btn-outline-secondary">Nullstill</a>
+        </div>
+    </form>
+
+    <table class="table table-sm table-striped align-middle">
+        <thead>
+        <tr>
+            <th>BookingID</th>
+            <th>BrukerID</th>
+            <th>Dato</th>
+            <th>Tid</th>
+            <th>Tjeneste</th>
+            <th>AnsattID</th>
+            <th>Endre</th>
+            <th>Slette</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (!Model.Any())
+        {
+            <tr><td colspan="9" class="text-muted">Ingen bookinger funnet.</td></tr>
+        }
+        else
+        {
+            foreach (var b in Model)
+            {
+                <tr>
+                    <td class="text-truncate" style="max-width:140px;">@b.Id</td>
+                    <td>@b.ClientId</td>
+                    <td>@b.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@b.Time</td>
+                    <td>@b.ServiceType</td>
+                    <td>@b.PersonnelId</td>
+                    <td>
+                        <a href="/Admin/EditBooking/@b.Id" class="btn btn-sm btn-warning">Endre</a>
+                    </td>
+                    <td>
+                        <form method="post" action="/Admin/DeleteBooking" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <button type="button"
+                                class="btn btn-sm btn-danger confirm-delete"
+                                data-confirm="Slette booking @b.Id?">
+                                Slette
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+
+    <a href="/Admin/Dashboard" class="btn btn-outline-secondary btn-sm">Tilbake</a>
+</div>
