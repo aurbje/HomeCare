@@ -142,18 +142,16 @@ namespace HomeCare.Api.Services
             }
         }
 
-        public async Task<ServiceResponse<string>> UpdateCaregiverAsync(int id, CaregiverUpdateDto caregiverDto)
+        public async Task<ServiceResponse<string>> UpdateCaregiverAsync(int id, UpdateCaregiverDto caregiverDto)
         {
             try
             {
                 var existingUser = await _adminRepo.GetUserByIdAsync(id);
-                // CORRECTED LOGIC: Check if the user's role IS "Caregiver" or "Admin"
                 if (existingUser == null || (existingUser.Role?.ToLower() != "caregiver" && existingUser.Role?.ToLower() != "admin"))
                 {
                     return ServiceResponse<string>.FailResponse("Ansatt ikke funnet");
                 }
 
-                // Map properties from DTO to the existing user entity
                 existingUser.FullName = caregiverDto.FullName;
                 existingUser.Email = caregiverDto.Email;
                 existingUser.TlfNumber = caregiverDto.TlfNumber;

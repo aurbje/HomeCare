@@ -2,15 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HomeCare.Api.DTO.Admin
 {
-    public class CaregiverUpdateDto
+    public class UpdateCaregiverDto
     {
         [Required]
         [StringLength(100)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         public string? TlfNumber { get; set; }
 

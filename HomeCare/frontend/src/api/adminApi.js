@@ -7,12 +7,14 @@ const authenticatedFetch = async (url, options = {}) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include', // This is the crucial part
+    credentials: 'include',
   };
 
   const response = await fetch(url, { ...defaultOptions, ...options });
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`API Error: ${response.status} - ${errorText}`);
     throw new Error(`API request failed: ${response.status}`);
   }
   return response.json();
@@ -22,10 +24,6 @@ const authenticatedFetch = async (url, options = {}) => {
 export const getUsers = (search = "") => {
   const qs = search && search.trim() ? `?q=${encodeURIComponent(search.trim())}` : "";
   return authenticatedFetch(`${API_URL}/admin/users${qs}`);
-};
-
-export const deleteUser = (id) => {
-  return authenticatedFetch(`${API_URL}/admin/users/${id}`, { method: 'DELETE' });
 };
 
 export const getUserById = (id) => {
@@ -45,6 +43,10 @@ export const updateUser = (id, userData) => {
   });
 };
 
+export const deleteUser = (id) => {
+  return authenticatedFetch(`${API_URL}/admin/users/${id}`, { method: 'DELETE' });
+};
+
 // --- Caregivers ---
 export const getCaregivers = (searchTerm = "") => {
   const params = searchTerm ? `?q=${encodeURIComponent(searchTerm)}` : "";
@@ -56,7 +58,6 @@ export const getCaregiverById = (id) => {
 };
 
 export const updateCaregiver = (id, userData) => {
-  // The backend DTO doesn't need the ID in the body, so we create a clean object.
   const dto = {
     fullName: userData.fullName,
     email: userData.email,

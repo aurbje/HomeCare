@@ -64,7 +64,6 @@ namespace HomeCare.Api.Controllers
 
         // PUT: api/admin/users/5
         [HttpPut("users/{id:int}")]
-        // --- FIX: Changed UserUpdateDto to UpdateUserDto ---
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto userDto)
         {
             var response = await _adminService.UpdateUserAsync(id, userDto);
@@ -106,6 +105,47 @@ namespace HomeCare.Api.Controllers
                 role = u.Role
             });
             return Ok(shaped);
+        }
+
+        // GET: api/admin/caregivers/5
+        [HttpGet("caregivers/{id:int}")]
+        public async Task<IActionResult> GetCaregiverById(int id)
+        {
+            _logger.LogInformation("GetCaregiverById called with id: {Id}", id);
+            _logger.LogInformation("User authenticated: {IsAuth}", User.Identity?.IsAuthenticated);
+            _logger.LogInformation("User role: {Role}", User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value);
+            
+            var response = await _adminService.GetCaregiverByIdAsync(id);
+            
+            _logger.LogInformation("Service response success: {Success}, message: {Message}", response.Success, response.Message);
+            
+            if (!response.Success)
+            {
+                return NotFound(new { message = response.Message });
+            }
+            var user = response.Data;
+            var shaped = new
+            {
+                id = user.Id,
+                fullName = user.FullName,
+                email = user.Email,
+                address = user.Address,
+                tlfNumber = user.TlfNumber,
+                role = user.Role
+            };
+            return Ok(shaped);
+        }
+
+        // PUT: api/admin/caregivers/5
+        [HttpPut("caregivers/{id:int}")]
+        public async Task<IActionResult> UpdateCaregiver(int id, [FromBody] UpdateCaregiverDto caregiverDto)
+        {
+            var response = await _adminService.UpdateCaregiverAsync(id, caregiverDto);
+            if (!response.Success)
+            {
+                return BadRequest(new { message = response.Message });
+            }
+            return Ok(new { message = response.Data });
         }
 
         // DELETE: api/admin/caregivers/5

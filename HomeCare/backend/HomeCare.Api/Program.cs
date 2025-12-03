@@ -18,13 +18,13 @@ builder.Logging.AddDebug();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.WriteIndented = true;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// CORS for frontend
+// --- UPDATED CORS CONFIGURATION ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", cors =>
@@ -32,7 +32,8 @@ builder.Services.AddCors(options =>
         cors.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials()
+            .SetIsOriginAllowed(origin => true); // This helps with debugging
     });
 });
 
@@ -44,6 +45,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromHours(3);
+        options.Cookie.SameSite = SameSiteMode.Lax; // Changed from default
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
 // Database
@@ -57,7 +60,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<ICaregiverRepository, CaregiverRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -91,16 +93,15 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseHsts();
-    app.UseHttpsRedirection();
 }
 
-// Pipeline
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-// CORS must come before Authentication/Authorization
-app.UseCors("AllowFrontend");
+// --- CRITICAL: CORS MUST BE IN THIS EXACT ORDER ---
+app.UseCors("AllowFrontend"); // BEFORE Authentication
 
 app.UseAuthentication();
 app.UseAuthorization();
