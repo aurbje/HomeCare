@@ -1,14 +1,6 @@
-/**
- * DashboardPage.jsx - Caregiver Dashboard
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- * Backend endpoint: GET /api/caregiver/dashboard (CaregiverController.GetDashboard)
- */
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import api from '../../api/api'
+import { useAuth } from '../../hooks/useAuth'
 
 /**
  * CaregiverDashboardPage Component
@@ -34,9 +26,6 @@ export default function CaregiverDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
 
-  // No data state
-  // if (!data) return <div className="container mt-5 alert alert-danger">{error || 'Ingen data tilgjengelig.'}</div>
-
   // Calendar state
   const [calendarYear, setCalendarYear] = useState(new Date().getFullYear())
   const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth()) // 0-indexed
@@ -55,26 +44,27 @@ export default function CaregiverDashboardPage() {
   const fetchDashboard = useCallback(async (year, month) => {
     try {
       setLoading(true)
-      setError(null)
-      setSuccess(null)
       const params = new URLSearchParams()
       if (year !== undefined) params.set('year', String(year))
       if (month !== undefined) params.set('month', String(month + 1)) // API expects 1-indexed
-      const url = `/caregiver/dashboard${params.toString() ? `?${params}` : ''}`
+      const url = `/api/caregiver/dashboard${params.toString() ? `?${params}` : ''}`
 
-      const response = await api.get(url)
-      setData(response.data)
-    } catch (e) {
-      if (e.response?.status === 401) {
-        navigate('/login')
-        return
+      const response = await fetch(url, { credentials: 'include' })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/login')
+          return
+        }
+        throw new Error(`HTTP ${response.status}`)
       }
-      // Log error for debugging
-      console.error('Dashboard fetch error:', e)
-      // Only set error if it's a real server error
-      if (e.response?.status >= 400) {
-        const errorMsg = e.response?.data?.message || e.response?.data?.error || 'En feil oppstod ved lasting av data.'
-        setError(errorMsg)
+
+      const result = await response.json()
+      setData(result)
+      setError(null)
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        setError('Kunne ikke laste dashboard data.')
       }
     } finally {
       setLoading(false)
@@ -85,15 +75,10 @@ export default function CaregiverDashboardPage() {
    * Check authentication and fetch data on mount
    */
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login', { replace: true })
-      return
-    }
-
     const role = user?.role?.toLowerCase()
 
-    // Wait for user data to load if role is not yet available
-    if (!role) {
+    if (!isAuthenticated) {
+      navigate('/login', { replace: true })
       return
     }
 
@@ -174,20 +159,21 @@ export default function CaregiverDashboardPage() {
 
     try {
       const dates = Array.from(selectedDates)
-      await api.post('/caregiver/availability/batch', dates)
+      const response = await fetch('/api/caregiver/availability/batch', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dates)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || 'Kunne ikke registrere dager.')
+      }
 
       setSuccess(`${dates.length} dag(er) registrert som tilgjengelig.`)
       setSelectedDates(new Set())
-
-      // Refresh data without clearing success message yet
-      const params = new URLSearchParams()
-      params.set('year', String(calendarYear))
-      params.set('month', String(calendarMonth + 1))
-      const response = await api.get(`/caregiver/dashboard?${params}`)
-      setData(response.data)
-
-      // Auto-clear success message after 3 seconds
-      setTimeout(() => setSuccess(null), 3000)
+      await fetchDashboard(calendarYear, calendarMonth)
     } catch (e) {
       setError(e.message || 'En feil oppstod.')
     } finally {
@@ -256,7 +242,10 @@ export default function CaregiverDashboardPage() {
   // Loading state
   if (loading) return <div className="container mt-5">Laster...</div>
 
-  const model = data?.model
+  // No data state
+  if (!data) return <div className="container mt-5 alert alert-danger">{error || 'Ingen data tilgjengelig.'}</div>
+
+  const model = data.model
   const calendarDays = generateCalendarDays()
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -287,7 +276,7 @@ export default function CaregiverDashboardPage() {
             <div className="d-flex flex-column w-100" style={{ gap: '0.5rem' }}>
 
               {/* Today's visits */}
-              <div className="card shadow-sm">
+              <div className="card border-start border-4 border-success">
                 <div className="card-body">
                   <h2 className="card-title fs-4 mb-3">
                     <i className="bi bi-calendar-day me-2"></i>Dagens besøk
@@ -324,7 +313,7 @@ export default function CaregiverDashboardPage() {
               </div>
 
               {/* Available dates section */}
-              <div className="card shadow-sm">
+              <div className="card border-start border-4 border-info">
                 <div className="card-body">
                   <h2 className="card-title fs-4 mb-3">
                     <i className="bi bi-calendar-check me-2"></i>Tilgjengelige dager
@@ -360,7 +349,7 @@ export default function CaregiverDashboardPage() {
 
           {/* Right column - Calendar */}
           <div className="col-12 col-lg-8">
-            <div className="card shadow-sm">
+            <div className="card border-start border-4 border-primary">
               <div className="card-body">
                 <h2 className="card-title fs-4 mb-3">
                   <i className="bi bi-calendar3 me-2"></i>Kalender

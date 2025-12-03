@@ -10,7 +10,7 @@ using HomeCare.Api.Services.Interfaces;
 
 namespace HomeCare.Api.Controllers
 {
-    [Authorize(Roles = UserRoleExtensions.Roles.Caregiver)]
+    [Authorize(Roles = $"{UserRoleExtensions.Roles.Caregiver},{UserRoleExtensions.Roles.Admin}")]
     [ApiController]
     [Route("api/[controller]")]
     public class CaregiverController : AuthorizedControllerBase
@@ -26,20 +26,28 @@ namespace HomeCare.Api.Controllers
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetDashboard([FromQuery] int? year, [FromQuery] int? month)
         {
-            var userId = GetCurrentUserId();
-
-            int calendarYear = year ?? DateTime.Today.Year;
-            int calendarMonth = month ?? DateTime.Today.Month;
-
-            var model = await _service.GetDashboardAsync(userId, year, month);
-            return Ok(new
+            try
             {
-                calendarYear,
-                calendarMonth,
-                availableDates = model.AvailableDates.OrderBy(d => d.Date).ToList(),
-                CaregiverId = userId,
-                model
-            });
+                var userId = GetCurrentUserId();
+
+                int calendarYear = year ?? DateTime.Today.Year;
+                int calendarMonth = month ?? DateTime.Today.Month;
+
+                var model = await _service.GetDashboardAsync(userId, year, month);
+
+                return Ok(new
+                {
+                    calendarYear,
+                    calendarMonth,
+                    availableDates = model?.AvailableDates?.OrderBy(d => d.Date).ToList() ?? new List<DateTime>(),
+                    caregiverId = userId,
+                    model
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "En feil oppstod.", error = ex.Message });
+            }
         }
 
         // register working day

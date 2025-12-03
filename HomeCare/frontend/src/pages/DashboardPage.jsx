@@ -1,6 +1,13 @@
+/**
+ * DashboardPage.jsx - Caregiver Dashboard (duplicate file)
+ *
+ * Note: This appears to be a duplicate of Caregiver/DashboardPage.jsx
+ * Auth: Uses context/AuthContext.jsx (group's pattern)
+ */
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../context/AuthContext'
 import api from '../../api/api'
 
 /**
@@ -227,10 +234,7 @@ export default function CaregiverDashboardPage() {
   // Loading state
   if (loading) return <div className="container mt-5">Laster...</div>
 
-  // No data state
-  if (!data) return <div className="container mt-5 alert alert-danger">{error || 'Ingen data tilgjengelig.'}</div>
-
-  const model = data.model
+  const model = data?.model
   const calendarDays = generateCalendarDays()
   const today = new Date()
   today.setHours(0, 0, 0, 0)

@@ -1,9 +1,25 @@
+/**
+ * LoginPage.jsx - User Login Page
+ *
+ * Auth: Uses context/AuthContext.jsx (group's pattern)
+ * Backend endpoint: POST /api/account/signin (AccountController.SignIn)
+ *
+ * After successful login:
+ * 1. Calls authApi.loginUser() to authenticate
+ * 2. Calls AuthContext.loginUser() to update global state
+ * 3. Navigates to dashboard
+ */
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../../api/authApi";
+import { loginUser as apiLogin } from "../../api/authApi";
+// Use AuthContext to update global auth state after login
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  // Get loginUser from AuthContext to update global state
+  const { loginUser } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,12 +30,23 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const result = await loginUser({ email, password });
-
+      // Call API to authenticate
+      const result = await apiLogin({ email, password });
       console.log("Login success:", result);
 
-      // Etter login → videresend bruker til dashboard
-      navigate("/dashboard");
+      // Update AuthContext with user data
+      // The response contains { message, user: { userId, fullName, email, role } }
+      loginUser(result.user);
+
+      // Navigate to appropriate dashboard based on role
+      const role = result.user?.role?.toLowerCase();
+      if (role === 'admin') {
+        navigate("/admin");
+      } else if (role === 'caregiver') {
+        navigate("/caregiver/dashboard");
+      } else {
+        navigate("/dashboard"); // default user dashboard
+      }
     } catch (err) {
       setError(err.message || "Innlogging feilet.");
     }

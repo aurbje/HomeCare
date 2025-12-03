@@ -1,5 +1,12 @@
+/**
+ * DashboardPage.jsx - User/Client Dashboard
+ *
+ * Auth: Uses context/AuthContext.jsx (group's pattern)
+ * Backend endpoint: GET /api/user/dashboard (UserController.GetDashboard)
+ */
+
 import { useEffect, useState } from 'react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../context/AuthContext'
 import api from '../../api/api'
 
 /**
@@ -50,7 +57,7 @@ export default function DashboardPage() {
 
             {/* Reminders Section */}
             <section role="region" aria-labelledby="reminder-heading">
-              <div className="card border-start col-12 border-4 border-success">
+              <div className="card shadow-sm">
                 <div className="card-body">
                   <h2 id="reminder-heading" className="card-title fs-4 mb-3">Påminnelser</h2>
                   <ul className="list-group">
@@ -70,7 +77,7 @@ export default function DashboardPage() {
 
             {/* Bookings Section */}
             <section role="region" aria-labelledby="booking-heading">
-              <div className="card border-start border-4 border-success">
+              <div className="card shadow-sm">
                 <div className="card-body">
                   <h2 id="booking-heading" className="card-title fs-4 mb-3">Dine timer</h2>
                   <ul className="list-group mb-3">
@@ -109,7 +116,7 @@ export default function DashboardPage() {
           {/* Right column: Calendar Placeholder */}
           <div className="col-12 col-lg-6">
             <section role="region" aria-labelledby="calendar-heading">
-              <div className="card border-start border-4 border-success">
+              <div className="card shadow-sm">
                 <div className="card-body">
                   <h2 id="calendar-heading" className="card-title fs-4 mb-3">Kalender</h2>
                   {/* TODO: Implement calendar component for visual booking scheduling */}

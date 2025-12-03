@@ -33,9 +33,9 @@ export default function BookingPage() {
       setLoading(true);
       const data = await getBookingPage();
 
-      setAvailableDates(data.availableDates);
-      setCategories(data.categories);
-      setAppointments(data.bookings);
+      setAvailableDates(data?.availableDates ?? []);
+      setCategories(data?.categories ?? []);
+      setAppointments(data?.bookings ?? []);
 
       setLoading(false);
     } catch (err) {
@@ -190,9 +190,8 @@ export default function BookingPage() {
                   <button
                     key={slot.id}
                     type="button"
-                    className={`btn btn-outline-primary mb-1 ${
-                      form.timeSlotId == slot.id ? "active" : ""
-                    }`}
+                    className={`btn btn-outline-primary mb-1 ${form.timeSlotId == slot.id ? "active" : ""
+                      }`}
                     onClick={() => setForm({ ...form, timeSlotId: slot.id })}
                   >
                     {slot.slot}

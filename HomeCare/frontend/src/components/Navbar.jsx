@@ -1,5 +1,12 @@
+/**
+ * Navbar.jsx - Main Navigation Bar
+ * 
+ * Auth: Uses context/AuthContext.jsx (group's pattern)
+ * Shows different nav items based on user role and login state
+ */
+
 import { useState, useRef, useEffect } from 'react'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '../context/AuthContext'
 
 /**
  * Navbar Component
@@ -12,16 +19,17 @@ import { useAuth } from '../hooks/useAuth'
  * - Login/Logout buttons
  */
 export default function Navbar() {
-  const { user, logout } = useAuth()
+  // AuthContext provides logoutUser (not logout) - aliased for compatibility
+  const { user, logoutUser } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [fontSize, setFontSize] = useState(16)
 
   /**
    * Handle user logout
+   * AuthContext's logoutUser already handles navigation to home
    */
   const handleLogout = () => {
-    logout()
-    window.location.href = '/'
+    logoutUser()
   }
 
   /**

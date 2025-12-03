@@ -1,13 +1,37 @@
+/**
+ * BookingPage.jsx - Advanced Booking Page with Caregiver Selection
+ *
+ * This is YOUR advanced implementation (kept instead of group's simpler version)
+ * Features that group's version doesn't have:
+ * - Caregiver selection (select specific caregiver for booking)
+ * - Time slot filtering based on caregiver availability
+ * - Edit existing bookings
+ *
+ * Backend endpoints used:
+ * - GET /api/booking/init (BookingController.GetBookingPage)
+ * - GET /api/booking/select-caregiver (BookingController.GetAvailableCaregivers)
+ * - POST /api/booking (BookingController.CreateOrUpdateBooking)
+ * - DELETE /api/booking/{id} (BookingController.CancelBooking)
+ *
+ * Auth: Uses context/AuthContext.jsx (group's pattern)
+ */
+
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../context/AuthContext'
 import api from '../../api/api'
 
 export default function BookingPage() {
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
 
-  const [data, setData] = useState(null)
+  // Main data states - initialized as empty for null safety
+  const [availableDates, setAvailableDates] = useState([])
+  const [categories, setCategories] = useState([])
+  const [bookings, setBookings] = useState([])
+  const [clientName, setClientName] = useState('')
+
+  // Selection states
   const [selectedDateId, setSelectedDateId] = useState(null)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTimeSlotId, setSelectedTimeSlotId] = useState(null)
@@ -22,6 +46,23 @@ export default function BookingPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
+  // Load booking data from API
+  const loadBookingData = async () => {
+    try {
+      const res = await api.get('/booking/init')
+      const data = res.data
+      setAvailableDates(data?.model?.availableDates ?? [])
+      setCategories(data?.model?.categories ?? [])
+      setBookings(data?.bookings ?? [])
+      setClientName(data?.clientName ?? '')
+      setCategoryId(data?.model?.categoryId || 0)
+    } catch {
+      setError('Kunne ikke laste booking data.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     const role = user?.role?.toLowerCase()
     const isClient = role === 'user' || role === 'client'
@@ -29,22 +70,16 @@ export default function BookingPage() {
       navigate('/login')
       return
     }
-    api.get('/booking/init')
-      .then(res => {
-        setData(res.data)
-        setCategoryId(res.data.model?.categoryId || 0)
-      })
-      .catch(() => setError('Kunne ikke laste booking data.'))
-      .finally(() => setLoading(false))
+    loadBookingData()
   }, [isAuthenticated, user?.role, navigate])
 
   useEffect(() => {
-    if (!selectedDateId || !data) return
-    const availDate = data.model?.availableDates?.find(d => d.id === selectedDateId)
+    if (!selectedDateId) return
+    const availDate = availableDates.find(d => d.id === selectedDateId)
     if (!availDate) return
     const filterTimeSlots = async () => {
       const filtered = []
-      for (const slot of availDate.timeSlots) {
+      for (const slot of (availDate.timeSlots ?? [])) {
         if (slot.isBooked) continue
         const params = new URLSearchParams({
           selectedDate: availDate.date,
@@ -65,7 +100,7 @@ export default function BookingPage() {
       setSelectedCaregiverId(null)
     }
     filterTimeSlots()
-  }, [selectedDateId, data, bookingId])
+  }, [selectedDateId, availableDates, bookingId])
 
   useEffect(() => {
     if (!selectedDate || !selectedTimeSlotId) {
@@ -122,8 +157,7 @@ export default function BookingPage() {
         setBookingId(0)
         setEditingBookingId(null)
         setSuccess('')
-        api.get('/booking/init')
-          .then(res => setData(res.data))
+        loadBookingData()
       }, 1500)
     } catch (err) {
       const messages = Object.values(err.response?.data?.errors || {}).flat().join(' ')
@@ -137,8 +171,7 @@ export default function BookingPage() {
     setNotes(booking.notes || '')
     setCategoryId(booking.category?.id || 0)
     const dateStr = new Date(booking.dateTime).toISOString().split('T')[0]
-    if (!data) return
-    const availDate = data.model?.availableDates?.find(d => d.date === dateStr)
+    const availDate = availableDates.find(d => d.date === dateStr)
     if (availDate) {
       setSelectedDateId(availDate.id)
       setSelectedDate(dateStr)
@@ -165,8 +198,7 @@ export default function BookingPage() {
       setSuccess('Booking avbestilt.')
       setEditingBookingId(null)
       setTimeout(() => {
-        api.get('/booking/init')
-          .then(res => setData(res.data))
+        loadBookingData()
         setSuccess('')
       }, 1000)
     } catch {
@@ -191,19 +223,15 @@ export default function BookingPage() {
     return <div className="container mt-5">Laster...</div>
   }
 
-  if (!data) {
-    return <div className="container mt-5">Ingen data tilgjengelig.</div>
-  }
-
-  const selectedCategory = data.model?.categories?.find(c => c.id === categoryId)
+  const selectedCategory = categories.find(c => c.id === categoryId)
   const requireNotes = selectedCategory?.name?.toUpperCase() === 'ANNET'
 
   return (
     <div className="font-resizable-area user-dashboard">
       <div className="container py-4">
-        {data.clientName && (
+        {clientName && (
           <div className="text-center mb-4">
-            <h1>Bestill time, {data.clientName}</h1>
+            <h1>Bestill time, {clientName}</h1>
           </div>
         )}
         {success && <div className="alert alert-success">{success}</div>}
@@ -211,7 +239,7 @@ export default function BookingPage() {
         <div className="row g-4">
           <div className="col-12 col-lg-6">
             <section aria-labelledby="booking-heading">
-              <div className="card border-start border-4 border-success">
+              <div className="card shadow-sm">
                 <div className="card-body">
                   <h2 id="booking-heading" className="fs-4 mb-3">Bestill her</h2>
                   {editingBookingId && (
@@ -226,8 +254,8 @@ export default function BookingPage() {
                     <div className="form-group mb-3">
                       <label className="form-label fw-bold">Dato</label>
                       <div className="date-options">
-                        {data.model?.availableDates?.length > 0 ? (
-                          data.model.availableDates.map(d => (
+                        {availableDates.length > 0 ? (
+                          availableDates.map(d => (
                             <label
                               key={d.id}
                               className={`date-option btn btn-outline-secondary m-1 ${selectedDateId === d.id ? 'active btn-success text-white' : ''}`}
@@ -303,7 +331,7 @@ export default function BookingPage() {
                         required
                       >
                         <option value="">-- Velg kategori --</option>
-                        {data.model?.categories?.map(c => (
+                        {categories.map(c => (
                           <option key={c.id} value={c.id}>{c.name}</option>
                         ))}
                       </select>
@@ -331,12 +359,12 @@ export default function BookingPage() {
           </div>
           <div className="col-12 col-lg-6">
             <section aria-labelledby="bookings-heading">
-              <div className="card border-start border-4 border-info">
+              <div className="card shadow-sm">
                 <div className="card-body">
                   <h2 id="bookings-heading" className="fs-4 mb-3">Dine timer</h2>
-                  {data.bookings && data.bookings.length > 0 ? (
+                  {bookings.length > 0 ? (
                     <div className="list-group">
-                      {data.bookings.map(b => (
+                      {bookings.map(b => (
                         <div
                           key={b.id}
                           className={`list-group-item ${editingBookingId === b.id ? 'list-group-item-warning border-warning border-2' : ''}`}
