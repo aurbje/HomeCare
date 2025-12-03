@@ -1,4 +1,4 @@
-namespace HomeCare.Api.DTO.User
+namespace HomeCare.Api.DTO
 {
     public class TimeSlotDto
     {

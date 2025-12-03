@@ -1,4 +1,4 @@
-namespace HomeCare.Api.DTO.User
+namespace HomeCare.Api.DTO
 {
     public class CaregiverDashboardDto
     {
@@ -8,7 +8,6 @@ namespace HomeCare.Api.DTO.User
         public List<VisitInfoDto> TodayVisits { get; set; } = new();
         public List<CalendarEventDto> CalendarEvents { get; set; } = new();
         public List<BookingSummaryDto> UpcomingBookings { get; set; } = new();
-        public List<BookingSummaryDto> PastBookings { get; set; } = new();
     }
 
     public class VisitInfoDto

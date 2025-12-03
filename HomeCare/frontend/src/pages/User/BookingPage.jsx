@@ -192,17 +192,37 @@ export default function BookingPage() {
   }
 
   const handleCancel = async (id) => {
-    if (!confirm('Er du sikker på at du vil avbestille denne timen?')) return
+    // Find booking details for confirmation message
+    const booking = bookings.find(b => b.id === id)
+    const bookingInfo = booking 
+      ? `${booking.category?.name || 'Tjeneste'} den ${new Date(booking.dateTime).toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' })}` 
+      : 'denne timen'
+    
+    // Enhanced confirmation dialog
+    if (!confirm(`Er du sikker på at du vil avbestille ${bookingInfo}?\n\nDenne handlingen kan ikke angres.`)) {
+      return
+    }
+    
     try {
       await api.delete(`/booking/${id}`)
-      setSuccess('Booking avbestilt.')
+      setSuccess('Bestillingen er avbestilt.')
       setEditingBookingId(null)
       setTimeout(() => {
         loadBookingData()
         setSuccess('')
-      }, 1000)
-    } catch {
-      setError('Kunne ikke avbestille.')
+      }, 1500)
+    } catch (err) {
+      // User-friendly error messages
+      if (err.response?.status === 404) {
+        setError('Bestillingen finnes ikke lenger. Siden vil oppdateres.')
+        loadBookingData()
+      } else if (err.response?.status === 401) {
+        setError('Du er ikke logget inn. Vennligst logg inn på nytt.')
+      } else if (err.response?.status === 400) {
+        setError('Kan ikke avbestille denne timen. Kontakt oss for hjelp.')
+      } else {
+        setError('Noe gikk galt. Prøv igjen senere eller kontakt support.')
+      }
     }
   }
 
@@ -220,22 +240,51 @@ export default function BookingPage() {
   }
 
   if (loading) {
-    return <div className="container mt-5">Laster...</div>
+    return (
+      <div className="container mt-5">
+        <div className="loading-spinner-container">
+          <div className="loading-spinner" role="status" aria-label="Laster inn data"></div>
+          <p className="text-muted mt-3">Laster inn booking data...</p>
+        </div>
+      </div>
+    )
   }
 
   const selectedCategory = categories.find(c => c.id === categoryId)
   const requireNotes = selectedCategory?.name?.toUpperCase() === 'ANNET'
 
   return (
-    <div className="font-resizable-area user-dashboard">
+    <div className="font-resizable-area user-dashboard booking-page">
       <div className="container py-4">
+        {/* Back to Dashboard button */}
+        <div className="mb-3">
+          <button 
+            type="button" 
+            className="btn btn-outline-secondary"
+            onClick={() => navigate('/dashboard')}
+            aria-label="Gå tilbake til oversikt"
+          >
+            <i className="bi bi-arrow-left me-2" aria-hidden="true"></i>Tilbake til oversikt
+          </button>
+        </div>
+        
         {clientName && (
           <div className="text-center mb-4">
             <h1>Bestill time</h1>
           </div>
         )}
-        {success && <div className="alert alert-success">{success}</div>}
-        {error && <div className="alert alert-danger">{error}</div>}
+        {success && (
+          <div className="alert alert-success" role="status" aria-live="polite">
+            <i className="bi bi-check-circle-fill me-2 alert-icon" aria-hidden="true"></i>
+            {success}
+          </div>
+        )}
+        {error && (
+          <div className="alert alert-danger" role="alert" aria-live="assertive">
+            <i className="bi bi-exclamation-triangle-fill me-2 alert-icon" aria-hidden="true"></i>
+            {error}
+          </div>
+        )}
         <div className="row g-4">
           <div className="col-12 col-lg-6">
             <section aria-labelledby="booking-heading">
@@ -367,38 +416,38 @@ export default function BookingPage() {
                       {bookings.map(b => (
                         <div
                           key={b.id}
-                          className={`list-group-item ${editingBookingId === b.id ? 'list-group-item-warning border-warning border-2' : ''}`}
+                          className={`list-group-item text-center py-3 ${editingBookingId === b.id ? 'list-group-item-warning border-warning border-2' : ''}`}
                         >
                           {editingBookingId === b.id && (
                             <span className="badge bg-warning text-dark mb-2">Redigerer</span>
                           )}
-                          <div className="d-flex justify-content-between align-items-start">
-                            <div>
-                              <h6 className="mb-1">
-                                {new Date(b.dateTime).toLocaleDateString('nb-NO', {
-                                  weekday: 'long',
-                                  day: 'numeric',
-                                  month: 'long',
-                                  year: 'numeric'
-                                })}
-                              </h6>
-                              <p className="mb-1">
-                                <strong>Tid:</strong> {new Date(b.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
-                              </p>
-                              <p className="mb-1">
-                                <strong>Kategori:</strong> {b.category?.name || 'N/A'}
-                              </p>
-                              <p className="mb-1">
-                                <strong>Ansatt:</strong> {b.caregiver?.fullName || 'N/A'}
-                              </p>
-                              {b.notes && (
-                                <p className="mb-0 text-muted">
-                                  <small>Notater: {b.notes}</small>
-                                </p>
-                              )}
+                          <div>
+                            <h6 className="mb-2">
+                              {new Date(b.dateTime).toLocaleDateString('nb-NO', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                              })}
+                            </h6>
+                            <div className="fw-bold fs-5 text-primary mb-1">
+                              <i className="bi bi-clock me-2"></i>
+                              {new Date(b.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
                             </div>
+                            <div className="text-muted mb-1">
+                              <i className="bi bi-person me-1"></i>
+                              {b.caregiver?.fullName || 'Ikke tildelt'}
+                            </div>
+                            <div className="small text-secondary mb-1">
+                              ({b.category?.name || 'N/A'})
+                            </div>
+                            {b.notes && (
+                              <p className="mb-0 text-muted small">
+                                <i className="bi bi-chat-left-text me-1"></i>{b.notes}
+                              </p>
+                            )}
                           </div>
-                          <div className="mt-2 d-flex gap-2">
+                          <div className="mt-3 d-flex justify-content-center gap-2">
                             <button
                               className="btn btn-sm btn-outline-warning"
                               onClick={() => handleEdit(b)}

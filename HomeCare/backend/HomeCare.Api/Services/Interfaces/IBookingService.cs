@@ -1,9 +1,6 @@
-using HomeCare.Api.DTO.User;
+using HomeCare.Api.DTO;
 using HomeCare.Api.Models;
 using HomeCare.Api.Enums;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HomeCare.Api.Services.Interfaces
 {
@@ -20,12 +17,12 @@ namespace HomeCare.Api.Services.Interfaces
         /// <summary>
         /// Creates or updates a booking.
         /// </summary>
-        Task<BookingResultDto> CreateOrUpdateBookingAsync(BookingRequestDto model, int userId);
+        Task<BookingResult> CreateOrUpdateBookingAsync(BookingRequestDto model, int userId);
 
         /// <summary>
         /// Cancels a booking.
         /// </summary>
-        Task<BookingResultDto> CancelBookingAsync(int bookingId, int userId, bool isAdmin);
+        Task<BookingResult> CancelBookingAsync(int bookingId, int userId, bool isAdmin);
 
         /// <summary>
         /// Gets a specific booking.

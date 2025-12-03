@@ -215,10 +215,21 @@ export default function CaregiverDashboardPage() {
   }
 
   /**
-   * Delete a single available day
+   * Delete a single available day with enhanced confirmation
    */
   const handleDeleteAvailability = async (date) => {
-    if (!confirm('Er du sikker på at du vil slette denne dagen?')) return
+    // Format date for user-friendly display
+    const formattedDate = date.toLocaleDateString('nb-NO', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+    
+    // Enhanced confirmation dialog
+    if (!confirm(`Er du sikker på at du vil slette tilgjengelighet for ${formattedDate}?\n\nDenne handlingen kan ikke angres.`)) {
+      return
+    }
 
     setError(null)
     setSuccess(null)
@@ -226,26 +237,20 @@ export default function CaregiverDashboardPage() {
     const dateStr = toDateString(date)
 
     try {
-      const response = await fetch(
-        `/api/caregiver/availability/request-deletion?caregiverId=${data?.caregiverId}&date=${dateStr}`,
-        {
-          method: 'POST',
-          credentials: 'include'
-        }
-      )
-
-      if (response.status === 409) {
-        const errorData = await response.json().catch(() => ({}))
-        setError(errorData.message || 'Kan ikke slette dag med bookinger.')
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      } else if (!response.ok) {
-        throw new Error('Kunne ikke slette dagen.')
-      } else {
-        setSuccess('Dag slettet.')
-        await fetchDashboard(calendarYear, calendarMonth)
-      }
+      await api.post(`/caregiver/availability/request-deletion?caregiverId=${data?.caregiverId}&date=${dateStr}`)
+      setSuccess(`Tilgjengelighet for ${formattedDate} er slettet.`)
+      await fetchDashboard(calendarYear, calendarMonth)
     } catch (e) {
-      setError(e.message || 'En feil oppstod.')
+      // User-friendly error messages
+      if (e.response?.status === 409) {
+        setError('Denne dagen har allerede en bestilling. Kontakt administrator for å gjøre endringer.')
+      } else if (e.response?.status === 404) {
+        setError('Kunne ikke finne tilgjengeligheten. Prøv å oppdatere siden.')
+      } else if (e.response?.status === 401) {
+        setError('Du er ikke logget inn. Vennligst logg inn på nytt.')
+      } else {
+        setError('Noe gikk galt. Prøv igjen senere eller kontakt support.')
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
@@ -272,8 +277,17 @@ export default function CaregiverDashboardPage() {
     return days
   }
 
-  // Loading state
-  if (loading) return <div className="container mt-5">Laster...</div>
+  // Loading state with spinner
+  if (loading) {
+    return (
+      <div className="container mt-5">
+        <div className="loading-spinner-container">
+          <div className="loading-spinner" role="status" aria-label="Laster inn data"></div>
+          <p className="text-muted mt-3">Laster inn arbeidsplanen...</p>
+        </div>
+      </div>
+    )
+  }
 
   const model = data?.model
   const calendarDays = generateCalendarDays()
@@ -296,9 +310,19 @@ export default function CaregiverDashboardPage() {
           <p className="lead text-muted mb-0">Du er logget inn som {model?.caregiverName || ''}.</p>
         </div>
 
-        {/* Alert messages */}
-        {error && <div className="alert alert-danger">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
+        {/* Alert messages with accessibility */}
+        {error && (
+          <div className="alert alert-danger" role="alert" aria-live="assertive">
+            <i className="bi bi-exclamation-triangle-fill me-2 alert-icon" aria-hidden="true"></i>
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="alert alert-success" role="status" aria-live="polite">
+            <i className="bi bi-check-circle-fill me-2 alert-icon" aria-hidden="true"></i>
+            {success}
+          </div>
+        )}
 
         <div className="row g-4">
           {/* Left column - Info cards */}

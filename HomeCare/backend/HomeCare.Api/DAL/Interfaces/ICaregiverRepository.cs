@@ -1,8 +1,5 @@
-using HomeCare.Api.DTO.User;
+using HomeCare.Api.DTO;
 using HomeCare.Api.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 
 namespace HomeCare.Api.DAL.Interfaces
 {

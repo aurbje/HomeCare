@@ -58,18 +58,18 @@ export default function DashboardPage() {
    * Set of booked date strings for calendar highlighting
    */
   const bookedDateSet = useMemo(() => {
-    const dates = data?.bookings ?? []
-    return new Set(dates.map(b => {
+    const bookings = data?.calendarBookings ?? []
+    return new Set(bookings.map(b => {
       const d = new Date(b.dateTime)
       return toDateString(d)
     }))
-  }, [data?.bookings])
+  }, [data?.calendarBookings])
 
   /**
    * Map of bookings by date for calendar display
    */
   const bookingsByDate = useMemo(() => {
-    const bookings = data?.bookings ?? []
+    const bookings = data?.calendarBookings ?? []
     const map = new Map()
     bookings.forEach(booking => {
       const d = new Date(booking.dateTime)
@@ -80,15 +80,7 @@ export default function DashboardPage() {
       map.get(dateStr).push(booking)
     })
     return map
-  }, [data?.bookings])
-
-  /**
-   * Get today's bookings for "Dine timer" section
-   */
-  const todayBookings = useMemo(() => {
-    const todayStr = toDateString(new Date())
-    return bookingsByDate.get(todayStr) || []
-  }, [bookingsByDate])
+  }, [data?.calendarBookings])
 
   /**
    * Navigate to previous month
@@ -136,8 +128,17 @@ export default function DashboardPage() {
     return days
   }
 
-  // Show loading message while data is being fetched
-  if (!data) return <div className="container mt-5">Laster...</div>
+  // Show loading spinner while data is being fetched
+  if (!data) {
+    return (
+      <div className="container mt-5">
+        <div className="loading-spinner-container">
+          <div className="loading-spinner" role="status" aria-label="Laster inn data"></div>
+          <p className="text-muted mt-3">Laster inn dine data...</p>
+        </div>
+      </div>
+    )
+  }
 
   const calendarDays = generateCalendarDays()
   const today = new Date()
@@ -170,23 +171,28 @@ export default function DashboardPage() {
                   <h2 className="card-title fs-4 mb-3">
                     <i className="bi bi-calendar-day me-2"></i>Dine timer i dag
                   </h2>
-                  {todayBookings.length > 0 ? (
+                  {(data?.todayBookings?.length > 0) ? (
                     <ul className="list-group" style={{ maxHeight: '280px', overflowY: 'auto' }}>
-                      {todayBookings.map(booking => (
-                        <li key={booking.id} className="list-group-item">
-                          <div className="fw-bold">
-                            <i className="bi bi-clock me-1"></i>
+                      {data.todayBookings.map(booking => (
+                        <li key={booking.id} className="list-group-item text-center py-3">
+                          <div className="fw-bold fs-5 text-primary mb-1">
+                            <i className="bi bi-clock me-2"></i>
                             {new Date(booking.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
+                            {/* <div className="small text-secondary"> */}
+                            &ensp;{booking.categoryName || 'N/A'}
+                            {/* </div> */}
                           </div>
-                          <div className="small">
+
+                          <div className="text-muted">
                             <i className="bi bi-person me-1"></i>
-                            {booking.caregiver?.fullName || 'Ikke tildelt'} ({booking.category?.name || 'N/A'})
+                            {booking.caregiverName || 'Ikke tildelt'}
                           </div>
+
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-muted mb-0">
+                    <p className="text-muted mb-0 text-center">
                       <i className="bi bi-check-circle me-2"></i>Ingen timer i dag.
                     </p>
                   )}
@@ -240,12 +246,20 @@ export default function DashboardPage() {
 
                 {/* Calendar navigation */}
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <button className="btn btn-outline-secondary" onClick={goToPrevMonth}>
-                    <i className="bi bi-chevron-left"></i> Forrige
+                  <button 
+                    className="btn btn-outline-secondary calendar-nav-btn" 
+                    onClick={goToPrevMonth}
+                    aria-label={`Gå til forrige måned, ${monthNames[calendarMonth === 0 ? 11 : calendarMonth - 1]}`}
+                  >
+                    <i className="bi bi-chevron-left" aria-hidden="true"></i> <span className="d-none d-sm-inline">Forrige</span>
                   </button>
-                  <h3 className="mb-0">{monthNames[calendarMonth]} {calendarYear}</h3>
-                  <button className="btn btn-outline-secondary" onClick={goToNextMonth}>
-                    Neste <i className="bi bi-chevron-right"></i>
+                  <h3 className="mb-0 fs-5 fs-sm-4" aria-live="polite">{monthNames[calendarMonth]} {calendarYear}</h3>
+                  <button 
+                    className="btn btn-outline-secondary calendar-nav-btn" 
+                    onClick={goToNextMonth}
+                    aria-label={`Gå til neste måned, ${monthNames[calendarMonth === 11 ? 0 : calendarMonth + 1]}`}
+                  >
+                    <span className="d-none d-sm-inline">Neste</span> <i className="bi bi-chevron-right" aria-hidden="true"></i>
                   </button>
                 </div>
 
