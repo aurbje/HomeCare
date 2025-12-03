@@ -1,32 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getUsers, deleteUser } from '../../api/adminApi';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUsers, deleteUser } from "../../api/adminApi";
 
 function UsersPage() {
   const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async (search = '') => {
+  const fetchUsers = async (search = "") => {
     try {
       setLoading(true);
       const data = await getUsers(search);
-      setUsers(data);
+      setUsers(data); // backend returns plain array
       setError(null);
     } catch (err) {
-      setError('Kunne ikke laste brukere');
+      setError("Kunne ikke laste brukere");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    let ignore = false;
+    async function load() {
+      if (ignore) return;
+      await fetchUsers(searchTerm);
+    }
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [searchTerm]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -34,8 +42,8 @@ function UsersPage() {
   };
 
   const handleReset = () => {
-    setSearchTerm('');
-    fetchUsers('');
+    setSearchTerm("");
+    fetchUsers("");
   };
 
   const handleDelete = async (id, fullName) => {
@@ -45,11 +53,11 @@ function UsersPage() {
 
     try {
       await deleteUser(id);
-      setSuccess('Bruker slettet');
-      fetchUsers(searchTerm);
+      setSuccess("Bruker slettet");
+      await fetchUsers(searchTerm);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError('Kunne ikke slette bruker');
+      setError("Kunne ikke slette bruker");
       console.error(err);
       setTimeout(() => setError(null), 3000);
     }
@@ -128,7 +136,7 @@ function UsersPage() {
                 <td>{user.address}</td>
                 <td>{user.tlfNumber}</td>
                 <td>
-                  <span className={`badge bg-${user.role === 'admin' ? 'danger' : 'secondary'}`}>
+                  <span className={`badge bg-${user.role === "admin" ? "danger" : "secondary"}`}>
                     {user.role}
                   </span>
                 </td>

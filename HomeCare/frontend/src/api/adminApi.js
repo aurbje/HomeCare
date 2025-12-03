@@ -1,79 +1,100 @@
-import api from './api';
+const API_URL = "https://localhost:7263/api";
 
-// Users
-export const getUsers = async (searchTerm = '') => {
-  const params = searchTerm ? { q: searchTerm } : {};
-  const response = await api.get('/admin/users', { params });
-  return response.data;
+// --- Helper for making authenticated fetch calls ---
+const authenticatedFetch = async (url, options = {}) => {
+  const defaultOptions = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  };
+
+  const response = await fetch(url, { ...defaultOptions, ...options });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`API Error: ${response.status} - ${errorText}`);
+    throw new Error(`API request failed: ${response.status}`);
+  }
+  return response.json();
 };
 
-export const getUserById = async (id) => {
-  const response = await api.get(`/admin/users/${id}`);
-  return response.data;
+// --- Users ---
+export const getUsers = (search = "") => {
+  const qs = search && search.trim() ? `?q=${encodeURIComponent(search.trim())}` : "";
+  return authenticatedFetch(`${API_URL}/admin/users${qs}`);
 };
 
-export const updateUser = async (id, userData) => {
+export const getUserById = (id) => {
+  return authenticatedFetch(`${API_URL}/admin/users/${id}`);
+};
+
+export const updateUser = (id, userData) => {
   const dto = {
     fullName: userData.fullName,
     email: userData.email,
     tlfNumber: userData.tlfNumber ?? null,
     address: userData.address ?? null,
   };
-  const response = await api.put(`/admin/users/${id}`, dto);
-  return response.data;
+  return authenticatedFetch(`${API_URL}/admin/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(dto),
+  });
 };
 
-export const deleteUser = async (id) => {
-  const response = await api.delete(`/admin/users/${id}`);
-  return response.data;
+export const deleteUser = (id) => {
+  return authenticatedFetch(`${API_URL}/admin/users/${id}`, { method: 'DELETE' });
 };
 
-// Caregivers
-export const getCaregivers = async (searchTerm = '') => {
-  const params = searchTerm ? { q: searchTerm } : {};
-  const response = await api.get('/admin/caregivers', { params });
-  return response.data;
+// --- Caregivers ---
+export const getCaregivers = (searchTerm = "") => {
+  const params = searchTerm ? `?q=${encodeURIComponent(searchTerm)}` : "";
+  return authenticatedFetch(`${API_URL}/admin/caregivers${params}`);
 };
 
-export const getCaregiverById = async (id) => {
-  const response = await api.get(`/admin/caregivers/${id}`);
-  return response.data;
+export const getCaregiverById = (id) => {
+  return authenticatedFetch(`${API_URL}/admin/caregivers/${id}`);
 };
 
-export const updateCaregiver = async (id, userData) => {
-  const dataWithId = { ...userData, id: parseInt(id) };
-  const response = await api.put(`/admin/caregivers/${id}`, dataWithId);
-  return response.data;
+export const updateCaregiver = (id, userData) => {
+  const dto = {
+    fullName: userData.fullName,
+    email: userData.email,
+    tlfNumber: userData.tlfNumber ?? null,
+    address: userData.address ?? null,
+  };
+  return authenticatedFetch(`${API_URL}/admin/caregivers/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(dto),
+  });
 };
 
-export const deleteCaregiver = async (id) => {
-  const response = await api.delete(`/admin/caregivers/${id}`);
-  return response.data;
+export const deleteCaregiver = (id) => {
+  return authenticatedFetch(`${API_URL}/admin/caregivers/${id}`, { method: 'DELETE' });
 };
 
-// Bookings
-export const getBookings = async (searchTerm = '') => {
-  const params = searchTerm ? { q: searchTerm } : {};
-  const response = await api.get('/admin/bookings', { params });
-  return response.data;
+// --- Bookings ---
+export const getBookings = (searchTerm = "") => {
+  const params = searchTerm ? `?q=${encodeURIComponent(searchTerm)}` : "";
+  return authenticatedFetch(`${API_URL}/admin/bookings${params}`);
 };
 
-export const getBookingById = async (id) => {
-  const response = await api.get(`/admin/bookings/${id}`);
-  return response.data;
+export const getBookingById = (id) => {
+  return authenticatedFetch(`${API_URL}/admin/bookings/${id}`);
 };
 
-export const updateBooking = async (id, bookingData) => {
-  const response = await api.put(`/admin/bookings/${id}`, bookingData);
-  return response.data;
+export const updateBooking = (id, bookingData) => {
+  return authenticatedFetch(`${API_URL}/admin/bookings/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(bookingData),
+  });
 };
 
-export const deleteBooking = async (id) => {
-  const response = await api.delete(`/admin/bookings/${id}`);
-  return response.data;
+export const deleteBooking = (id) => {
+  return authenticatedFetch(`${API_URL}/admin/bookings/${id}`, { method: 'DELETE' });
 };
 
-export const getBookingData = async () => {
-  const response = await api.get('/admin/booking-data');
-  return response.data;
+export const getBookingData = () => {
+  return authenticatedFetch(`${API_URL}/admin/booking-data`);
 };

@@ -1,6 +1,7 @@
 using HomeCare.Api.Models;
 using HomeCare.Api.DAL.Interfaces;
 using HomeCare.Api.DTO.Shared;
+using HomeCare.Api.DTO.Admin;
 
 namespace HomeCare.Api.Services
 {
@@ -58,7 +59,54 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved sletting av bruker");
             }
         }
+        public async Task<ServiceResponse<User>> GetUserByIdAsync(int id)
+        {
+            try
+            {
+                var user = await _adminRepo.GetUserByIdAsync(id);
+                if (user == null)
+                {
+                    return ServiceResponse<User>.FailResponse("Bruker ikke funnet");
+                }
+                return ServiceResponse<User>.SuccessResponse(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching user by ID {UserId}", id);
+                return ServiceResponse<User>.FailResponse("Feil ved henting av bruker");
+            }
+        }
+        public async Task<ServiceResponse<string>> UpdateUserAsync(int id, UpdateUserDto userDto)
+        {
+            try
+            {
+                var existingUser = await _adminRepo.GetUserByIdAsync(id);
+                if (existingUser == null)
+                {
+                    return ServiceResponse<string>.FailResponse("Bruker ikke funnet");
+                }
 
+                // Map properties from your DTO to the existing user entity
+                existingUser.FullName = userDto.FullName;
+                existingUser.Email = userDto.Email;
+                existingUser.TlfNumber = userDto.TlfNumber;
+                existingUser.Address = userDto.Address;
+
+                var success = await _adminRepo.UpdateUserAsync(existingUser);
+                if (!success)
+                {
+                    return ServiceResponse<string>.FailResponse("Kunne ikke oppdatere bruker");
+                }
+
+                _logger.LogInformation("Updated user {UserId}", id);
+                return ServiceResponse<string>.SuccessResponse("Bruker ble oppdatert");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user {UserId}", id);
+                return ServiceResponse<string>.FailResponse("Feil ved oppdatering av bruker");
+            }
+        }
         //Caregivers
         public async Task<ServiceResponse<IEnumerable<User>>> GetCaregiversAsync(string? searchTerm)
         {
@@ -72,6 +120,56 @@ namespace HomeCare.Api.Services
             {
                 _logger.LogError(ex, "Error fetching caregivers");
                 return ServiceResponse<IEnumerable<User>>.FailResponse("Failed to load caregivers");
+            }
+        }
+
+        public async Task<ServiceResponse<User>> GetCaregiverByIdAsync(int id)
+        {
+            try
+            {
+                var user = await _adminRepo.GetUserByIdAsync(id);
+                // CORRECTED LOGIC: Check if the user's role IS "Caregiver" or "Admin"
+                if (user == null || (user.Role?.ToLower() != "caregiver" && user.Role?.ToLower() != "admin"))
+                {
+                    return ServiceResponse<User>.FailResponse("Ansatt ikke funnet");
+                }
+                return ServiceResponse<User>.SuccessResponse(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching caregiver by ID {UserId}", id);
+                return ServiceResponse<User>.FailResponse("Feil ved henting av ansatt");
+            }
+        }
+
+        public async Task<ServiceResponse<string>> UpdateCaregiverAsync(int id, UpdateCaregiverDto caregiverDto)
+        {
+            try
+            {
+                var existingUser = await _adminRepo.GetUserByIdAsync(id);
+                if (existingUser == null || (existingUser.Role?.ToLower() != "caregiver" && existingUser.Role?.ToLower() != "admin"))
+                {
+                    return ServiceResponse<string>.FailResponse("Ansatt ikke funnet");
+                }
+
+                existingUser.FullName = caregiverDto.FullName;
+                existingUser.Email = caregiverDto.Email;
+                existingUser.TlfNumber = caregiverDto.TlfNumber;
+                existingUser.Address = caregiverDto.Address;
+
+                var success = await _adminRepo.UpdateUserAsync(existingUser);
+                if (!success)
+                {
+                    return ServiceResponse<string>.FailResponse("Kunne ikke oppdatere ansatt");
+                }
+
+                _logger.LogInformation("Updated caregiver {UserId}", id);
+                return ServiceResponse<string>.SuccessResponse("Ansatt ble oppdatert");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating caregiver {UserId}", id);
+                return ServiceResponse<string>.FailResponse("Feil ved oppdatering av ansatt");
             }
         }
 
