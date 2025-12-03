@@ -1,28 +1,12 @@
 /**
  * AuthContext.jsx - Global Authentication State Management
- * 
- * This context provides authentication state throughout the React application.
- * Based on the group's Final_Alexander branch implementation, adapted to use
- * axios API calls (from your implementation) instead of fetch.
- * 
- * How it works:
- * - On app load, checks if user is logged in via GET /api/account/me
- * - Provides user state, loginUser(), and logoutUser() to all components
- * - Wrapped around the app in index.js
- * 
- * Backend endpoints used:
- * - GET /api/account/me (AccountController.GetCurrentUser)
- * - POST /api/account/logout (AccountController.Logout)
- * 
- * Components that use this context:
- * - frontend/src/pages/User/BookingPage.jsx
- * - frontend/src/pages/User/DashboardPage.jsx
- * - frontend/src/pages/Account/LoginPage.jsx
- * - frontend/src/components/Navbar.jsx (for navbar auth state)
+ *
+ * Provides authentication state throughout the React application.
+ * Checks current session on load via GET /api/account/me.
  */
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { getCurrentUser, logoutUser as apiLogout } from "../api/authApi";
+import { getCurrentUser, logout as apiLogout, logout } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
 
 // Create the authentication context
@@ -30,10 +14,6 @@ const AuthContext = createContext();
 
 /**
  * AuthProvider component - wraps the app to provide auth state
- * Place this in index.js around <App /> inside <BrowserRouter>
- * 
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.children - Child components
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -41,36 +21,27 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   // Load user from cookie when app starts
-  // Calls GET /api/account/me to check if session cookie is valid
   useEffect(() => {
     async function loadUser() {
       try {
         const existing = await getCurrentUser();
         if (existing) setUser(existing);
       } catch (error) {
-        // User is not logged in or session expired - this is normal
+        // No active session is fine
         console.log("No active session found");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     loadUser();
   }, []);
 
-  /**
-   * Set user data after successful login
-   * Called from LoginPage after POST /api/account/signin succeeds
-   * 
-   * @param {Object} userData - User data from login response
-   */
+  // Set user data after successful login
   const loginUser = (userData) => {
     setUser(userData);
   };
 
-  /**
-   * Log out the current user
-   * Calls POST /api/account/logout and clears local state
-   * Redirects to homepage after logout
-   */
+  // Log out the current user
   const logoutUser = async () => {
     try {
       await apiLogout();
@@ -81,12 +52,10 @@ export function AuthProvider({ children }) {
     navigate("/"); // Redirect to homepage
   };
 
-  // Compute isAuthenticated from user state (convenience property)
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loginUser, logoutUser }}>
-      {/* Don't render children until initial auth check is complete */}
+    <AuthContext.Provider value={{ user, isAuthenticated, loginUser, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );
@@ -94,55 +63,7 @@ export function AuthProvider({ children }) {
 
 /**
  * Custom hook to access authentication context
- * Use this in components to get user state and auth functions
- * 
- * Usage:
- *   const { user, isAuthenticated, loginUser, logoutUser } = useAuth();
- * 
- * @returns {Object} Auth context value
  */
-export function useAuth() {
-  return useContext(AuthContext);
-}
-// frontend/src/context/AuthContext.jsx
-import { createContext, useContext, useState, useEffect } from "react";
-import { getCurrentUser, logout } from "../api/authApi";
-import { useNavigate } from "react-router-dom";
-
-const AuthContext = createContext();
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  // Load user from cookie when app starts
-  useEffect(() => {
-    async function loadUser() {
-      const existing = await getCurrentUser();
-      if (existing) setUser(existing);
-      setLoading(false);
-    }
-    loadUser();
-  }, []);
-
-  const loginUser = (userData) => {
-    setUser(userData);
-  };
-
-  const logoutUser = async () => {
-    await logout();
-    setUser(null);
-    navigate("/");         // Redirect to homepage
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, loginUser, logoutUser }}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
-}
-
 export function useAuth() {
   return useContext(AuthContext);
 }

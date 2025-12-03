@@ -16,8 +16,6 @@ import CaregiverPage from "./pages/Admin/CaregiverPage";
 import EditUserPage from "./pages/Admin/EditUserPage";
 import EditBookingPage from "./pages/Admin/EditBookingPage";
 import EditCaregiverPage from "./pages/Admin/EditCaregiverPage";
-// Added from group's Final_Alexander branch
-import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 // Caregiver dashboard
 import CaregiverDashboardPage from "./pages/Caregiver/DashboardPage";
 

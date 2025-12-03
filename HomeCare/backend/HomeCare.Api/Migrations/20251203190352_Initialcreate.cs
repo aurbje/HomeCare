@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HomeCare.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initialcreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -204,8 +204,10 @@ namespace HomeCare.Api.Migrations
                 {
                     { 1, "Vask" },
                     { 2, "Omsorg" },
-                    { 3, "Matstell" },
-                    { 4, "Annet" }
+                    { 3, "Mating" },
+                    { 4, "Medisinering" },
+                    { 5, "Stell" },
+                    { 6, "Annet" }
                 });
 
             migrationBuilder.CreateIndex(
