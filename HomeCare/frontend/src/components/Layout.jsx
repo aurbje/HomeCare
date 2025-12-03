@@ -166,7 +166,7 @@ export default function Layout() {
             <nav className="hc-side-menu-links">
               <div className="hc-side-menu-section-title">HomeCare</div>
 
-              <Link to="/news" onClick={closeMenu}>
+              <Link to="#" onClick={closeMenu}>
                 Nyheter
               </Link>
               <Link to="/about" onClick={closeMenu}>
