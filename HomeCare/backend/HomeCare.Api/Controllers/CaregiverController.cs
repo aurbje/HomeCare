@@ -1,88 +1,97 @@
+using HomeCare.Api.Enums;
+using HomeCare.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HomeCare.Api.Services;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using HomeCare.Api.Services.Interfaces;
+
 
 namespace HomeCare.Api.Controllers
 {
+    [Authorize(Roles = UserRoleExtensions.Roles.Caregiver)]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Caregiver")]
-    public class CaregiverController : ControllerBase
+    public class CaregiverController : AuthorizedControllerBase
     {
-        private readonly CaregiverService _caregiverService;
-        private readonly ILogger<CaregiverController> _logger;
+        private readonly ICaregiverService _service;
 
-        public CaregiverController(CaregiverService caregiverService, ILogger<CaregiverController> logger)
+        public CaregiverController(ICaregiverService service)
         {
-            _caregiverService = caregiverService;
-            _logger = logger;
+            _service = service;
         }
 
-        // GET: /api/caregiver/clients
-        [HttpGet("clients")]
-        public async Task<IActionResult> GetAssignedClients()
+        // dashboard data
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboard([FromQuery] int? year, [FromQuery] int? month)
         {
+            var userId = GetCurrentUserId();
+
+            int calendarYear = year ?? DateTime.Today.Year;
+            int calendarMonth = month ?? DateTime.Today.Month;
+
+            var model = await _service.GetDashboardAsync(userId, year, month);
+            return Ok(new
+            {
+                calendarYear,
+                calendarMonth,
+                availableDates = model.AvailableDates.OrderBy(d => d.Date).ToList(),
+                CaregiverId = userId,
+                model
+            });
+        }
+
+        // register working day
+        [HttpPost("availability")]
+        public async Task<IActionResult> RegisterAvailability([FromBody] DateTime AvailableDate)
+        {
+            if (AvailableDate.Date < DateTime.Today)
+            {
+                return BadRequest(new { message = "Du kan ikke registrere en dato i fortiden." });
+            }
+
+            var userId = GetCurrentUserId();
+            await _service.RegisterAvailabilityAsync(userId, AvailableDate);
+            return NoContent();
+        }
+
+        [HttpPost("availability/batch")]
+        public async Task<IActionResult> RegisterMultipleAvailability([FromBody] List<DateTime> SelectedDates)
+        {
+            var userId = GetCurrentUserId();
+            await _service.RegisterMultipleAvailabilityAsync(userId, SelectedDates);
+            return NoContent();
+        }
+
+        [HttpDelete("availability")]
+        public async Task<IActionResult> DeleteAvailability([FromQuery] DateTime dateToDelete)
+        {
+            var userId = GetCurrentUserId();
+
             try
             {
-                var response = await _caregiverService.GetClientsAsync(User);
-
-                if (response == null || response.Data == null || !response.Data.Any())
-                {
-                    _logger.LogInformation("No clients found for caregiver {User}.", User.Identity?.Name);
-                    return NotFound(new { message = "No assigned clients found." });
-                }
-
-                return Ok(response.Data);
+                await _service.DeleteAvailabilityAsync(userId, dateToDelete.Date);
+                return NoContent();
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                _logger.LogError(ex, "Error while fetching assigned clients for caregiver {User}.", User.Identity?.Name);
-                return StatusCode(500, new { message = "Unexpected error while fetching clients." });
+                return BadRequest(new { message = ex.Message });
             }
         }
 
-        // GET: /api/caregiver/schedule
-        [HttpGet("schedule")]
-        public async Task<IActionResult> GetSchedule()
+        [HttpPost("availability/request-deletion")]
+        public async Task<IActionResult> RequestAvailabilityDeletion([FromQuery] int CaregiverId, [FromQuery] DateTime date)
         {
-            try
+            var deleted = await _service.RequestAvailabilityDeletionAsync(CaregiverId, date.Date);
+
+            if (deleted)
             {
-                var response = await _caregiverService.GetScheduleAsync(User);
-
-                if (response == null || response.Data == null || !response.Data.Any())
-                {
-                    _logger.LogInformation("No schedule found for caregiver {User}.", User.Identity?.Name);
-                    return NotFound(new { message = "No scheduled bookings found." });
-                }
-
-                return Ok(response.Data);
+                return NoContent();
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "Error while fetching schedule for caregiver {User}.", User.Identity?.Name);
-                return StatusCode(500, new { message = "Unexpected error while fetching schedule." });
-            }
-        }
-
-        // PUT: /api/caregiver/visit/{bookingId}/complete
-        [HttpPut("visit/{bookingId}/complete")]
-        public async Task<IActionResult> CompleteVisit(int bookingId)
-        {
-            try
-            {
-                var result = await _caregiverService.CompleteVisitAsync(bookingId);
-
-                if (result == null || !result.Success)
-                    return NotFound(new { message = "Booking not found or could not be completed." });
-
-                _logger.LogInformation("Caregiver {User} completed booking {BookingId}.", User.Identity?.Name, bookingId);
-                return Ok(new { message = "Visit marked as completed.", data = result.Data });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error completing booking {BookingId} for caregiver {User}.", bookingId, User.Identity?.Name);
-                return StatusCode(500, new { message = "Unexpected error while completing visit." });
+                return Conflict(new { message = "Denne dagen er allerede reservert av en kunde. Administrator vil håndtere forespørselen manuelt." });
             }
         }
     }

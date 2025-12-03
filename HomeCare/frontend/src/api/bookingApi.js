@@ -1,80 +1,62 @@
 // src/api/bookingApi.js
+// Uses axios api instance with baseURL from .env (REACT_APP_API_URL)
 
-const API_BASE = "https://localhost:7016/api/booking"; 
-// Endre til riktig port hvis din backend kjører på en annen adresse
-
-// Helper: converts Fetch errors into readable exceptions
-async function handleResponse(response) {
-  if (!response.ok) {
-    let error = "Ukjent feil";
-
-    try {
-      const data = await response.json();
-      error = data.message || JSON.stringify(data);
-    } catch {
-      error = response.statusText;
-    }
-
-    throw new Error(error);
-  }
-
-  // Hvis det ikke finnes body
-  if (response.status === 204) return null;
-
-  return response.json();
-}
+import api from './api';
 
 /* =============================================
    GET: Hent komplett bookingside-data
-   GET /api/booking
+   GET /booking
 ============================================= */
 export async function getBookingPage() {
-  const response = await fetch(API_BASE, {
-    method: "GET",
-    credentials: "include", // hvis cookies skal brukes
-  });
-  return handleResponse(response);
+  const response = await api.get('/booking');
+  return response.data;
+}
+
+/* =============================================
+   GET: Hent booking init data
+   GET /booking/init
+============================================= */
+export async function getBookingInit() {
+  const response = await api.get('/booking/init');
+  return response.data;
 }
 
 /* =============================================
    GET: Hent booking for redigering
-   GET /api/booking/{id}
+   GET /booking/{id}
 ============================================= */
 export async function getBookingForEdit(id) {
-  const response = await fetch(`${API_BASE}/${id}`, {
-    method: "GET",
-    credentials: "include",
-  });
-
-  return handleResponse(response);
+  const response = await api.get(`/booking/${id}`);
+  return response.data;
 }
 
 /* =============================================
    POST: Opprett eller oppdater booking
-   POST /api/booking
+   POST /booking
 ============================================= */
 export async function createOrUpdateBooking(model) {
-  const response = await fetch(API_BASE, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(model),
-  });
-
-  return handleResponse(response);
+  const response = await api.post('/booking', model);
+  return response.data;
 }
 
 /* =============================================
    DELETE: Avbryt booking
-   DELETE /api/booking/{id}
+   DELETE /booking/{id}
 ============================================= */
 export async function cancelBooking(id) {
-  const response = await fetch(`${API_BASE}/${id}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
+  const response = await api.delete(`/booking/${id}`);
+  return response.data;
+}
 
-  return handleResponse(response);
+/* =============================================
+   GET: Hent tilgjengelige caregivers for slot
+   GET /booking/select-caregiver
+============================================= */
+export async function getAvailableCaregivers(selectedDate, timeSlotId, bookingId) {
+  const params = new URLSearchParams({ selectedDate });
+  if (timeSlotId) params.append('timeSlotId', timeSlotId);
+  if (bookingId) params.append('bookingId', bookingId);
+  
+  const response = await api.get(`/booking/select-caregiver?${params}`);
+  return response.data;
 }

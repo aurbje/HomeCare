@@ -1,221 +1,113 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using HomeCare.Api.Models;
 using HomeCare.Api.DTO;
-using HomeCare.Api.DAL.Interfaces;
-using HomeCare.Api.DTO.User;
+using HomeCare.Api.Enums;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using HomeCare.Api.Services.Interfaces;
 
 namespace HomeCare.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BookingController : ControllerBase
+    [Authorize]
+    public class BookingController : AuthorizedControllerBase
     {
-        private readonly IBookingRepository _bookingRepo;
+        private readonly IBookingService _bookingService;
         private readonly ILogger<BookingController> _logger;
 
-        public BookingController(IBookingRepository bookingRepo, ILogger<BookingController> logger)
+        public BookingController(IBookingService bookingService, ILogger<BookingController> logger)
         {
-            _bookingRepo = bookingRepo;
+            _bookingService = bookingService;
             _logger = logger;
         }
 
-        // GET: /api/booking
-        [HttpGet]
-        public async Task<ActionResult<BookingPageDto>> GetBookingPage()
+        [HttpGet("init")]
+        public async Task<IActionResult> GetBookingInit()
         {
-            _logger.LogInformation("Loading booking page data.");
-
-            try
-            {
-                var availableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
-                var categories = (await _bookingRepo.GetCategoriesAsync()).ToList();
-                var bookings = (await _bookingRepo.GetAllBookingsAsync()).ToList();
-
-                var model = new BookingPageDto
-                {
-                    SelectedDate = DateTime.Today,
-                    CategoryId = categories.FirstOrDefault()?.Id ?? 0,
-                    AvailableDates = availableDates,
-                    Categories = categories,
-                    Bookings = bookings
-                };
-
-                return Ok(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while loading booking data.");
-                return StatusCode(500, new { message = "Unexpected error while loading booking data." });
-            }
+            var userId = GetCurrentUserId();
+            var result = await _bookingService.GetBookingInitAsync(userId);
+            return Ok(result);
         }
 
-        // POST: /api/booking
         [HttpPost]
-        public async Task<IActionResult> CreateOrUpdateBooking([FromBody] CreateBookingDto model)
+        public async Task<IActionResult> CreateOrUpdateBooking([FromBody] BookingRequestDto model)
         {
-            _logger.LogInformation("Booking request for category {CategoryId} on {Date}", model.CategoryId, model.SelectedDate);
+            var UserId = GetCurrentUserId();
+            var result = await _bookingService.CreateOrUpdateBookingAsync(model, UserId);
 
-            if (!ModelState.IsValid)
+            return result.ResultType switch
             {
-                var errors = ModelState
-                    .Where(kvp => kvp.Value?.Errors.Any() == true)
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray());
-
-                return BadRequest(new { message = "Validation failed", errors });
-            }
-
-            try
-            {
-                var selectedCategory = await _bookingRepo.GetCategoryByIdAsync(model.CategoryId);
-                if (selectedCategory == null)
-                    return BadRequest(new { message = "Invalid category." });
-
-                var selectedSlot = await _bookingRepo.GetAvailableTimeSlotAsync(model.TimeSlotId);
-                if (selectedSlot == null)
-                    return BadRequest(new { message = "Selected time slot is no longer available." });
-
-                // Parse slot time string (e.g. "10:00-11:00")
-                if (!TimeSpan.TryParse(selectedSlot.Slot.Split('-')[0].Trim(), out TimeSpan startTime))
-                    return BadRequest(new { message = "Invalid time slot format." });
-
-                if (model.BookingId > 0)
-                {
-                    var existing = await _bookingRepo.GetBookingByIdAsync(model.BookingId);
-                    if (existing == null)
-                        return NotFound(new { message = "Booking not found." });
-
-                    existing.Date = selectedSlot.AvailableDate.Date;
-                    existing.Time = selectedSlot.Slot;
-                    existing.TimeSlotId = selectedSlot.Id;
-                    existing.ServiceType = selectedCategory.Name;
-                    existing.Notes = model.Notes;
-
-                    selectedSlot.IsBooked = true;
-                    await _bookingRepo.UpdateTimeSlotAsync(selectedSlot);
-                    await _bookingRepo.UpdateBookingAsync(existing);
-
-                    return Ok(new
-                    {
-                        message = $"Booking updated for {existing.Date:yyyy-MM-dd} at {existing.Time}.",
-                        booking = existing
-                    });
-                }
-                else
-                {
-                    var booking = new Booking
-                    {
-                        Date = selectedSlot.AvailableDate.Date,
-                        Time = selectedSlot.Slot,
-                        TimeSlotId = selectedSlot.Id,
-                        CategoryId = selectedCategory.Id,
-                        ServiceType = selectedCategory.Name,
-                        Notes = model.Notes,
-                        Status = "Booked"
-                    };
-
-                    selectedSlot.IsBooked = true;
-                    await _bookingRepo.AddBookingAsync(booking);
-
-                    return StatusCode(201, new
-                    {
-                        message = $"Booking created for {booking.Date:yyyy-MM-dd} {booking.Time}.",
-                        booking
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while creating or updating booking.");
-                return StatusCode(500, new { message = "Unexpected error while saving booking." });
-            }
+                BookingResultType.Success => Ok(new { message = result.Message, bookingId = result.BookingId }),
+                BookingResultType.NotFound => NotFound(new { message = result.Message }),
+                BookingResultType.Forbidden => Forbid(),
+                BookingResultType.ValidationError => ValidationProblem(CreateModelState(result.ValidationErrors)),
+                _ => BadRequest(new { message = result.Message })
+            };
         }
 
-        // DELETE: /api/booking/{id}
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> CancelBooking(int id)
         {
-            _logger.LogInformation("Attempting to cancel booking {BookingId}.", id);
+            var userId = GetCurrentUserId();
+            var isAdmin = IsInRole(UserRoleExtensions.Roles.Admin);
+            var result = await _bookingService.CancelBookingAsync(id, userId, isAdmin);
 
-            try
+            return result.ResultType switch
             {
-                var booking = await _bookingRepo.GetBookingByIdAsync(id);
-                if (booking == null)
-                    return NotFound(new { message = "Booking not found." });
-
-                var slot = await _bookingRepo.GetAvailableTimeSlotAsync(booking.TimeSlotId);
-                if (slot != null)
-                {
-                    slot.IsBooked = false;
-                    await _bookingRepo.UpdateTimeSlotAsync(slot);
-                }
-
-                await _bookingRepo.DeleteBookingAsync(id);
-                return Ok(new { message = "Booking cancelled successfully." });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while cancelling booking {BookingId}.", id);
-                return StatusCode(500, new { message = "Unexpected error while cancelling booking." });
-            }
+                BookingResultType.Success => NoContent(),
+                BookingResultType.NotFound => NotFound(new { message = result.Message }),
+                BookingResultType.Forbidden => Forbid(),
+                _ => BadRequest(new { message = result.Message })
+            };
         }
 
-        // GET: /api/booking/{id}
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<BookingEditDto>> GetBookingForEdit(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBooking(int id)
         {
-            _logger.LogInformation("Loading data for editing booking {BookingId}.", id);
+            var userId = GetCurrentUserId();
+            var isAdmin = IsInRole(UserRoleExtensions.Roles.Admin);
+            var booking = await _bookingService.GetBookingAsync(id, userId, isAdmin);
 
-            try
-            {
-                var booking = await _bookingRepo.GetBookingByIdAsync(id);
-                if (booking == null)
-                    return NotFound(new { message = "Booking not found." });
-
-                var availableDates = (await _bookingRepo.GetAvailableDatesAsync()).ToList();
-                var categories = (await _bookingRepo.GetCategoriesAsync()).ToList();
-                var bookings = (await _bookingRepo.GetAllBookingsAsync()).ToList();
-
-                var model = new BookingEditDto
-                {
-                    BookingId = booking.Id,
-                    SelectedDate = booking.Date,
-                    TimeSlotId = booking.TimeSlotId,
-                    CategoryId = booking.CategoryId,
-                    Notes = booking.Notes,
-                    AvailableDates = availableDates,
-                    Categories = categories,
-                    Bookings = bookings
-                };
-
-                return Ok(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while loading booking {BookingId}.", id);
-                return StatusCode(500, new { message = "Unexpected error while loading booking." });
-            }
+            if (booking == null) return NotFound();
+            return Ok(booking);
         }
-    }
 
-    // DTOs (response shapes)
-    public class BookingPageDto
-    {
-        public DateTime SelectedDate { get; set; }
-        public int CategoryId { get; set; }
-        public List<AvailableDate> AvailableDates { get; set; } = new();
-        public List<Category> Categories { get; set; } = new();
-        public List<Booking> Bookings { get; set; } = new();
-    }
+        [HttpGet("select-Caregiver")]
+        public async Task<IActionResult> SelectCaregiver([FromQuery] string selectedDate, [FromQuery] int? timeSlotId, [FromQuery] int? bookingId)
+        {
+            if (string.IsNullOrWhiteSpace(selectedDate))
+            {
+                return Ok(Array.Empty<object>());
+            }
 
-    public class BookingEditDto
-    {
-        public int BookingId { get; set; }
-        public DateTime SelectedDate { get; set; }
-        public int TimeSlotId { get; set; }
-        public int CategoryId { get; set; }
-        public string? Notes { get; set; }
-        public List<AvailableDate> AvailableDates { get; set; } = new();
-        public List<Category> Categories { get; set; } = new();
-        public List<Booking> Bookings { get; set; } = new();
+            if (!DateTime.TryParseExact(selectedDate, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var date))
+            {
+                if (!DateTime.TryParse(selectedDate, out date))
+                {
+                    return Ok(Array.Empty<object>());
+                }
+            }
+
+            var Caregiver = await _bookingService.GetAvailableCaregiverForSlotAsync(date, timeSlotId, bookingId);
+            var CaregiverDto = Caregiver.Select(p => new { p.Id, p.FullName }).ToList();
+            return Ok(CaregiverDto);
+        }
+
+        private Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary CreateModelState(Dictionary<string, string>? errors)
+        {
+            var modelState = new Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary();
+            if (errors != null)
+            {
+                foreach (var (key, value) in errors)
+                {
+                    modelState.AddModelError(key, value);
+                }
+            }
+            return modelState;
+        }
     }
 }

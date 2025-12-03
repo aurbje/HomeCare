@@ -28,7 +28,7 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                IQueryable<User> query = _context.AppUsers;
+                IQueryable<User> query = _context.Users;
 
                 if (!string.IsNullOrWhiteSpace(q))
                 {
@@ -58,7 +58,7 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
+                var user = await _context.Users.FindAsync(id);
                 if (user == null)
                 {
                     return NotFound(new { message = "Bruker ikke funnet" });
@@ -78,7 +78,7 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
+                var user = await _context.Users.FindAsync(id);
                 if (user == null)
                 {
                     return NotFound(new { message = "Bruker ikke funnet" });
@@ -106,14 +106,14 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
+                var user = await _context.Users.FindAsync(id);
                 if (user == null)
                 {
                     return NotFound(new { message = "Bruker ikke funnet" });
                 }
 
                 // safetyguard - Do not delete the last admin
-                if (user.Role == "Admin" && await _context.AppUsers.CountAsync(u => u.Role == "Admin") <= 1)
+                if (user.Role == "Admin" && await _context.Users.CountAsync(u => u.Role == "Admin") <= 1)
                 {
                     return BadRequest(new { message = "Kan ikke slette den siste admin-brukeren" });
                 }
@@ -125,7 +125,7 @@ namespace HomeCare.Api.Controllers
                     return BadRequest(new { message = "Kan ikke slette bruker som er knyttet til bookinger" });
                 }
 
-                _context.AppUsers.Remove(user);
+                _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = $"Bruker {user.FullName} ble slettet" });
@@ -145,7 +145,7 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                IQueryable<User> query = _context.AppUsers.Where(u => u.Role == "Caregiver");
+                IQueryable<User> query = _context.Users.Where(u => u.Role == "Caregiver");
 
                 if (!string.IsNullOrWhiteSpace(q))
                 {
@@ -175,7 +175,7 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
+                var user = await _context.Users.FindAsync(id);
                 
                 if (user == null || user.Role != "Caregiver")
                 {
@@ -197,7 +197,7 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
+                var user = await _context.Users.FindAsync(id);
                 if (user == null || user.Role != "Caregiver")
                 {
                     return NotFound(new { message = "Personell ikke funnet" });
@@ -224,20 +224,20 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
+                var user = await _context.Users.FindAsync(id);
                 if (user == null)
                 {
                     return NotFound(new { message = "Personell ikke funnet" });
                 }
 
-                // Checks references - CaregiverId is a string containing the user ID
-                var hasBookings = await _context.Bookings.AnyAsync(b => b.CaregiverId == id.ToString());
+                // Checks references - CaregiverId is int? now
+                var hasBookings = await _context.Bookings.AnyAsync(b => b.CaregiverId == id);
                 if (hasBookings)
                 {
                     return BadRequest(new { message = "Kan ikke slette personell som er knyttet til bookinger" });
                 }
 
-                _context.AppUsers.Remove(user);
+                _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = $"Personell {user.FullName} ble slettet" });
@@ -257,7 +257,9 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                IQueryable<Booking> query = _context.Bookings.Include(b => b.User);
+                IQueryable<Booking> query = _context.Bookings
+                    .Include(b => b.User)
+                    .Include(b => b.Category);
 
                 if (!string.IsNullOrWhiteSpace(q))
                 {
@@ -266,13 +268,11 @@ namespace HomeCare.Api.Controllers
                         (b.User != null && (
                             b.User.FullName.ToLower().Contains(term) ||
                             b.User.Email.ToLower().Contains(term))) ||
-                        (b.ServiceType != null && b.ServiceType.ToLower().Contains(term)) ||
-                        (b.CaregiverId != null && b.CaregiverId.Contains(term)));
+                        (b.Category != null && b.Category.Name.ToLower().Contains(term)));
                 }
 
                 var bookings = await query
-                    .OrderByDescending(b => b.Date)
-                    .ThenBy(b => b.Time)
+                    .OrderByDescending(b => b.DateTime)
                     .Take(500)
                     .ToListAsync();
 
@@ -315,8 +315,8 @@ namespace HomeCare.Api.Controllers
         {
             try
             {
-                var clients = await _context.AppUsers.Where(u => u.Role == "User").ToListAsync();
-                var personnel = await _context.AppUsers.Where(u => u.Role == "Caregiver").ToListAsync();
+                var clients = await _context.Users.Where(u => u.Role == "User").ToListAsync();
+                var personnel = await _context.Users.Where(u => u.Role == "Caregiver").ToListAsync();
 
                 return Ok(new { clients, personnel });
             }
@@ -339,9 +339,9 @@ namespace HomeCare.Api.Controllers
                     return NotFound(new { message = "Booking ikke funnet" });
                 }
 
-                booking.Date = model.Date;
-                booking.Time = model.Time;
-                booking.ServiceType = model.ServiceType;
+                // Updated to use new Booking model properties
+                booking.DateTime = model.DateTime;
+                booking.CategoryId = model.CategoryId;
                 booking.Notes = model.Notes;
                 booking.CaregiverId = model.CaregiverId;
                 booking.UserId = model.UserId;
@@ -369,7 +369,7 @@ namespace HomeCare.Api.Controllers
                 }
 
                 // Optional safety: block deletion of past bookings
-                if (booking.Date.Date < DateTime.Today)
+                if (booking.DateTime.Date < DateTime.Today)
                 {
                     return BadRequest(new { message = "Kan ikke slette tidligere booking" });
                 }

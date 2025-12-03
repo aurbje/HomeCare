@@ -1,4 +1,4 @@
-namespace HomeCare.ViewModels.Admin
+namespace HomeCare.Api.DTO.Admin
 {
     public class PersonnelViewModel
     {

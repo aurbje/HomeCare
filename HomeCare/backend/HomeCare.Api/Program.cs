@@ -1,6 +1,8 @@
 using HomeCare.Api.Data;
 using HomeCare.Api.DAL.Interfaces;
 using HomeCare.Api.DAL.Repositories;
+using HomeCare.Api.Services;
+using HomeCare.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -51,6 +53,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<ICaregiverRepository, CaregiverRepository>();
+
+// Services
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<ICaregiverService, CaregiverService>();
 
 var app = builder.Build();
 

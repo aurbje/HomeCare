@@ -1,37 +1,29 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using HomeCare.Api.Enums;
 
 namespace HomeCare.Api.Models
 {
-    // basic user model stored in our own user table (not identity)
     public class User
     {
         public int Id { get; set; }
 
-        // person info
-        [Required]
-        public string FullName { get; set; } = string.Empty; // e.g. "Name Surname"
-
-        [Required, EmailAddress]
+        // Personopplysninger
+        public string FullName { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
-        // hashed password so we never store plain text
-        [Required]
+        // Autentisering
         public string PasswordHash { get; set; } = string.Empty;
 
-        // contact details
-        [Required]
+        // Kontaktinformasjon
         public string TlfNumber { get; set; } = string.Empty;
-
-        [Required]
         public string Address { get; set; } = string.Empty;
 
-        // user role (mainly "user", but can be expanded)
-        [Required]
-        public string Role { get; set; } = "user";
+        // Roller og tilgang (lagres som string i DB for kompatibilitet med ASP.NET Authorization)
+        public string Role { get; set; } = UserRoleExtensions.Roles.User;
 
-        // visits assigned to this user
-        public ICollection<Visit> Visits { get; set; } = new List<Visit>();
-
+        /// <summary>
+        /// Henter rollen som enum for enklere logikk
+        /// </summary>
+        public UserRole? RoleEnum => Role.ToUserRole();
     }
 }

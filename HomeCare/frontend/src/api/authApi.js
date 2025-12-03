@@ -1,74 +1,36 @@
 // src/api/authApi.js
+// Uses axios api instance with baseURL from .env (REACT_APP_API_URL)
 
-const API_BASE = "https://localhost:7016/api/auth";
-
-// Helper: same as bookingApi
-async function handleResponse(response) {
-    if (!response.ok) {
-        let error = "Ukjent feil";
-
-        try {
-            const data = await response.json();
-            error = data.message || JSON.stringify(data);
-        } catch {
-            error = response.statusText;
-        }
-
-        throw new Error(error);
-    }
-
-    if (response.status === 204) return null;
-    return response.json();
-}
+import api from './api';
 
 /* =============================================
-   POST /api/auth/login
+   POST /account/signin
 ============================================= */
 export async function loginUser(credentials) {
-    const response = await fetch(`${API_BASE}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",  // for cookies/session
-        body: JSON.stringify(credentials),
-    });
-
-    return handleResponse(response);
+    const response = await api.post('/account/signin', credentials);
+    return response.data;
 }
 
 /* =============================================
-   POST /api/auth/register
+   POST /account/signup
 ============================================= */
 export async function registerUser(model) {
-    const response = await fetch(`${API_BASE}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(model),
-    });
-
-    return handleResponse(response);
+    const response = await api.post('/account/signup', model);
+    return response.data;
 }
 
 /* =============================================
-   POST /api/auth/logout
+   POST /account/logout
 ============================================= */
 export async function logoutUser() {
-    const response = await fetch(`${API_BASE}/logout`, {
-        method: "POST",
-        credentials: "include",
-    });
-
-    return handleResponse(response);
+    const response = await api.post('/account/logout');
+    return response.data;
 }
 
 /* =============================================
-   GET /api/auth/me (optional)
+   GET /account/me
 ============================================= */
 export async function getCurrentUser() {
-    const response = await fetch(`${API_BASE}/me`, {
-        method: "GET",
-        credentials: "include",
-    });
-
-    return handleResponse(response);
+    const response = await api.get('/account/me');
+    return response.data;
 }
