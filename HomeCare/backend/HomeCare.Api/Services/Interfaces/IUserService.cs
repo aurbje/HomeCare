@@ -1,4 +1,4 @@
-using HomeCare.Api.DTO;
+using HomeCare.Api.DTO.User;
 using HomeCare.Api.Models;
 
 namespace HomeCare.Api.Services.Interfaces

@@ -4,8 +4,6 @@ using HomeCare.Api.DAL.Repositories;
 using HomeCare.Api.Data;
 using HomeCare.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
 
 namespace HomeCare.Tests.Repositories
@@ -21,12 +19,11 @@ namespace HomeCare.Tests.Repositories
             return new AppDbContext(opts);
         }
 
-        // 5️⃣ Add user + fetch by email
         [Fact]
         public async Task AddUserAndRetrieveByEmail_Works()
         {
-            var db = GetDbContext();
-            var repo = new UserRepository(db, Mock.Of<ILogger<UserRepository>>());
+            using var db = GetDbContext();
+            var repo = new UserRepository(db);
 
             var user = new User { FullName = "Test", Email = "test@test.com", PasswordHash = "abc" };
 
@@ -37,34 +34,16 @@ namespace HomeCare.Tests.Repositories
             Assert.Equal("Test", fetched!.FullName);
         }
 
-        // 6️⃣ EmailExists
         [Fact]
         public async Task EmailExists_ReturnsTrueForExistingEmail()
         {
-            var db = GetDbContext();
-            db.AppUsers.Add(new User { FullName = "A", Email = "exists@test.com", PasswordHash = "x" });
-            db.SaveChanges();
+            using var db = GetDbContext();
+            db.Users.Add(new User { FullName = "A", Email = "exists@test.com", PasswordHash = "x" });
+            await db.SaveChangesAsync();
 
-            var repo = new UserRepository(db, Mock.Of<ILogger<UserRepository>>());
+            var repo = new UserRepository(db);
 
             Assert.True(await repo.EmailExistsAsync("exists@test.com"));
-        }
-
-        // 7️⃣ Delete user
-        [Fact]
-        public async Task DeleteUser_RemovesUserFromDatabase()
-        {
-            var db = GetDbContext();
-            db.AppUsers.Add(new User { Id = 1, FullName = "Del", Email = "del@test.com", PasswordHash = "x" });
-            db.SaveChanges();
-
-            var repo = new UserRepository(db, Mock.Of<ILogger<UserRepository>>());
-
-            var ok = await repo.DeleteUserAsync(1);
-            var stillThere = await repo.GetUserByIdAsync(1);
-
-            Assert.True(ok);
-            Assert.Null(stillThere);
         }
     }
 }

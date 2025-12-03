@@ -1,5 +1,5 @@
 using HomeCare.Api.Data;
-using HomeCare.Api.DTO;
+using HomeCare.Api.DTO.User;
 using HomeCare.Api.Enums;
 using HomeCare.Api.Services.Interfaces;
 using HomeCare.Api.Models;
@@ -116,7 +116,7 @@ namespace HomeCare.Api.Services
             };
         }
 
-        public async Task<BookingResult> CreateOrUpdateBookingAsync(BookingRequestDto model, int UserId)
+        public async Task<BookingResultDto> CreateOrUpdateBookingAsync(BookingRequestDto model, int UserId)
         {
             _logger.LogInformation("Booking attempt for categoryId {CategoryId} on {Date}", model.CategoryId, model.SelectedDate);
 
@@ -182,14 +182,14 @@ namespace HomeCare.Api.Services
 
             if (errors.Count > 0)
             {
-                return new BookingResult { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
+                return new BookingResultDto { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
             }
 
             // Validate Caregiver exists
             if (!model.SelectedCaregiverId.HasValue)
             {
                 errors["SelectedCaregiverId"] = "Please select a Caregiver.";
-                return new BookingResult { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
+                return new BookingResultDto { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
             }
 
             var Caregiver = await _repo.GetUserByIdAsync(model.SelectedCaregiverId.Value);
@@ -197,7 +197,7 @@ namespace HomeCare.Api.Services
             {
                 _logger.LogWarning("Caregiver ID {Id} not found.", model.SelectedCaregiverId);
                 errors["SelectedCaregiverId"] = "Valgt ansatt finnes ikke.";
-                return new BookingResult { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
+                return new BookingResultDto { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
             }
 
             // Update existing booking
@@ -207,7 +207,7 @@ namespace HomeCare.Api.Services
                 if (existing == null)
                 {
                     _logger.LogWarning("Booking {BookingId} not found for update.", model.BookingId);
-                    return new BookingResult { Success = false, ResultType = BookingResultType.NotFound, Message = "Booking not found." };
+                    return new BookingResultDto { Success = false, ResultType = BookingResultType.NotFound, Message = "Booking not found." };
                 }
 
                 if (selectedSlot?.AvailableDate != null && selectedCategory != null)
@@ -221,12 +221,12 @@ namespace HomeCare.Api.Services
                     await _repo.UpdateBookingAsync(existing);
                     _logger.LogInformation("Booking {BookingId} updated.", existing.Id);
 
-                    return new BookingResult { Success = true, BookingId = existing.Id, Message = "Booking updated.", ResultType = BookingResultType.Success };
+                    return new BookingResultDto { Success = true, BookingId = existing.Id, Message = "Booking updated.", ResultType = BookingResultType.Success };
                 }
                 else
                 {
                     errors["TimeSlotId"] = "Valgt tidspunkt er ikke lenger tilgjengelig.";
-                    return new BookingResult { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
+                    return new BookingResultDto { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
                 }
             }
 
@@ -234,7 +234,7 @@ namespace HomeCare.Api.Services
             if (selectedSlot?.AvailableDate == null || selectedCategory == null)
             {
                 errors["TimeSlotId"] = "Valgt tidspunkt er ikke lenger tilgjengelig.";
-                return new BookingResult { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
+                return new BookingResultDto { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
             }
 
             var booking = new Booking
@@ -250,10 +250,10 @@ namespace HomeCare.Api.Services
             await _repo.AddBookingAsync(booking);
             _logger.LogInformation("Booking created for {DateTime} category {CategoryId}.", booking.DateTime, booking.CategoryId);
 
-            return new BookingResult { Success = true, BookingId = booking.Id, Message = "Booking booked.", ResultType = BookingResultType.Success };
+            return new BookingResultDto { Success = true, BookingId = booking.Id, Message = "Booking booked.", ResultType = BookingResultType.Success };
         }
 
-        public async Task<BookingResult> CancelBookingAsync(int bookingId, int userId, bool isAdmin)
+        public async Task<BookingResultDto> CancelBookingAsync(int bookingId, int userId, bool isAdmin)
         {
             _logger.LogInformation("Cancel request for booking {BookingId} by user {UserId}.", bookingId, userId);
 
@@ -261,19 +261,19 @@ namespace HomeCare.Api.Services
             if (booking == null)
             {
                 _logger.LogWarning("Booking {BookingId} not found.", bookingId);
-                return new BookingResult { Success = false, ResultType = BookingResultType.NotFound, Message = "Booking not found." };
+                return new BookingResultDto { Success = false, ResultType = BookingResultType.NotFound, Message = "Booking not found." };
             }
 
             if (booking.UserId != userId && !isAdmin)
             {
                 _logger.LogWarning("User {UserId} attempted to cancel booking {BookingId} they don't own.", userId, bookingId);
-                return new BookingResult { Success = false, ResultType = BookingResultType.Forbidden, Message = "Not authorized to cancel this booking." };
+                return new BookingResultDto { Success = false, ResultType = BookingResultType.Forbidden, Message = "Not authorized to cancel this booking." };
             }
 
             await _repo.DeleteBookingAsync(bookingId);
             _logger.LogInformation("Booking {BookingId} cancelled.", bookingId);
 
-            return new BookingResult { Success = true, ResultType = BookingResultType.Success, Message = "Booking cancelled." };
+            return new BookingResultDto { Success = true, ResultType = BookingResultType.Success, Message = "Booking cancelled." };
         }
 
         public async Task<BookingDto?> GetBookingAsync(int bookingId, int userId, bool isAdmin)

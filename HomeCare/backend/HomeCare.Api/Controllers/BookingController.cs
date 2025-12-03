@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using HomeCare.Api.Models;
-using HomeCare.Api.DTO;
+using HomeCare.Api.DTO.User;
 using HomeCare.Api.Enums;
 using System.Threading.Tasks;
 using System;

@@ -151,23 +151,23 @@ namespace HomeCare.Api.Controllers
         }
 
         // Bookings
+
         [HttpGet("bookings")]
         public async Task<IActionResult> GetBookings([FromQuery(Name = "q")] string? q)
         {
-            var list = await _adminRepo.GetBookingsAsync(q);
-            // Map to shape expected by frontend if needed
-            var shaped = list.Select(b => new
+            var bookings = await _adminRepo.GetBookingsAsync(q);
+            var shaped = bookings.Select(b => new
             {
                 id = b.Id,
+                date = b.DateTime,
+                time = b.TimeSlot?.Slot,
+                status = b.Status.ToString(),
                 clientId = b.UserId,
+                clientName = b.User?.FullName,
                 caregiverId = b.CaregiverId,
-                date = b.Date,
-                time = b.Time,
-                serviceType = b.ServiceType,
-                notes = b.Notes,
-                status = b.Status,
-                timeSlot = b.TimeSlot?.Slot,
-                category = b.Category?.Name
+                caregiverName = _context.Users.FirstOrDefault(u => u.Id == b.CaregiverId)?.FullName,
+                categoryId = b.CategoryId,
+                categoryName = b.Category?.Name
             });
             return Ok(shaped);
         }
@@ -175,32 +175,29 @@ namespace HomeCare.Api.Controllers
         [HttpGet("bookings/{id:int}")]
         public async Task<IActionResult> GetBookingById(int id)
         {
-            var b = await _adminRepo.GetBookingByIdAsync(id);
-            if (b == null) return NotFound();
+            var booking = await _adminRepo.GetBookingByIdAsync(id);
+            if (booking == null) return NotFound();
             return Ok(new
             {
-                id = b.Id,
-                clientId = b.UserId,
-                caregiverId = b.CaregiverId,
-                date = b.Date,
-                time = b.Time,
-                serviceType = b.ServiceType,
-                notes = b.Notes,
-                status = b.Status,
-                timeSlot = b.TimeSlot?.Slot,
-                category = b.Category?.Name
+                id = booking.Id,
+                date = booking.DateTime,
+                timeSlotId = booking.TimeSlotId,
+                status = booking.Status.ToString(),
+                clientId = booking.UserId,
+                caregiverId = booking.CaregiverId,
+                categoryId = booking.CategoryId
             });
         }
 
         public class UpdateBookingDto
         {
-            public int? ClientId { get; set; }
-            public string? CaregiverId { get; set; }
+            public int ClientId { get; set; }
+            public int? CaregiverId { get; set; }
             public DateTime Date { get; set; }
-            public string Time { get; set; } = string.Empty;
-            public string ServiceType { get; set; } = string.Empty;
+            public int TimeSlotId { get; set; }
+            public int CategoryId { get; set; }
             public string? Notes { get; set; }
-            public string? Status { get; set; }
+            public string Status { get; set; } = string.Empty;
         }
 
         [HttpPut("bookings/{id:int}")]
@@ -209,16 +206,23 @@ namespace HomeCare.Api.Controllers
             var existing = await _adminRepo.GetBookingByIdAsync(id);
             if (existing == null) return NotFound();
 
+            // Update properties from DTO
             existing.UserId = input.ClientId;
-            if (!string.IsNullOrWhiteSpace(input.CaregiverId)) existing.CaregiverId = input.CaregiverId!;
-            existing.Date = input.Date;
-            existing.Time = input.Time;
-            existing.ServiceType = input.ServiceType;
+            existing.CaregiverId = input.CaregiverId;
+            existing.DateTime = input.Date;
+            existing.TimeSlotId = input.TimeSlotId;
+            existing.CategoryId = input.CategoryId;
             existing.Notes = input.Notes;
-            if (!string.IsNullOrWhiteSpace(input.Status)) existing.Status = input.Status!;
+            
+            if (Enum.TryParse<HomeCare.Api.Enums.BookingStatus>(input.Status, true, out var statusEnum))
+            {
+                existing.Status = statusEnum;
+            }
 
-            var ok = await _adminRepo.UpdateBookingAsync(existing);
-            return ok ? Ok(new { message = "Booking updated" }) : StatusCode(500, new { message = "Failed to update booking" });
+            var success = await _adminRepo.UpdateBookingAsync(existing);
+            if (!success) return StatusCode(500, "Failed to update booking");
+
+            return Ok(new { message = "Booking updated" });
         }
 
         [HttpDelete("bookings/{id:int}")]
@@ -230,19 +234,19 @@ namespace HomeCare.Api.Controllers
 
         // Dropdown data for editing bookings
         [HttpGet("booking-data")]
-        public async Task<IActionResult> GetBookingData()
+        public async Task<IActionResult> GetBookingCreationData()
         {
-            var clients = await _context.AppUsers
-                .Where(u => u.Role == "User")
-                .Select(u => new { id = u.Id, fullName = u.FullName, email = u.Email })
-                .ToListAsync();
+            var clients = await _context.Users
+                .Where(u => u.Role.ToLower() != "admin" && u.Role.ToLower() != "caregiver")
+                .Select(u => new { id = u.Id, name = u.FullName }).ToListAsync();
 
-            var caregivers = await _context.AppUsers
-                .Where(u => u.Role == "Caregiver")
-                .Select(u => new { id = u.Id, fullName = u.FullName, email = u.Email })
-                .ToListAsync();
+            var caregivers = await _context.Users
+                .Where(u => u.Role.ToLower() == "admin" || u.Role.ToLower() == "caregiver")
+                .Select(u => new { id = u.Id, name = u.FullName }).ToListAsync();
+            
+            var categories = await _context.Categories.Select(c => new { id = c.Id, name = c.Name }).ToListAsync();
 
-            return Ok(new { clients, caregivers });
+            return Ok(new { clients, caregivers, categories });
         }
     }
 }

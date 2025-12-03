@@ -21,8 +21,9 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                IQueryable<User> q = _context.AppUsers
-                .Where(u => u.Role.ToLower() != "caregiver" && u.Role.ToLower() != "admin");
+                                IQueryable<User> q = _context.Users
+                    .Where(u => u.Role.ToLower() != "caregiver" && 
+                               u.Role.ToLower() != "admin");
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
@@ -47,7 +48,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                return await _context.AppUsers.FirstOrDefaultAsync(u => u.Id == id);
+                return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
             }
             catch (Exception ex)
             {
@@ -60,7 +61,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                _context.AppUsers.Add(user);
+                _context.Users.Add(user);
                 await _context.SaveChangesAsync();
                 return user;
             }
@@ -76,7 +77,7 @@ namespace HomeCare.Api.DAL.Repositories
             try
             {
                 // This method now receives the full user entity from the controller
-                _context.AppUsers.Update(user);
+                _context.Users.Update(user);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -91,17 +92,20 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                var user = await _context.AppUsers.FindAsync(id);
+                var user = await _context.Users.FindAsync(id);
                 if (user == null) return false;
 
-                // Block deleting the last admin
-                if (user.Role == "Admin" && await CountAdminsAsync() <= 1) return false;
+                // Prevent deleting the last admin
+                if (user.Role.ToLower() == "admin" && await CountAdminsAsync() <= 1)
+                {
+                    return false;
+                }
 
                 // Block if referenced in bookings (as client or caregiver)
                 if (await HasClientBookingsAsync(id)) return false;
                 if (await HasCaregiverBookingsAsync(id)) return false;
 
-                _context.AppUsers.Remove(user);
+                _context.Users.Remove(user); // Corrected from AppUsers
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception ex)
@@ -116,7 +120,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                IQueryable<User> q = _context.AppUsers
+                IQueryable<User> q = _context.Users
                 .Where(u => u.Role.ToLower() == "caregiver" || u.Role.ToLower() == "admin");
                 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -139,12 +143,12 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                var caregiver = await _context.AppUsers.FirstOrDefaultAsync(u => u.Id == id && u.Role == "Caregiver");
+                var caregiver = await _context.Users.FirstOrDefaultAsync(u => u.Id == id && u.Role == "Caregiver");
                 if (caregiver == null) return false;
 
                 if (await HasCaregiverBookingsAsync(id)) return false;
 
-                _context.AppUsers.Remove(caregiver);
+                _context.Users.Remove(caregiver);
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception ex)
@@ -168,18 +172,16 @@ namespace HomeCare.Api.DAL.Repositories
                 {
                     var term = searchTerm.Trim().ToLower();
                     q = q.Where(b =>
-                        (b.ServiceType != null && b.ServiceType.ToLower().Contains(term)) ||
-                        (b.TimeSlot != null && b.TimeSlot.Slot.ToLower().Contains(term)) ||
                         (b.Category != null && b.Category.Name.ToLower().Contains(term)) ||
-                        (b.CaregiverId != null && b.CaregiverId.ToLower().Contains(term)) ||
+                        (b.TimeSlot != null && b.TimeSlot.Slot.ToLower().Contains(term)) ||
                         (b.User != null && (
                             b.User.FullName.ToLower().Contains(term) ||
                             b.User.Email.ToLower().Contains(term))));
                 }
 
                 return await q
-                    .OrderByDescending(b => b.Date)
-                    .ThenBy(b => b.Time)
+                    .OrderByDescending(b => b.DateTime)
+                    .ThenBy(b => b.TimeSlot.Slot)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -257,7 +259,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                return await _context.AppUsers.CountAsync(u => u.Role == "Admin");
+                return await _context.Users.CountAsync(u => u.Role.ToLower() == "admin");
             }
             catch (Exception ex)
             {
@@ -283,8 +285,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                var cid = caregiverId.ToString();
-                return await _context.Bookings.AnyAsync(b => b.CaregiverId == cid);
+                return await _context.Bookings.AnyAsync(b => b.CaregiverId == caregiverId);
             }
             catch (Exception ex)
             {

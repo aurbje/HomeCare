@@ -1,111 +1,154 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using HomeCare.Api.Controllers;
-using HomeCare.Api.DAL.Interfaces;
-using HomeCare.Api.DTO.User;
-using HomeCare.Api.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
+using Moq;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+using HomeCare.Api.Controllers;
+using HomeCare.Api.Services.Interfaces;
+using HomeCare.Api.DTO.User;
 
 namespace HomeCare.Tests.Controllers
 {
     public class BookingControllerTests
     {
-        private readonly Mock<IBookingRepository> _repo;
-        private readonly Mock<ILogger<BookingController>> _logger;
-        private readonly BookingController _controller;
-
-        public BookingControllerTests()
-        {
-            _repo = new Mock<IBookingRepository>();
-            _logger = new Mock<ILogger<BookingController>>();
-            _controller = new BookingController(_repo.Object, _logger.Object);
-        }
-
-        // 1️⃣ GET booking page
         [Fact]
-        public async Task GetBookingPage_ReturnsDtoWithData()
+        public async Task GetBookingInit_ReturnsOk()
         {
-            _repo.Setup(r => r.GetAvailableDatesAsync())
-                 .ReturnsAsync(new[] { new AvailableDate { Id = 1, Date = DateTime.Today } });
+            var serviceMock = new Mock<IBookingService>();
+            var loggerMock = new Mock<ILogger<BookingController>>();
 
-            _repo.Setup(r => r.GetCategoriesAsync())
-                 .ReturnsAsync(new[] { new Category { Id = 1, Name = "Cleaning" } });
-
-            _repo.Setup(r => r.GetAllBookingsAsync())
-                 .ReturnsAsync(Array.Empty<Booking>());
-
-            var result = await _controller.GetBookingPage();
-            var ok = Assert.IsType<OkObjectResult>(result.Result);
-            var dto = Assert.IsType<BookingPageDto>(ok.Value);
-
-            Assert.Single(dto.AvailableDates);
-            Assert.Single(dto.Categories);
-            Assert.Empty(dto.Bookings);
-            Assert.Equal(1, dto.CategoryId);
-        }
-
-        // 2️⃣ Invalid model
-        [Fact]
-        public async Task CreateOrUpdateBooking_InvalidModel_ReturnsBadRequest()
-        {
-            var dto = new CreateBookingDto
+            var initDto = new BookingInitDto
             {
-                CategoryId = 0,
-                TimeSlotId = 0,
-                SelectedDate = DateTime.Today
+                ClientName = "John Doe",
+                Model = new BookingFormDataDto
+                {
+                    SelectedDate = DateTime.Today.AddDays(1),
+                    Categories = new List<CategoryDto>(),
+                    AvailableDates = new List<AvailableDateDto>(),
+                    AvailableCaregiver = new List<UserSummaryDto>()
+                },
+                Bookings = new List<BookingDto>()
             };
 
-            _controller.ModelState.AddModelError("CategoryId", "Required");
+            serviceMock.Setup(s => s.GetBookingInitAsync(It.IsAny<int>()))
+                       .ReturnsAsync(initDto);
 
-            var result = await _controller.CreateOrUpdateBooking(dto);
-            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            var controller = new BookingController(serviceMock.Object, loggerMock.Object);
 
-            Assert.Equal(400, bad.StatusCode);
-        }
+            var result = await controller.GetBookingInit();
 
-        // 3️⃣ Valid booking → Created
-        [Fact]
-        public async Task CreateBooking_Valid_ReturnsCreated()
-        {
-            var dto = new CreateBookingDto
-            {
-                CategoryId = 1,
-                TimeSlotId = 2,
-                SelectedDate = DateTime.Today,
-                Notes = "Test"
-            };
-
-            var category = new Category { Id = 1, Name = "Cleaning" };
-            var date = new AvailableDate { Id = 1, Date = DateTime.Today };
-            var slot = new TimeSlot { Id = 2, Slot = "09:00-10:00", IsBooked = false, AvailableDate = date };
-
-            _repo.Setup(r => r.GetCategoryByIdAsync(1)).ReturnsAsync(category);
-            _repo.Setup(r => r.GetAvailableTimeSlotAsync(2)).ReturnsAsync(slot);
-
-            var result = await _controller.CreateOrUpdateBooking(dto);
-            var created = Assert.IsType<ObjectResult>(result);
-
-            Assert.Equal(201, created.StatusCode);
-        }
-
-        // 4️⃣ Cancel booking
-        [Fact]
-        public async Task CancelBooking_ReturnsOk()
-        {
-            var booking = new Booking { Id = 10, TimeSlotId = 2 };
-
-            _repo.Setup(r => r.GetBookingByIdAsync(10)).ReturnsAsync(booking);
-            _repo.Setup(r => r.GetAvailableTimeSlotAsync(2))
-                 .ReturnsAsync(new TimeSlot { Id = 2, IsBooked = true });
-
-            var result = await _controller.CancelBooking(10);
             var ok = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(initDto, ok.Value);
+        }
 
-            Assert.Equal(200, ok.StatusCode);
+        [Fact]
+        public async Task CreateOrUpdateBooking_Success_ReturnsOk()
+        {
+            var serviceMock = new Mock<IBookingService>();
+            var loggerMock = new Mock<ILogger<BookingController>>();
+            var controller = new BookingController(serviceMock.Object, loggerMock.Object);
+
+            var request = new BookingRequestDto
+            {
+                SelectedDate = DateTime.Today.AddDays(2),
+                TimeSlotId = 1,
+                CategoryId = 2,
+                SelectedCaregiverId = 3,
+                Notes = "Test",
+                BookingId = 0
+            };
+
+            var svcResult = new BookingResultDto
+            {
+                ResultType = HomeCare.Api.Enums.BookingResultType.Success,
+                Message = "Created",
+                BookingId = 99,
+                Success = true
+            };
+
+            serviceMock.Setup(s => s.CreateOrUpdateBookingAsync(request, It.IsAny<int>()))
+                       .ReturnsAsync(svcResult);
+
+            var result = await controller.CreateOrUpdateBooking(request);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var payload = Assert.IsType<Dictionary<string, object>>(ok.Value);
+            Assert.Equal("Created", payload["message"]);
+            Assert.Equal(99, payload["bookingId"]);
+        }
+
+        [Fact]
+        public async Task CancelBooking_NotFound_ReturnsNotFound()
+        {
+            var serviceMock = new Mock<IBookingService>();
+            var loggerMock = new Mock<ILogger<BookingController>>();
+            var controller = new BookingController(serviceMock.Object, loggerMock.Object);
+
+            var svcResult = new BookingResultDto
+            {
+                ResultType = HomeCare.Api.Enums.BookingResultType.NotFound,
+                Message = "Booking not found",
+                Success = false
+            };
+
+            serviceMock.Setup(s => s.CancelBookingAsync(123, It.IsAny<int>(), It.IsAny<bool>()))
+                       .ReturnsAsync(svcResult);
+
+            var result = await controller.CancelBooking(123);
+
+            var notFound = Assert.IsType<NotFoundObjectResult>(result);
+            var payload = Assert.IsType<Dictionary<string, string>>(notFound.Value);
+            Assert.Equal("Booking not found", payload["message"]);
+        }
+
+        [Fact]
+        public async Task GetBooking_Found_ReturnsOk()
+        {
+            var serviceMock = new Mock<IBookingService>();
+            var loggerMock = new Mock<ILogger<BookingController>>();
+            var controller = new BookingController(serviceMock.Object, loggerMock.Object);
+
+            var booking = new BookingDto
+            {
+                Id = 10,
+                DateTime = DateTime.Today.AddDays(1),
+                Notes = "Note"
+            };
+
+            serviceMock.Setup(s => s.GetBookingAsync(10, It.IsAny<int>(), It.IsAny<bool>()))
+                       .ReturnsAsync(booking);
+
+            var result = await controller.GetBooking(10);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(booking, ok.Value);
+        }
+
+        [Fact]
+        public async Task SelectCaregiver_ValidDate_ReturnsOkList()
+        {
+            var serviceMock = new Mock<IBookingService>();
+            var loggerMock = new Mock<ILogger<BookingController>>();
+            var controller = new BookingController(serviceMock.Object, loggerMock.Object);
+
+            var dateStr = DateTime.Today.AddDays(3).ToString("yyyy-MM-dd");
+
+            var caregivers = new List<UserSummaryDto>
+            {
+                new UserSummaryDto { Id = 1, FullName = "A" },
+                new UserSummaryDto { Id = 2, FullName = "B" }
+            };
+
+            serviceMock.Setup(s => s.GetAvailableCaregiverForSlotAsync(It.IsAny<DateTime>(), 1, null))
+                       .ReturnsAsync(caregivers);
+
+            var result = await controller.SelectCaregiver(dateStr, 1, null);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var list = Assert.IsType<List<object>>(ok.Value);
+            Assert.Equal(2, list.Count);
         }
     }
 }

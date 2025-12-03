@@ -1,4 +1,4 @@
-namespace HomeCare.Api.DTO
+namespace HomeCare.Api.DTO.User
 {
     public class CategoryDto
     {

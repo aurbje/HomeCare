@@ -1,4 +1,4 @@
-namespace HomeCare.Api.DTO
+namespace HomeCare.Api.DTO.User
 {
     public class UserDto
     {
@@ -14,6 +14,7 @@ namespace HomeCare.Api.DTO
     {
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;
-        public string? Role { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 }

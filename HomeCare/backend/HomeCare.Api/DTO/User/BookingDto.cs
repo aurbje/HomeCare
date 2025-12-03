@@ -1,6 +1,6 @@
 using HomeCare.Api.Enums;
 
-namespace HomeCare.Api.DTO
+namespace HomeCare.Api.DTO.User
 {
     public class BookingDto
     {

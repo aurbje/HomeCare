@@ -1,5 +1,5 @@
 using HomeCare.Api.DAL.Interfaces;
-using HomeCare.Api.DTO;
+using HomeCare.Api.DTO.User;
 using HomeCare.Api.Services.Interfaces;
 
 namespace HomeCare.Api.Services
