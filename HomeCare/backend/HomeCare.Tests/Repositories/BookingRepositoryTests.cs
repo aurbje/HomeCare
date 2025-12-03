@@ -1,0 +1,85 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using HomeCare.Api.DAL.Repositories;
+using HomeCare.Api.Data;
+using HomeCare.Api.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+
+namespace HomeCare.Tests.Repositories
+{
+    public class BookingRepositoryTests
+    {
+        private AppDbContext GetDb()
+        {
+            var opts = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            return new AppDbContext(opts);
+        }
+
+        // 8️⃣ GetAvailableDates returns future dates + free slots
+        [Fact]
+        public async Task GetAvailableDates_ReturnsOnlyFutureDatesWithFreeSlots()
+        {
+            var db = GetDb();
+
+            var date = new AvailableDate { Id = 1, Date = DateTime.Today.AddDays(1) };
+            db.AvailableDates.Add(date);
+
+            db.TimeSlots.Add(new TimeSlot { Id = 1, Slot = "09-10", AvailableDate = date, IsBooked = false });
+
+            db.SaveChanges();
+
+            var repo = new BookingRepository(db, Mock.Of<ILogger<BookingRepository>>());
+
+            var result = (await repo.GetAvailableDatesAsync()).ToList();
+
+            Assert.Single(result);
+            Assert.Equal(date.Id, result[0].Id);
+        }
+
+        // 9️⃣ Fetch single time slot
+        [Fact]
+        public async Task GetAvailableTimeSlot_ReturnsCorrectSlot()
+        {
+            var db = GetDb();
+            var date = new AvailableDate { Id = 1, Date = DateTime.Today };
+            var slot = new TimeSlot { Id = 5, Slot = "10-11", AvailableDate = date, IsBooked = false };
+
+            db.AvailableDates.Add(date);
+            db.TimeSlots.Add(slot);
+            db.SaveChanges();
+
+            var repo = new BookingRepository(db, Mock.Of<ILogger<BookingRepository>>());
+
+            var result = await repo.GetAvailableTimeSlotAsync(5);
+
+            Assert.NotNull(result);
+            Assert.Equal("10-11", result!.Slot);
+        }
+
+        // 🔟 Update timeslot booking status
+        [Fact]
+        public async Task UpdateTimeSlot_SetsIsBookedAndSaves()
+        {
+            var db = GetDb();
+            var slot = new TimeSlot { Id = 3, Slot = "09-10", IsBooked = false };
+
+            db.TimeSlots.Add(slot);
+            db.SaveChanges();
+
+            var repo = new BookingRepository(db, Mock.Of<ILogger<BookingRepository>>());
+
+            slot.IsBooked = true;
+            var ok = await repo.UpdateTimeSlotAsync(slot);
+
+            Assert.True(ok);
+            Assert.True(db.TimeSlots.First().IsBooked);
+        }
+    }
+}
