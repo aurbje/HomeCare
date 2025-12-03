@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using HomeCare.Api.Services; // Use the service
+using HomeCare.Api.Services;
 using HomeCare.Api.DTO.Admin;
 using Microsoft.AspNetCore.Authorization;
 
@@ -7,13 +7,12 @@ namespace HomeCare.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")] // Secure the entire controller for Admins
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
-        private readonly AdminService _adminService; // Inject the service
+        private readonly AdminService _adminService;
         private readonly ILogger<AdminController> _logger;
 
-        // --- CONSTRUCTOR UPDATED to use AdminService ---
         public AdminController(AdminService adminService, ILogger<AdminController> logger)
         {
             _adminService = adminService;
@@ -24,14 +23,11 @@ namespace HomeCare.Api.Controllers
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers([FromQuery(Name = "q")] string? q)
         {
-            // --- Use the service to get users ---
             var response = await _adminService.GetUsersAsync(q);
             if (!response.Success)
             {
                 return StatusCode(500, new { message = response.Message });
             }
-
-            // The service returns the full User model, so we shape it for the frontend
             var shaped = response.Data.Select(u => new
             {
                 id = u.Id,
@@ -41,19 +37,51 @@ namespace HomeCare.Api.Controllers
                 tlfNumber = u.TlfNumber,
                 role = u.Role
             });
-
             return Ok(shaped);
+        }
+
+        // GET: api/admin/users/5
+        [HttpGet("users/{id:int}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var response = await _adminService.GetUserByIdAsync(id);
+            if (!response.Success)
+            {
+                return NotFound(new { message = response.Message });
+            }
+            var user = response.Data;
+            var shaped = new
+            {
+                id = user.Id,
+                fullName = user.FullName,
+                email = user.Email,
+                address = user.Address,
+                tlfNumber = user.TlfNumber,
+                role = user.Role
+            };
+            return Ok(shaped);
+        }
+
+        // PUT: api/admin/users/5
+        [HttpPut("users/{id:int}")]
+        // --- FIX: Changed UserUpdateDto to UpdateUserDto ---
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto userDto)
+        {
+            var response = await _adminService.UpdateUserAsync(id, userDto);
+            if (!response.Success)
+            {
+                return BadRequest(new { message = response.Message });
+            }
+            return Ok(new { message = response.Data });
         }
 
         // DELETE: api/admin/users/5
         [HttpDelete("users/{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            // --- Use the service to delete user, which includes safety checks ---
             var response = await _adminService.DeleteUserAsync(id);
             if (!response.Success)
             {
-                // The service provides a user-friendly error message
                 return BadRequest(new { message = response.Message });
             }
             return Ok(new { message = response.Data });
@@ -101,7 +129,6 @@ namespace HomeCare.Api.Controllers
             {
                 return StatusCode(500, new { message = response.Message });
             }
-            // You can add shaping logic here if needed, similar to GetUsers
             return Ok(response.Data);
         }
 
@@ -116,8 +143,5 @@ namespace HomeCare.Api.Controllers
             }
             return Ok(new { message = response.Data });
         }
-
-        // NOTE: The other endpoints (GetUserById, UpdateUser, etc.) were not in your AdminService.
-        // If you need them, they should be added to AdminService first and then called from here.
     }
 }

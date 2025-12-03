@@ -55,9 +55,11 @@ namespace HomeCare.Api.DAL.Repositories
 
         public async Task<bool> UpdateUserAsync(User user)
         {
+            // This correctly marks the entity for update.
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-            return true;
+            // SaveChangesAsync returns the number of rows affected.
+            // We return true only if one or more rows were changed.
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteUserAsync(int id)
