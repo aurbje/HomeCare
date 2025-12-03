@@ -252,7 +252,8 @@ export default function CaregiverDashboardPage() {
         {/* Header */}
         <div className="mb-3">
           <h1 className="display-6 fw-bold text-success mb-1">Min arbeidsplan</h1>
-          <p className="lead text-muted mb-0">{model?.caregiverName || ''}</p>
+          {/* <p className="lead text-muted mb-0">{model?.caregiverName || ''}</p> */}
+          <h2 className="fs-3">Du er logget inn som {model?.caregiverName || ''}.</h2>
         </div>
 
         {/* Alert messages */}

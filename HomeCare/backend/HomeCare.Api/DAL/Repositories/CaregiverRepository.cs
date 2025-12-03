@@ -33,23 +33,23 @@ namespace HomeCare.Api.DAL.Repositories
             var todayEnd = DateTime.Today.AddDays(1);
 
             var todayVisits = await _context.Bookings
-                .Include(a => a.Client)
+                .Include(a => a.User)
                 .Include(a => a.Category)
                 .Where(a => a.CaregiverId == CaregiverId && a.DateTime >= todayStart && a.DateTime < todayEnd)
                 .OrderBy(a => a.DateTime)
                 .Select(a => new VisitInfoDto
                 {
                     Time = a.DateTime,
-                    ClientName = a.Client != null ? a.Client.FullName : "Ukjent",
-                    Address = a.Client != null ? a.Client.Address : "",
-                    Phone = a.Client != null ? a.Client.TlfNumber : "",
+                    ClientName = a.User != null ? a.User.FullName : "Ukjent",
+                    Address = a.User != null ? a.User.Address : "",
+                    Phone = a.User != null ? a.User.TlfNumber : "",
                     Tasks = new List<string> { a.Category != null ? a.Category.Name : "Ukjent" }
                 })
                 .ToListAsync();
 
             // Get calendar events for the Caregiver (upcoming bookings)
             var calendarEvents = await _context.Bookings
-                .Include(a => a.Client)
+                .Include(a => a.User)
                 .Include(a => a.Category)
                 .Where(a => a.CaregiverId == CaregiverId && a.DateTime >= todayStart)
                 .OrderBy(a => a.DateTime)
@@ -57,7 +57,7 @@ namespace HomeCare.Api.DAL.Repositories
                 {
                     StartTime = a.DateTime,
                     Title = a.Category != null ? a.Category.Name : "Avtale",
-                    ClientName = a.Client != null ? a.Client.FullName : "Ukjent",
+                    ClientName = a.User != null ? a.User.FullName : "Ukjent",
                     CategoryName = a.Category != null ? a.Category.Name : ""
                 })
                 .ToListAsync();
@@ -167,7 +167,7 @@ namespace HomeCare.Api.DAL.Repositories
             return await _context.Bookings
                 .Include(a => a.TimeSlot)
                 .Include(a => a.Category)
-                .Include(a => a.Client)
+                .Include(a => a.User)
                 .Where(a => a.CaregiverId == CaregiverId && a.DateTime.Date >= DateTime.Today)
                 .OrderBy(a => a.DateTime)
                 .ToListAsync();

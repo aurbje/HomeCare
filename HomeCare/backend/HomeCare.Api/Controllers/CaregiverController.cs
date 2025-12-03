@@ -16,24 +16,32 @@ namespace HomeCare.Api.Controllers
     public class CaregiverController : AuthorizedControllerBase
     {
         private readonly ICaregiverService _service;
+        private readonly ILogger<CaregiverController> _logger;
 
-        public CaregiverController(ICaregiverService service)
+        public CaregiverController(ICaregiverService service, ILogger<CaregiverController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         // dashboard data
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetDashboard([FromQuery] int? year, [FromQuery] int? month)
         {
+            _logger.LogInformation("Caregiver Dashboard requested. User claims: {Claims}",
+                string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
+
             try
             {
                 var userId = GetCurrentUserId();
+                _logger.LogInformation("Caregiver User ID: {UserId}", userId);
 
                 int calendarYear = year ?? DateTime.Today.Year;
                 int calendarMonth = month ?? DateTime.Today.Month;
 
                 var model = await _service.GetDashboardAsync(userId, year, month);
+                _logger.LogInformation("Dashboard model retrieved: {HasModel}, AvailableDates count: {Count}",
+                    model != null, model?.AvailableDates?.Count ?? 0);
 
                 return Ok(new
                 {
@@ -44,8 +52,14 @@ namespace HomeCare.Api.Controllers
                     model
                 });
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning("Unauthorized access: {Message}", ex.Message);
+                return Unauthorized(new { message = "Ikke autentisert." });
+            }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in GetDashboard: {Message}", ex.Message);
                 return StatusCode(500, new { message = "En feil oppstod.", error = ex.Message });
             }
         }
