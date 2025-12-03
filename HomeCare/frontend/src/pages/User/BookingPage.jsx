@@ -194,15 +194,15 @@ export default function BookingPage() {
   const handleCancel = async (id) => {
     // Find booking details for confirmation message
     const booking = bookings.find(b => b.id === id)
-    const bookingInfo = booking 
-      ? `${booking.category?.name || 'Tjeneste'} den ${new Date(booking.dateTime).toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' })}` 
+    const bookingInfo = booking
+      ? `${booking.category?.name || 'Tjeneste'} den ${new Date(booking.dateTime).toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' })}`
       : 'denne timen'
-    
+
     // Enhanced confirmation dialog
     if (!confirm(`Er du sikker på at du vil avbestille ${bookingInfo}?\n\nDenne handlingen kan ikke angres.`)) {
       return
     }
-    
+
     try {
       await api.delete(`/booking/${id}`)
       setSuccess('Bestillingen er avbestilt.')
@@ -258,8 +258,8 @@ export default function BookingPage() {
       <div className="container py-4">
         {/* Back to Dashboard button */}
         <div className="mb-3">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-outline-secondary"
             onClick={() => navigate('/dashboard')}
             aria-label="Gå tilbake til oversikt"
@@ -267,7 +267,7 @@ export default function BookingPage() {
             <i className="bi bi-arrow-left me-2" aria-hidden="true"></i>Tilbake til oversikt
           </button>
         </div>
-        
+
         {clientName && (
           <div className="text-center mb-4">
             <h1>Bestill time</h1>

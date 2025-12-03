@@ -225,7 +225,7 @@ export default function CaregiverDashboardPage() {
       month: 'long',
       year: 'numeric'
     })
-    
+
     // Enhanced confirmation dialog
     if (!confirm(`Er du sikker på at du vil slette tilgjengelighet for ${formattedDate}?\n\nDenne handlingen kan ikke angres.`)) {
       return
@@ -330,10 +330,10 @@ export default function CaregiverDashboardPage() {
             <div className="d-flex flex-column w-100" style={{ gap: '0.5rem' }}>
 
               {/* Today's visits */}
-              <div className="card shadow-sm">
+              <div className="card shadow-sm" role="region" aria-labelledby="today-visits-heading">
                 <div className="card-body">
-                  <h2 className="card-title fs-4 mb-3">
-                    <i className="bi bi-calendar-day me-2"></i>Dagens besøk
+                  <h2 id="today-visits-heading" className="card-title fs-4 mb-3">
+                    <i className="bi bi-calendar-day me-2" aria-hidden="true"></i>Dagens besøk
                   </h2>
                   {model?.todayVisits && model.todayVisits.length > 0 ? (
                     <ul className="list-group">
@@ -360,17 +360,17 @@ export default function CaregiverDashboardPage() {
                     </ul>
                   ) : (
                     <p className="text-muted mb-0">
-                      <i className="bi bi-check-circle me-2"></i>Ingen besøk i dag.
+                      <i className="bi bi-check-circle me-2" aria-hidden="true"></i>Ingen besøk i dag.
                     </p>
                   )}
                 </div>
               </div>
 
               {/* Available dates section */}
-              <div className="card shadow-sm">
+              <div className="card shadow-sm" role="region" aria-labelledby="available-dates-heading">
                 <div className="card-body">
-                  <h2 className="card-title fs-4 mb-3">
-                    <i className="bi bi-calendar-check me-2"></i>Tilgjengelige dager
+                  <h2 id="available-dates-heading" className="card-title fs-4 mb-3">
+                    <i className="bi bi-calendar-check me-2" aria-hidden="true"></i>Tilgjengelige dager
                   </h2>
                   {availableDates.length > 0 ? (
                     <ul className="list-group" style={{ maxHeight: '280px', overflowY: 'auto' }}>
@@ -403,10 +403,10 @@ export default function CaregiverDashboardPage() {
 
           {/* Right column - Calendar */}
           <div className="col-12 col-lg-8">
-            <div className="card shadow-sm">
+            <div className="card shadow-sm" role="region" aria-labelledby="calendar-section-heading">
               <div className="card-body">
-                <h2 className="card-title fs-4 mb-3">
-                  <i className="bi bi-calendar3 me-2"></i>Kalender
+                <h2 id="calendar-section-heading" className="card-title fs-4 mb-3">
+                  <i className="bi bi-calendar3 me-2" aria-hidden="true"></i>Kalender
                 </h2>
                 <p className="text-muted small mb-3">
                   Kryss av dager du er tilgjengelig og trykk på knappen for å registrere.
@@ -414,22 +414,33 @@ export default function CaregiverDashboardPage() {
 
                 {/* Calendar navigation */}
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <button className="btn btn-outline-secondary" onClick={goToPrevMonth}>
-                    <i className="bi bi-chevron-left"></i> Forrige
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={goToPrevMonth}
+                    aria-label={`Gå til forrige måned, ${monthNames[calendarMonth === 0 ? 11 : calendarMonth - 1]}`}
+                  >
+                    <i className="bi bi-chevron-left" aria-hidden="true"></i> Forrige
                   </button>
-                  <h3 className="mb-0">{monthNames[calendarMonth]} {calendarYear}</h3>
-                  <button className="btn btn-outline-secondary" onClick={goToNextMonth}>
-                    Neste <i className="bi bi-chevron-right"></i>
+                  <h3 className="mb-0" id="calendar-heading" aria-live="polite">{monthNames[calendarMonth]} {calendarYear}</h3>
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={goToNextMonth}
+                    aria-label={`Gå til neste måned, ${monthNames[calendarMonth === 11 ? 0 : calendarMonth + 1]}`}
+                  >
+                    Neste <i className="bi bi-chevron-right" aria-hidden="true"></i>
                   </button>
                 </div>
 
                 {/* Calendar grid */}
-                <div className="table-responsive">
-                  <table className="table table-bordered text-center">
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="table table-bordered text-center mb-0" style={{ tableLayout: 'fixed', width: '100%' }} aria-labelledby="calendar-heading">
+                    <caption className="visually-hidden">
+                      Kalender for {monthNames[calendarMonth]} {calendarYear}. Kryss av dager du er tilgjengelig.
+                    </caption>
                     <thead>
                       <tr>
                         {dayNames.map(day => (
-                          <th key={day} className="bg-light">{day}</th>
+                          <th key={day} className="bg-light p-1 p-sm-2" scope="col" style={{ width: '14.28%' }}>{day}</th>
                         ))}
                       </tr>
                     </thead>
@@ -438,7 +449,7 @@ export default function CaregiverDashboardPage() {
                         <tr key={weekIdx}>
                           {calendarDays.slice(weekIdx * 7, (weekIdx + 1) * 7).map((date, dayIdx) => {
                             if (!date) {
-                              return <td key={dayIdx} className="bg-light"></td>
+                              return <td key={dayIdx} className="bg-light p-1 p-sm-2"></td>
                             }
 
                             const dateStr = toDateString(date)
@@ -452,13 +463,14 @@ export default function CaregiverDashboardPage() {
                               <td
                                 key={dayIdx}
                                 className={`
+                                  p-1 p-sm-2
                                   ${isPast ? 'bg-light text-muted' : ''}
                                   ${isAvailable ? 'bg-success-subtle' : ''}
                                   ${isToday ? 'border-primary border-2' : ''}
                                 `}
-                                style={{ minWidth: '100px', verticalAlign: 'top', padding: '8px' }}
+                                style={{ verticalAlign: 'top' }}
                               >
-                                <div className="fw-bold mb-1">{date.getDate()}</div>
+                                <div className="fw-bold mb-1" style={{ fontSize: '0.9rem' }}>{date.getDate()}</div>
 
                                 {/* Display bookings for this day */}
                                 {dayEvents.length > 0 && (
@@ -484,20 +496,23 @@ export default function CaregiverDashboardPage() {
                                       <button
                                         type="button"
                                         className="btn btn-sm btn-warning"
-                                        title="Slett tilgjengelig dag"
+                                        aria-label={`Slett tilgjengelighet for ${date.toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' })}`}
                                         onClick={() => handleDeleteAvailability(date)}
                                       >
-                                        Slett
+                                        <span aria-hidden="true">Slett</span>
+                                        <span className="visually-hidden">Slett tilgjengelighet</span>
                                       </button>
                                     ) : (
-                                      <label title="Registrer som tilgjengelig">
+                                      <label className="visually-hidden-focusable">
                                         <input
                                           type="checkbox"
                                           checked={isSelected}
                                           onChange={e => handleCheckboxChange(dateStr, e.target.checked)}
                                           className="form-check-input"
                                           style={{ width: '18px', height: '18px' }}
+                                          aria-label={`Velg ${date.toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' })} som tilgjengelig`}
                                         />
+                                        <span className="visually-hidden">Velg {date.getDate()}. {monthNames[calendarMonth]}</span>
                                       </label>
                                     )}
                                   </div>
@@ -512,17 +527,30 @@ export default function CaregiverDashboardPage() {
                 </div>
 
                 {/* Submit selected dates */}
-                <button
-                  type="button"
-                  className="btn btn-success btn-lg mt-3"
-                  onClick={handleRegisterMultiple}
-                  disabled={selectedDates.size === 0 || submitting}
-                >
-                  <i className="bi bi-check-circle me-2"></i>
-                  {submitting
-                    ? 'Registrerer...'
-                    : `Registrer ${selectedDates.size} valgte dag(er)`}
-                </button>
+                <div className="d-flex gap-2 mt-3 align-items-stretch">
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}
+                    onClick={handleRegisterMultiple}
+                    disabled={selectedDates.size === 0 || submitting}
+                  >
+                    <i className="bi bi-check-circle me-2"></i>
+                    {submitting
+                      ? 'Registrerer...'
+                      : `Registrer ${selectedDates.size} valgte dag(er)`}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}
+                    onClick={() => setSelectedDates(new Set())}
+                    disabled={selectedDates.size === 0 || submitting}
+                  >
+                    <i className="bi bi-x-circle me-2"></i>
+                    Fjern valg
+                  </button>
+                </div>
               </div>
             </div>
           </div>
