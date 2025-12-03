@@ -131,22 +131,22 @@ namespace HomeCare.Api.Controllers
         /// <returns>User info (id, fullName, email, role) or 401 if not logged in</returns>
         // GET: /api/account/me
         // Added from group's Final_Alexander branch for AuthContext integration
-        [HttpGet("me")]
-        public IActionResult GetCurrentUser()
-        {
-            if (!(User.Identity?.IsAuthenticated ?? false))
-            {
-                return Unauthorized(new { message = "Not logged in" });
-            }
+        // [HttpGet("me")]
+        // public IActionResult GetCurrentUser()
+        // {
+        //     if (!(User.Identity?.IsAuthenticated ?? false))
+        //     {
+        //         return Unauthorized(new { message = "Not logged in" });
+        //     }
 
-            return Ok(new
-            {
-                id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                fullName = User.FindFirst(ClaimTypes.Name)?.Value,
-                email = User.FindFirst(ClaimTypes.Email)?.Value,
-                role = User.FindFirst(ClaimTypes.Role)?.Value
-            });
-        }
+        //     return Ok(new
+        //     {
+        //         id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+        //         fullName = User.FindFirst(ClaimTypes.Name)?.Value,
+        //         email = User.FindFirst(ClaimTypes.Email)?.Value,
+        //         role = User.FindFirst(ClaimTypes.Role)?.Value
+        //     });
+        // }
 
         /// <summary>
         /// Signs out the current user by removing the authentication cookie.
