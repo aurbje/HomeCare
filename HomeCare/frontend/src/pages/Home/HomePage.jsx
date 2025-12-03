@@ -28,12 +28,11 @@ export default function Home() {
             Finn avdelingen som dekker ditt område. Vi er et dedikerte team, med lokal kjennskap i alle Oslos bydeler.
           </p>
 
-          {/* viktig: stretch rad + flex-kolonner */}
-          <div className="row g-4 align-items-stretch">
+          <div className="row g-4">
 
-            {/* --- Block 1 --- */}
-            <div className="col-md-6 col-lg-4 d-flex">
-              <div className="hc-contact-card flex-fill h-100">
+            {/* --- Repeat block 1 --- */}
+            <div className="col-md-6 col-lg-4">
+              <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Vest</h5>
                 <p className="mb-3 text-muted">Ullern, Vestre Aker og Nordre Aker</p>
 
@@ -51,8 +50,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 2 --- */}
-            <div className="col-md-6 col-lg-4 d-flex">
-              <div className="hc-contact-card flex-fill h-100">
+            <div className="col-md-6 col-lg-4">
+              <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Sentrum</h5>
                 <p className="mb-3 text-muted">Gamle Oslo, Grünerløkka og Sagene</p>
 
@@ -70,8 +69,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 3 --- */}
-            <div className="col-md-6 col-lg-4 d-flex">
-              <div className="hc-contact-card flex-fill h-100">
+            <div className="col-md-6 col-lg-4">
+              <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Nord</h5>
                 <p className="mb-3 text-muted">Alna, Grorud og Stovner</p>
 
@@ -89,8 +88,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 4 --- */}
-            <div className="col-md-6 col-lg-4 d-flex">
-              <div className="hc-contact-card flex-fill h-100">
+            <div className="col-md-6 col-lg-4">
+              <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Syd</h5>
                 <p className="mb-3 text-muted">Nordstrand, Østensjø, Søndre Nordstrand</p>
 
@@ -108,8 +107,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 5 --- */}
-            <div className="col-md-6 col-lg-4 d-flex">
-              <div className="hc-contact-card flex-fill h-100">
+            <div className="col-md-6 col-lg-4">
+              <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Natt</h5>
                 <p className="mb-3 text-muted">Nattjeneste i hele byen</p>
 
@@ -127,8 +126,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 6 --- */}
-            <div className="col-md-6 col-lg-4 d-flex">
-              <div className="hc-contact-card flex-fill h-100">
+            <div className="col-md-6 col-lg-4">
+              <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Praktisk bistand</h5>
                 <p className="mb-3 text-muted">Hverdagsstøtte og praktiske tjenester</p>
 
@@ -148,7 +147,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
 
       {/* NEWS SECTION */}
       <section className="news-section py-5">
@@ -256,54 +254,6 @@ export default function Home() {
               </form>
             </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* SURVEY SECTION */}
-      <section className="survey-section py-5 bg-light">
-        <div className="container">
-          <h2 className="text-center fw-bold mb-3">Brukerundersøkelse</h2>
-          <p className="text-center text-muted mb-5" style={{ maxWidth: "720px", margin: "0 auto" }}>
-            Resultatene viser at brukere og pårørende opplever HomeCare som trygg og tilgjengelig.
-          </p>
-
-          <div className="row g-4 justify-content-center">
-            <div className="col-md-6">
-              <div className="hc-survey-card">
-                <div className="hc-survey-gauge">
-                  <div className="hc-survey-needle"></div>
-                  <div className="hc-survey-inner">
-                    <span className="hc-survey-value">93%</span>
-                  </div>
-                </div>
-                <p className="mt-3 text-center text-muted">
-                  opplever at de blir møtt med respekt og trygghet
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-6">
-              <div className="hc-survey-card">
-                <div className="hc-survey-gauge">
-                  <div className="hc-survey-needle needle-2"></div>
-                  <div className="hc-survey-inner">
-                    <span className="hc-survey-value">91%</span>
-                  </div>
-                </div>
-                <p className="mt-3 text-center text-muted">
-                  ville anbefalt HomeCare til andre
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-center small text-muted mt-4">
-            Hentet fra HomeCare sin brukerundersøkelse i 2025.
-          </p>
-
-          <div className="text-center mt-3">
-            <a href="#" className="btn btn-main px-4 py-2">Les mer om undersøkelsen</a>
           </div>
         </div>
       </section>
