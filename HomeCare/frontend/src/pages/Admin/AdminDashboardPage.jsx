@@ -39,7 +39,7 @@ function AdminDashboardPage() {
           <div
             className="text-decoration-none card shadow-sm h-100 border-0 hover-shadow"
             style={{ cursor: 'pointer' }}
-            onClick={() => navigate('/admin/personnel')}
+            onClick={() => navigate('/admin/caregivers')}
           >
             <div className="card-body text-center py-4">
               <div className="display-6 mb-3">🧑‍⚕️</div>

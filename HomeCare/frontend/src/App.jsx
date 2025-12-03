@@ -12,10 +12,10 @@ import BookingPage from "./pages/User/BookingPage";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import UsersPage from "./pages/Admin/UsersPage";
 import Bookings from "./pages/Admin/Bookings";
-import PersonnelPage from "./pages/Admin/PersonnelPage";
+import CaregiverPage from "./pages/Admin/CaregiverPage";
 import EditUserPage from "./pages/Admin/EditUserPage";
 import EditBookingPage from "./pages/Admin/EditBookingPage";
-import EditPersonnelPage from "./pages/Admin/EditPersonnelPage";
+import EditCaregiverPage from "./pages/Admin/EditCaregiverPage";
 
 export default function App() {
   return (
@@ -33,10 +33,10 @@ export default function App() {
         <Route path="adminDashboard" element={<AdminDashboardPage />} />
         <Route path="admin/users" element={<UsersPage />} />
         <Route path="admin/bookings" element={<Bookings />} />
-        <Route path="admin/personnel" element={<PersonnelPage />} />
-        <Route path="admin/users/edit/" element={<EditUserPage />} />
-        <Route path="admin/bookings/edit" element={<EditBookingPage />} />
-        <Route path="admin/personnel/edit" element={<EditPersonnelPage />} />
+        <Route path="admin/caregivers" element={<CaregiverPage />} />
+        <Route path="admin/users/edit/:id" element={<EditUserPage />} />
+        <Route path="admin/bookings/edit/:id" element={<EditBookingPage />} />
+        <Route path="admin/caregivers/edit/:id" element={<EditCaregiverPage />} />
       </Route>
 
     </Routes>

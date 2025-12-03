@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCaregiver, deleteCaregiver } from '../../api/adminApi';
+import { getCaregivers, deleteCaregiver } from '../../api/adminApi';
 
 function CaregiverPage() {
   const [caregivers, setCaregivers] = useState([]);
@@ -17,7 +17,7 @@ function CaregiverPage() {
   const fetchCaregivers = async (search = '') => {
     try {
       setLoading(true);
-      const data = await getCaregiver(search);
+      const data = await getCaregivers(search);
       setCaregivers(data);
       setError(null);
     } catch (err) {
@@ -155,7 +155,7 @@ function CaregiverPage() {
         </tbody>
       </table>
 
-      <button onClick={() => navigate('/admin/dashboard')} className="btn btn-outline-secondary btn-sm">
+      <button onClick={() => navigate('/admindashboard')} className="btn btn-outline-secondary btn-sm">
         Tilbake
       </button>
     </div>

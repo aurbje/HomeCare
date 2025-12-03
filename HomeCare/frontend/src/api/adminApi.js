@@ -46,26 +46,26 @@ export const updateUser = async (id, userData) => {
   return response.data;
 };
 
-// Personnel operations
-export const getCaregiver = async (searchTerm = '') => {
-  const response = await api.get('/api/admin/caregiver', {
+// Caregiver operations
+export const getCaregivers = async (searchTerm = '') => {
+  const response = await api.get('/api/admin/caregivers', {
     params: { q: searchTerm }
   });
   return response.data;
 };
 
 export const deleteCaregiver = async (id) => {
-  const response = await api.delete(`/api/admin/caregiver/${id}`);
+  const response = await api.delete(`/api/admin/caregivers/${id}`);
   return response.data;
 };
 
 export const getCaregiverById = async (id) => {
-  const response = await api.get(`/api/admin/caregiver/${id}`);
+  const response = await api.get(`/api/admin/caregivers/${id}`);
   return response.data;
 };
 
 export const updateCaregiver = async (id, caregiverData) => {
-  const response = await api.put(`/api/admin/caregiver/${id}`, caregiverData);
+  const response = await api.put(`/api/admin/caregivers/${id}`, caregiverData);
   return response.data;
 };
 

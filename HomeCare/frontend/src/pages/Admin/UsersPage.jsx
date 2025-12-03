@@ -155,7 +155,7 @@ function UsersPage() {
         </tbody>
       </table>
 
-      <button onClick={() => navigate('/admin/dashboard')} className="btn btn-outline-secondary btn-sm">
+      <button onClick={() => navigate('/admindashboard')} className="btn btn-outline-secondary btn-sm">
         Tilbake
       </button>
     </div>

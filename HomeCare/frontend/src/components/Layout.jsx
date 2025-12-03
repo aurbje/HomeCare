@@ -15,7 +15,7 @@ export default function Layout() {
 
   const getDashboardPath = (u) => {
     const role = u?.role?.toLowerCase();
-    if (role === "admin") return "/admin";
+    if (role === "admin") return "/admindashboard";
     if (role === "caregiver") return "/caregiver";
     return "/dashboard";
   };
