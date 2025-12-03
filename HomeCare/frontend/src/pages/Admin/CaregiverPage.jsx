@@ -130,7 +130,7 @@ function CaregiverPage() {
                 <td>{caregiver.tlfNumber}</td>
                 <td>{caregiver.address}</td>
                 <td>
-                  <span className="badge bg-info">{person.role}</span>
+                  <span className="badge bg-info">{caregiver.role}</span>
                 </td>
                 <td>
                   <button

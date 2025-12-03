@@ -26,7 +26,16 @@ namespace HomeCare.Api.Controllers
         public async Task<IActionResult> GetUsers([FromQuery(Name = "q")] string? q)
         {
             var users = await _adminRepo.GetUsersAsync(q);
-            return Ok(users);
+            var shaped = users.Select(u => new
+            {
+                id = u.Id,
+                fullName = u.FullName,
+                email = u.Email,
+                address = u.Address,
+                tlfNumber = u.TlfNumber,
+                role = u.Role
+            });
+            return Ok(shaped);
         }
 
         [HttpGet("users/{id:int}")]
@@ -34,7 +43,15 @@ namespace HomeCare.Api.Controllers
         {
             var user = await _adminRepo.GetUserByIdAsync(id);
             if (user == null) return NotFound();
-            return Ok(user);
+            return Ok(new
+            {
+                id = user.Id,
+                fullName = user.FullName,
+                email = user.Email,
+                address = user.Address,
+                tlfNumber = user.TlfNumber,
+                role = user.Role
+            });
         }
 
         [HttpPut("users/{id:int}")]
@@ -67,7 +84,16 @@ namespace HomeCare.Api.Controllers
         public async Task<IActionResult> GetCaregivers([FromQuery(Name = "q")] string? q)
         {
             var list = await _adminRepo.GetCaregiversAsync(q);
-            return Ok(list);
+            var shaped = list.Select(u => new
+            {
+                id = u.Id,
+                fullName = u.FullName,
+                email = u.Email,
+                address = u.Address,
+                tlfNumber = u.TlfNumber,
+                role = u.Role
+            });
+            return Ok(shaped);
         }
 
         [HttpGet("caregivers/{id:int}")]
@@ -77,7 +103,15 @@ namespace HomeCare.Api.Controllers
             if (user == null) return NotFound();
             if (!(string.Equals(user.Role, "Caregiver", StringComparison.OrdinalIgnoreCase) || string.Equals(user.Role, "Personnel", StringComparison.OrdinalIgnoreCase)))
                 return NotFound();
-            return Ok(user);
+            return Ok(new
+            {
+                id = user.Id,
+                fullName = user.FullName,
+                email = user.Email,
+                address = user.Address,
+                tlfNumber = user.TlfNumber,
+                role = user.Role
+            });
         }
 
         [HttpPut("caregivers/{id:int}")]

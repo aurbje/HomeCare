@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getBookingById, updateBooking, getClientsAndPersonnel } from '../../api/adminApi';
+import { getBookingById, updateBooking, getClientsAndCaregivers } from '../../api/adminApi';
 
 function EditBookingPage() {
   const { id } = useParams();

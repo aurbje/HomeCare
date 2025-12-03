@@ -21,7 +21,9 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                IQueryable<User> q = _context.AppUsers;
+                IQueryable<User> q = _context.AppUsers
+                .Where(u => u.Role != "Caregiver" && u.Role != "Admin");
+
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     var term = searchTerm.Trim().ToLower();
@@ -112,7 +114,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                IQueryable<User> q = _context.AppUsers.Where(u => u.Role == "Caregiver" || u.Role == "Personnel");
+                IQueryable<User> q = _context.AppUsers.Where(u => u.Role == "Caregiver" || u.Role == "Admin");
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     var term = searchTerm.Trim().ToLower();
