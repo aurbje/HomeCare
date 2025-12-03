@@ -8,11 +8,12 @@ function EditUserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
+    id: '',
     fullName: '',
     email: '',
     tlfNumber: '',
     address: '',
-    role: 'User'
+    role: 'Client'
   });
 
   useEffect(() => {
@@ -22,18 +23,20 @@ function EditUserPage() {
   const fetchUser = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await getUserById(id);
+      console.log('Fetched user data:', data); // Debug log
       setFormData({
+        id: data.id,
         fullName: data.fullName || '',
         email: data.email || '',
         tlfNumber: data.tlfNumber || '',
         address: data.address || '',
-        role: data.role || 'User'
+        role: data.role || 'Client'
       });
-      setError(null);
     } catch (err) {
-      setError('Kunne ikke laste bruker');
-      console.error(err);
+      console.error('Error fetching user:', err);
+      setError('Kunne ikke laste bruker: ' + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -50,11 +53,12 @@ function EditUserPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateUser(id, formData);
+      console.log('Submitting data:', formData); // Debug log
+      await updateUser(id, formData); // Send complete formData including role
       navigate('/admin/users');
     } catch (err) {
-      setError('Kunne ikke oppdatere bruker');
-      console.error(err);
+      console.error('Error updating user:', err);
+      setError('Kunne ikke oppdatere bruker: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -124,22 +128,8 @@ function EditUserPage() {
           />
         </div>
 
-        <div className="mb-3">
-          <label htmlFor="role" className="form-label">Rolle</label>
-          <select
-            className="form-select"
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <option value="User">User</option>
-            <option value="Ansatt">Ansatt</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-
         <button type="submit" className="btn btn-primary">Lagre endringer</button>
+        
         <button
           type="button"
           onClick={() => navigate('/admin/users')}

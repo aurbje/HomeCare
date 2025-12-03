@@ -22,7 +22,7 @@ namespace HomeCare.Api.DAL.Repositories
             try
             {
                 IQueryable<User> q = _context.AppUsers
-                .Where(u => u.Role != "Caregiver" && u.Role != "Admin");
+                .Where(u => u.Role.ToLower() != "caregiver" && u.Role.ToLower() != "admin");
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
@@ -75,8 +75,17 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
+                var existing = await _context.AppUsers.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == user.Id);
+                if (existing == null) return false;
+
+                // Preserve the original role and password
+                user.Role = existing.Role;
+                user.PasswordHash = existing.PasswordHash;
+
                 _context.AppUsers.Update(user);
-                return await _context.SaveChangesAsync() > 0;
+                await _context.SaveChangesAsync();
+                return true;
             }
             catch (Exception ex)
             {
@@ -114,7 +123,9 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                IQueryable<User> q = _context.AppUsers.Where(u => u.Role == "Caregiver" || u.Role == "Admin");
+                IQueryable<User> q = _context.AppUsers
+                .Where(u => u.Role.ToLower() == "caregiver" || u.Role.ToLower() == "admin");
+                
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     var term = searchTerm.Trim().ToLower();

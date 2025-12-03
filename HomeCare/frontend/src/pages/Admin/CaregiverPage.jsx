@@ -105,7 +105,6 @@ function CaregiverPage() {
         <thead>
           <tr>
             <th>BrukerID</th>
-            <th>AnsattID</th>
             <th>Navn</th>
             <th>E-post</th>
             <th>Telefon</th>
@@ -124,7 +123,6 @@ function CaregiverPage() {
             caregivers.map((caregiver) => (
               <tr key={caregiver.id}>
                 <td>{caregiver.id}</td>
-                <td>{caregiver.caregiverId}</td>
                 <td>{caregiver.fullName}</td>
                 <td>{caregiver.email}</td>
                 <td>{caregiver.tlfNumber}</td>

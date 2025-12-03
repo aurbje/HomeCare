@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using HomeCare.Api.DAL.Interfaces;
 using HomeCare.Api.Data;
 using HomeCare.Api.Models;
+using HomeCare.Api.DTO.Admin;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeCare.Api.Controllers
@@ -57,19 +58,21 @@ namespace HomeCare.Api.Controllers
         [HttpPut("users/{id:int}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User input)
         {
-            if (id != input.Id && input.Id != 0) return BadRequest(new { message = "Mismatched user id" });
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var existing = await _adminRepo.GetUserByIdAsync(id);
             if (existing == null) return NotFound();
 
             existing.FullName = input.FullName;
             existing.Email = input.Email;
-            existing.TlfNumber = input.TlfNumber;
-            existing.Address = input.Address;
-            existing.Role = input.Role;
+            existing.TlfNumber = input.TlfNumber ?? existing.TlfNumber;
+            existing.Address = input.Address ?? existing.Address;
 
-            var ok = await _adminRepo.UpdateUserAsync(existing);
-            return ok ? Ok(existing) : StatusCode(500, new { message = "Failed to update user" });
+            var success = await _adminRepo.UpdateUserAsync(existing);
+            if (!success) return StatusCode(500, new { message = "Failed to update user" });
+
+            return Ok(new { message = "User updated" });
         }
 
         [HttpDelete("users/{id:int}")]
@@ -101,8 +104,12 @@ namespace HomeCare.Api.Controllers
         {
             var user = await _adminRepo.GetUserByIdAsync(id);
             if (user == null) return NotFound();
-            if (!(string.Equals(user.Role, "Caregiver", StringComparison.OrdinalIgnoreCase) || string.Equals(user.Role, "Personnel", StringComparison.OrdinalIgnoreCase)))
+            
+            // Allow Caregiver or Admin
+            if (!(string.Equals(user.Role, "Caregiver", StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(user.Role, "Admin", StringComparison.OrdinalIgnoreCase)))
                 return NotFound();
+                
             return Ok(new
             {
                 id = user.Id,
@@ -115,27 +122,28 @@ namespace HomeCare.Api.Controllers
         }
 
         [HttpPut("caregivers/{id:int}")]
-        public async Task<IActionResult> UpdateCaregiver(int id, [FromBody] User input)
+        public async Task<IActionResult> UpdateCaregiver(int id, [FromBody] UpdateUserDto input)
         {
-            if (id != input.Id && input.Id != 0) return BadRequest(new { message = "Mismatched user id" });
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var existing = await _adminRepo.GetUserByIdAsync(id);
             if (existing == null) return NotFound();
 
+            // Verify it's actually a caregiver or admin
+            if (!(string.Equals(existing.Role, "Caregiver", StringComparison.OrdinalIgnoreCase) || 
+                  string.Equals(existing.Role, "Admin", StringComparison.OrdinalIgnoreCase)))
+                return NotFound();
+
             existing.FullName = input.FullName;
             existing.Email = input.Email;
-            existing.TlfNumber = input.TlfNumber;
-            existing.Address = input.Address;
-            existing.Role = string.IsNullOrWhiteSpace(input.Role) ? existing.Role : input.Role;
+            existing.TlfNumber = input.TlfNumber ?? existing.TlfNumber;
+            existing.Address = input.Address ?? existing.Address;
 
-            var ok = await _adminRepo.UpdateUserAsync(existing);
-            return ok ? Ok(existing) : StatusCode(500, new { message = "Failed to update personnel" });
-        }
+            var success = await _adminRepo.UpdateUserAsync(existing);
+            if (!success) return StatusCode(500, new { message = "Failed to update caregiver" });
 
-        [HttpDelete("caregivers/{id:int}")]
-        public async Task<IActionResult> DeleteCaregiver(int id)
-        {
-            var ok = await _adminRepo.DeleteCaregiverAsync(id);
-            return ok ? Ok(new { message = "Caregiver deleted" }) : NotFound(new { message = "Caregiver not found or cannot delete" });
+            return Ok(new { message = "Caregiver updated" });
         }
 
         // Bookings

@@ -8,13 +8,12 @@ function EditCaregiverPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
+    id: '',
     fullName: '',
-    userName: '',
     email: '',
     tlfNumber: '',
     address: '',
-    personnelId: ''
-  });
+   });
 
   useEffect(() => {
     fetchCaregiver();
@@ -25,13 +24,12 @@ function EditCaregiverPage() {
       setLoading(true);
       const data = await getCaregiverById(id);
       setFormData({
+        id: data.id || '',
         fullName: data.fullName || '',
-        userName: data.userName || '',
         email: data.email || '',
         tlfNumber: data.tlfNumber || '',
         address: data.address || '',
-        personnelId: data.personnelId || ''
-      });
+        });
       setError(null);
     } catch (err) {
       setError('Kunne ikke laste ansatt');
@@ -90,19 +88,6 @@ function EditCaregiverPage() {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="userName" className="form-label">Brukernavn</label>
-          <input
-            type="text"
-            className="form-control"
-            id="userName"
-            name="userName"
-            value={formData.userName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
           <label htmlFor="email" className="form-label">E-post</label>
           <input
             type="email"
@@ -139,24 +124,10 @@ function EditCaregiverPage() {
           />
         </div>
 
-        <div className="mb-3">
-          <label htmlFor="caregiverId" className="form-label">Ansatt ID</label>
-          <input
-            type="number"
-            className="form-control"
-            id="caregiverId"
-            name="caregiverId"
-            value={formData.caregiverId}
-            onChange={handleChange}
-            readOnly
-          />
-          <small className="text-muted">Dette feltet kan ikke endres.</small>
-        </div>
-
         <button type="submit" className="btn btn-primary">Lagre endringer</button>
         <button
           type="button"
-          onClick={() => navigate('/admin/caregiver')}
+          onClick={() => navigate('/admin/caregivers')}
           className="btn btn-outline-secondary ms-2"
         >
           Avbryt

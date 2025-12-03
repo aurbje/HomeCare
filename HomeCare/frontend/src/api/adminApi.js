@@ -13,7 +13,13 @@ export const getUserById = async (id) => {
 };
 
 export const updateUser = async (id, userData) => {
-  const response = await api.put(`/admin/users/${id}`, userData);
+  const dto = {
+    fullName: userData.fullName,
+    email: userData.email,
+    tlfNumber: userData.tlfNumber ?? null,
+    address: userData.address ?? null,
+  };
+  const response = await api.put(`/admin/users/${id}`, dto);
   return response.data;
 };
 
@@ -35,7 +41,8 @@ export const getCaregiverById = async (id) => {
 };
 
 export const updateCaregiver = async (id, userData) => {
-  const response = await api.put(`/admin/caregivers/${id}`, userData);
+  const dataWithId = { ...userData, id: parseInt(id) };
+  const response = await api.put(`/admin/caregivers/${id}`, dataWithId);
   return response.data;
 };
 
