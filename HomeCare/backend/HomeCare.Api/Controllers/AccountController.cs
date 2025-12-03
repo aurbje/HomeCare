@@ -88,6 +88,20 @@ namespace HomeCare.Api.Controllers
             }
         }
 
+        [HttpGet("me")]
+        public IActionResult GetCurrentUser()
+        {
+            if (!User.Identity?.IsAuthenticated ?? false)
+                return Unauthorized(new { message = "Not logged in" });
+
+            return Ok(new {
+                id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                fullName = User.FindFirst(ClaimTypes.Name)?.Value,
+                email = User.FindFirst(ClaimTypes.Email)?.Value,
+                role = User.FindFirst(ClaimTypes.Role)?.Value
+            });
+        }
+
         // POST: /api/account/logout
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
