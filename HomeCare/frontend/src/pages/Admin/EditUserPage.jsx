@@ -53,8 +53,8 @@ const fetchUser = async () => {
   const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-          console.log('Submitting data:', formData); // Debug log
-          await updateUser(id, formData); // Send complete formData including role
+          console.log('Submitting data:', formData); // debug log
+          await updateUser(id, formData); // send complete formData including role
           navigate('/admin/users');
       } catch (err) {
           console.error('Error updating user:', err);

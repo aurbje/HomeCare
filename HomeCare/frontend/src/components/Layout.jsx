@@ -83,12 +83,12 @@ export default function Layout() {
                   </Link>
                 </li>
                 )}
-                {/* HØYRESIDE: avhenger av om bruker er logget inn */}
+                {/* left: depends on if your logged in */}
                 {user ? (
                   <>
                     <li className="nav-item ms-3">
                       <Link
-                        className="btn btn-outline-primary px-3"
+                        className="btn btn-outline-success px-3"
                         to={getDashboardPath(user)}
                       >
                         Min side

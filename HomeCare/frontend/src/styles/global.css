@@ -164,6 +164,37 @@
     transform: translateY(-1px);
   }
   
+  .hc-btn-outline {
+    border-radius: 0.75rem;      
+    padding: 0.4rem 1.4rem;      
+    font-weight: 500;
+    min-width: 110px;            
+    text-align: center;
+  }
+  
+  /* Grønn */
+  .hc-btn-outline-green {
+    border: 1.5px solid #16a86b;
+    color: #16a86b;
+    background-color: transparent;
+  }
+  
+  .hc-btn-outline-green:hover {
+    background-color: #16a86b;
+    color: #ffffff;
+  }
+  
+  /* Grå */
+  .hc-btn-outline-grey {
+    border: 1.5px solid #6c757d;
+    color: #6c757d;
+    background-color: transparent;
+  }
+  
+  .hc-btn-outline-grey:hover {
+    background-color: #6c757d;
+    color: #ffffff;
+  }
   /* button styling */
   .btn-success,
   .btn-outline-success,

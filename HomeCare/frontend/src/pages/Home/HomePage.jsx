@@ -28,11 +28,12 @@ export default function Home() {
             Finn avdelingen som dekker ditt område. Vi er et dedikerte team, med lokal kjennskap i alle Oslos bydeler.
           </p>
 
-          <div className="row g-4">
+          {/* viktig: stretch rad + flex-kolonner */}
+          <div className="row g-4 align-items-stretch">
 
-            {/* --- Repeat block 1 --- */}
-            <div className="col-md-6 col-lg-4">
-              <div className="hc-contact-card">
+            {/* --- Block 1 --- */}
+            <div className="col-md-6 col-lg-4 d-flex">
+              <div className="hc-contact-card flex-fill h-100">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Vest</h5>
                 <p className="mb-3 text-muted">Ullern, Vestre Aker og Nordre Aker</p>
 
@@ -50,8 +51,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 2 --- */}
-            <div className="col-md-6 col-lg-4">
-              <div className="hc-contact-card">
+            <div className="col-md-6 col-lg-4 d-flex">
+              <div className="hc-contact-card flex-fill h-100">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Sentrum</h5>
                 <p className="mb-3 text-muted">Gamle Oslo, Grünerløkka og Sagene</p>
 
@@ -69,8 +70,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 3 --- */}
-            <div className="col-md-6 col-lg-4">
-              <div className="hc-contact-card">
+            <div className="col-md-6 col-lg-4 d-flex">
+              <div className="hc-contact-card flex-fill h-100">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Nord</h5>
                 <p className="mb-3 text-muted">Alna, Grorud og Stovner</p>
 
@@ -88,8 +89,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 4 --- */}
-            <div className="col-md-6 col-lg-4">
-              <div className="hc-contact-card">
+            <div className="col-md-6 col-lg-4 d-flex">
+              <div className="hc-contact-card flex-fill h-100">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Syd</h5>
                 <p className="mb-3 text-muted">Nordstrand, Østensjø, Søndre Nordstrand</p>
 
@@ -107,8 +108,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 5 --- */}
-            <div className="col-md-6 col-lg-4">
-              <div className="hc-contact-card">
+            <div className="col-md-6 col-lg-4 d-flex">
+              <div className="hc-contact-card flex-fill h-100">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Natt</h5>
                 <p className="mb-3 text-muted">Nattjeneste i hele byen</p>
 
@@ -126,8 +127,8 @@ export default function Home() {
             </div>
 
             {/* --- Block 6 --- */}
-            <div className="col-md-6 col-lg-4">
-              <div className="hc-contact-card">
+            <div className="col-md-6 col-lg-4 d-flex">
+              <div className="hc-contact-card flex-fill h-100">
                 <h5 className="fw-bold mb-1">Praktisk bistand</h5>
                 <p className="mb-3 text-muted">Hverdagsstøtte og praktiske tjenester</p>
 
@@ -147,6 +148,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
 
       {/* NEWS SECTION */}
       <section className="news-section py-5">

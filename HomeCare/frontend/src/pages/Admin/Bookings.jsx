@@ -92,10 +92,10 @@ function BookingsPage() {
           />
         </div>
         <div className="col-auto">
-          <button type="submit" className="btn btn-sm btn-primary">Søk</button>
+          <button type="submit" className="btn btn-sm hc-btn-outline hc-btn-outline-green me-2">Søk</button>
         </div>
         <div className="col-auto">
-          <button type="button" onClick={handleReset} className="btn btn-sm btn-outline-secondary">
+          <button type="button" onClick={handleReset} className="btn btn-sm hc-btn-outline hc-btn-outline-grey">
             Nullstill
           </button>
         </div>
@@ -151,7 +151,7 @@ function BookingsPage() {
         </tbody>
       </table>
 
-      <button onClick={() => navigate('/admindashboard')} className="btn btn-outline-secondary btn-sm">
+      <button onClick={() => navigate('/admindashboard')} className="btn btn-main btn-sm">
         Tilbake
       </button>
     </div>
