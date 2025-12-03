@@ -2,298 +2,186 @@ using HomeCare.Api.Data;
 using HomeCare.Api.Models;
 using HomeCare.Api.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HomeCare.Api.DAL.Repositories
 {
     public class AdminRepository : IAdminRepository
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<AdminRepository> _logger;
 
-        public AdminRepository(AppDbContext context, ILogger<AdminRepository> logger)
+        // --- ILogger has been removed from the constructor ---
+        public AdminRepository(AppDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
-        //Users
+        #region Users
+
         public async Task<IEnumerable<User>> GetUsersAsync(string? searchTerm)
         {
-            try
-            {
-                                IQueryable<User> q = _context.Users
-                    .Where(u => u.Role.ToLower() != "caregiver" && 
-                               u.Role.ToLower() != "admin");
+            // Base query excludes admins and caregivers. Handles cases where Role might be null.
+            IQueryable<User> query = _context.Users
+                .Where(u => u.Role != null && u.Role.ToLower() != "caregiver" && u.Role.ToLower() != "admin");
 
-                if (!string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    var term = searchTerm.Trim().ToLower();
-                    q = q.Where(u =>
-                        u.FullName.ToLower().Contains(term) ||
-                        u.Email.ToLower().Contains(term) ||
-                        u.Address.ToLower().Contains(term) ||
-                        u.TlfNumber.ToLower().Contains(term) ||
-                        u.Role.ToLower().Contains(term));
-                }
-                return await q.OrderBy(u => u.Id).ToListAsync();
-            }
-            catch (Exception ex)
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                _logger.LogError(ex, "Error fetching users with term {Term}", searchTerm);
-                throw;
+                var term = searchTerm.Trim().ToLower();
+                // This search is now null-safe.
+                query = query.Where(u =>
+                    (u.FullName != null && u.FullName.ToLower().Contains(term)) ||
+                    (u.Email != null && u.Email.ToLower().Contains(term)) ||
+                    (u.Address != null && u.Address.ToLower().Contains(term)) ||
+                    (u.TlfNumber != null && u.TlfNumber.ToLower().Contains(term))
+                );
             }
+            return await query.OrderBy(u => u.Id).ToListAsync();
         }
 
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            try
-            {
-                return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching user {Id}", id);
-                throw;
-            }
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User> AddUserAsync(User user)
         {
-            try
-            {
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-                return user;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding user {Email}", user.Email);
-                throw;
-            }
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task<bool> UpdateUserAsync(User user)
         {
-            try
-            {
-                // This method now receives the full user entity from the controller
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating user {Id}", user.Id);
-                return false;
-            }
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            try
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return false;
+
+            if (user.Role != null && user.Role.ToLower() == "admin" && await CountAdminsAsync() <= 1)
             {
-                var user = await _context.Users.FindAsync(id);
-                if (user == null) return false;
-
-                // Prevent deleting the last admin
-                if (user.Role.ToLower() == "admin" && await CountAdminsAsync() <= 1)
-                {
-                    return false;
-                }
-
-                // Block if referenced in bookings (as client or caregiver)
-                if (await HasClientBookingsAsync(id)) return false;
-                if (await HasCaregiverBookingsAsync(id)) return false;
-
-                _context.Users.Remove(user); // Corrected from AppUsers
-                return await _context.SaveChangesAsync() > 0;
+                return false; // Block deleting last admin
             }
-            catch (Exception ex)
+
+            if (await HasClientBookingsAsync(id) || await HasCaregiverBookingsAsync(id))
             {
-                _logger.LogError(ex, "Error deleting user {Id}", id);
-                throw;
+                return false; // Block deleting user with bookings
             }
+
+            _context.Users.Remove(user);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        //Caregiver
+        #endregion
+
+        #region Caregivers
+
         public async Task<IEnumerable<User>> GetCaregiversAsync(string? searchTerm)
         {
-            try
+            IQueryable<User> query = _context.Users
+                .Where(u => u.Role != null && (u.Role.ToLower() == "caregiver" || u.Role.ToLower() == "admin"));
+            
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                IQueryable<User> q = _context.Users
-                .Where(u => u.Role.ToLower() == "caregiver" || u.Role.ToLower() == "admin");
-                
-                if (!string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    var term = searchTerm.Trim().ToLower();
-                    q = q.Where(u =>
-                        u.FullName.ToLower().Contains(term) ||
-                        u.Email.ToLower().Contains(term));
-                }
-                return await q.OrderBy(u => u.Id).ToListAsync();
+                var term = searchTerm.Trim().ToLower();
+                query = query.Where(u =>
+                    (u.FullName != null && u.FullName.ToLower().Contains(term)) ||
+                    (u.Email != null && u.Email.ToLower().Contains(term)));
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching personnel with term {Term}", searchTerm);
-                throw;
-            }
+            return await query.OrderBy(u => u.Id).ToListAsync();
         }
 
         public async Task<bool> DeleteCaregiverAsync(int id)
         {
-            try
-            {
-                var caregiver = await _context.Users.FirstOrDefaultAsync(u => u.Id == id && u.Role == "Caregiver");
-                if (caregiver == null) return false;
+            var caregiver = await _context.Users.FirstOrDefaultAsync(u => u.Id == id && u.Role != null && u.Role == "Caregiver");
+            if (caregiver == null || await HasCaregiverBookingsAsync(id)) return false;
 
-                if (await HasCaregiverBookingsAsync(id)) return false;
-
-                _context.Users.Remove(caregiver);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting caregiver {Id}", id);
-                throw;
-            }
+            _context.Users.Remove(caregiver);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        //Bookings
+        #endregion
+
+        #region Bookings
+
         public async Task<IEnumerable<Booking>> GetBookingsAsync(string? searchTerm)
         {
-            try
-            {
-                IQueryable<Booking> q = _context.Bookings
-                    .Include(b => b.User)
-                    .Include(b => b.TimeSlot)
-                    .Include(b => b.Category);
+            IQueryable<Booking> query = _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.TimeSlot)
+                .Include(b => b.Category);
 
-                if (!string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    var term = searchTerm.Trim().ToLower();
-                    q = q.Where(b =>
-                        (b.Category != null && b.Category.Name.ToLower().Contains(term)) ||
-                        (b.TimeSlot != null && b.TimeSlot.Slot.ToLower().Contains(term)) ||
-                        (b.User != null && (
-                            b.User.FullName.ToLower().Contains(term) ||
-                            b.User.Email.ToLower().Contains(term))));
-                }
-
-                return await q
-                    .OrderByDescending(b => b.DateTime)
-                    .ThenBy(b => b.TimeSlot.Slot)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                _logger.LogError(ex, "Error fetching bookings with term {Term}", searchTerm);
-                throw;
+                var term = searchTerm.Trim().ToLower();
+                query = query.Where(b =>
+                    (b.Category != null && b.Category.Name != null && b.Category.Name.ToLower().Contains(term)) ||
+                    (b.TimeSlot != null && b.TimeSlot.Slot != null && b.TimeSlot.Slot.ToLower().Contains(term)) ||
+                    (b.User != null && (
+                        (b.User.FullName != null && b.User.FullName.ToLower().Contains(term)) ||
+                        (b.User.Email != null && b.User.Email.ToLower().Contains(term))
+                    )));
             }
+
+            return await query.OrderByDescending(b => b.DateTime).ToListAsync();
         }
 
         public async Task<Booking?> GetBookingByIdAsync(int id)
         {
-            try
-            {
-                return await _context.Bookings
-                    .Include(b => b.User)
-                    .Include(b => b.TimeSlot)
-                    .Include(b => b.Category)
-                    .FirstOrDefaultAsync(b => b.Id == id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching booking {Id}", id);
-                throw;
-            }
+            return await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.TimeSlot)
+                .Include(b => b.Category)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Booking> AddBookingAsync(Booking booking)
         {
-            try
-            {
-                _context.Bookings.Add(booking);
-                await _context.SaveChangesAsync();
-                return booking;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding booking for user {UserId}", booking.UserId);
-                throw;
-            }
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
+            return booking;
         }
 
         public async Task<bool> UpdateBookingAsync(Booking booking)
         {
-            try
-            {
-                _context.Bookings.Update(booking);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating booking {Id}", booking.Id);
-                throw;
-            }
+            _context.Bookings.Update(booking);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteBookingAsync(int id)
         {
-            try
-            {
-                var booking = await _context.Bookings.FindAsync(id);
-                if (booking == null) return false;
-
-                _context.Bookings.Remove(booking);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting booking {Id}", id);
-                throw;
-            }
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking == null) return false;
+            _context.Bookings.Remove(booking);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        // ---------- Helpers ----------
+        #endregion
+
+        #region Helpers
+
         public async Task<int> CountAdminsAsync()
         {
-            try
-            {
-                return await _context.Users.CountAsync(u => u.Role.ToLower() == "admin");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error counting admins");
-                throw;
-            }
+            return await _context.Users.CountAsync(u => u.Role != null && u.Role.ToLower() == "admin");
         }
 
         public async Task<bool> HasClientBookingsAsync(int userId)
         {
-            try
-            {
-                return await _context.Bookings.AnyAsync(b => b.UserId == userId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking client bookings for user {UserId}", userId);
-                throw;
-            }
+            return await _context.Bookings.AnyAsync(b => b.UserId == userId);
         }
 
         public async Task<bool> HasCaregiverBookingsAsync(int caregiverId)
         {
-            try
-            {
-                return await _context.Bookings.AnyAsync(b => b.CaregiverId == caregiverId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking caregiver bookings for user {CaregiverId}", caregiverId);
-                throw;
-            }
+            return await _context.Bookings.AnyAsync(b => b.CaregiverId == caregiverId);
         }
-
        
+        #endregion
     }
 }

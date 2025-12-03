@@ -56,11 +56,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<ICaregiverRepository, CaregiverRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<ICaregiverService, CaregiverService>();
+builder.Services.AddScoped<AdminService>();
 
 var app = builder.Build();
 

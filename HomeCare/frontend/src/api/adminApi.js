@@ -1,11 +1,27 @@
-import api from './api';
+import api from "./api";
 
-// Users
-export const getUsers = async (searchTerm = '') => {
-  const params = searchTerm ? { q: searchTerm } : {};
-  const response = await api.get('/admin/users', { params });
-  return response.data;
-};
+const API_URL = "https://localhost:7263/api";
+
+// Users (non-admin, non-caregiver) — backend returns a plain array
+export async function getUsers(search = "") {
+  const qs = search && search.trim() ? `?q=${encodeURIComponent(search.trim())}` : "";
+  const res = await fetch(`${API_URL}/admin/users${qs}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to fetch users: ${res.status}`);
+  return res.json();
+}
+
+export async function deleteUser(id) {
+  // --- FIX: Corrected a typo from API__URL to API_URL ---
+  const res = await fetch(`${API_URL}/admin/users/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete user ${id}: ${res.status}`);
+  return res.json();
+}
 
 export const getUserById = async (id) => {
   const response = await api.get(`/admin/users/${id}`);
@@ -23,15 +39,10 @@ export const updateUser = async (id, userData) => {
   return response.data;
 };
 
-export const deleteUser = async (id) => {
-  const response = await api.delete(`/admin/users/${id}`);
-  return response.data;
-};
-
 // Caregivers
-export const getCaregivers = async (searchTerm = '') => {
+export const getCaregivers = async (searchTerm = "") => {
   const params = searchTerm ? { q: searchTerm } : {};
-  const response = await api.get('/admin/caregivers', { params });
+  const response = await api.get("/admin/caregivers", { params });
   return response.data;
 };
 
@@ -52,9 +63,9 @@ export const deleteCaregiver = async (id) => {
 };
 
 // Bookings
-export const getBookings = async (searchTerm = '') => {
+export const getBookings = async (searchTerm = "") => {
   const params = searchTerm ? { q: searchTerm } : {};
-  const response = await api.get('/admin/bookings', { params });
+  const response = await api.get("/admin/bookings", { params });
   return response.data;
 };
 
@@ -74,6 +85,6 @@ export const deleteBooking = async (id) => {
 };
 
 export const getBookingData = async () => {
-  const response = await api.get('/admin/booking-data');
+  const response = await api.get("/admin/booking-data");
   return response.data;
-};
+}
