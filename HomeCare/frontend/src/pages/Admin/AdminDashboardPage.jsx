@@ -18,7 +18,7 @@ function AdminDashboardPage() {
             <div className="card-body text-center py-4">
               <div className="display-6 mb-3">👥</div>
               <h2 className="h5">Brukere</h2>
-              <p className="text-muted small mb-0">Administrer brukerkontoer og roller</p>
+              <p className="text-muted small mb-0">Administrer brukere</p>
             </div>
           </div>
         </div>

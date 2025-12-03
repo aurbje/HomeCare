@@ -67,7 +67,7 @@ function EditBookingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Convert the data to match backend expectations
+      
       const updateData = {
         userId: parseInt(formData.userId),
         caregiverId: formData.caregiverId ? parseInt(formData.caregiverId) : null,
@@ -91,7 +91,7 @@ function EditBookingPage() {
 
   return (
     <div className="container py-4">
-      <h1 className="h4 mb-3">Rediger booking: #{id}</h1>
+      <h1 className="h4 mb-3">Rediger booking: {id}</h1>
 
       {error && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
@@ -111,7 +111,7 @@ function EditBookingPage() {
             onChange={handleChange}
             required
           >
-            <option value="">-- Velg bruker --</option>
+            <option value=""> Velg bruker </option>
             {clients.map((client) => (
               <option key={client.id} value={client.id}>
                 {client.fullName} ({client.email})
@@ -129,7 +129,7 @@ function EditBookingPage() {
             value={formData.caregiverId}
             onChange={handleChange}
           >
-            <option value="">-- Velg ansatt (valgfritt) --</option>
+            <option value=""> Velg ansatt</option>
             {caregivers.map((caregiver) => (
               <option key={caregiver.id} value={caregiver.id}>
                 {caregiver.fullName} ({caregiver.email})
@@ -139,20 +139,20 @@ function EditBookingPage() {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="dateTime" className="form-label">Dato og tid</label>
+          <label htmlFor="dateTime" className="form-label">Dato</label>
           <input
-            type="datetime-local"
+            type="date"
             className="form-control"
             id="dateTime"
             name="dateTime"
-            value={formData.dateTime}
+            value={formData.date}
             onChange={handleChange}
             required
           />
         </div>
 
         <div className="mb-3">
-          <label htmlFor="timeSlotId" className="form-label">Tidsluke ID</label>
+          <label htmlFor="timeSlotId" className="form-label">Tid</label>
           <input
             type="number"
             className="form-control"
@@ -162,11 +162,11 @@ function EditBookingPage() {
             onChange={handleChange}
             required
           />
-          <small className="text-muted">Må matche en eksisterende TimeSlot ID i databasen</small>
+          <small className="text-muted">Må matche ledig Tidspunkt i databasen</small>
         </div>
 
         <div className="mb-3">
-          <label htmlFor="categoryId" className="form-label">Kategori ID</label>
+          <label htmlFor="categoryId" className="form-label">Kategori</label>
           <input
             type="number"
             className="form-control"
@@ -176,7 +176,7 @@ function EditBookingPage() {
             onChange={handleChange}
             required
           />
-          <small className="text-muted">Må matche en eksisterende Category ID i databasen</small>
+          
         </div>
 
         <div className="mb-3">
