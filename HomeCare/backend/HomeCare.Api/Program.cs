@@ -24,16 +24,16 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// --- UPDATED CORS CONFIGURATION ---
+// --- IMPROVED CORS CONFIGURATION ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", cors =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        cors.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .SetIsOriginAllowed(origin => true); // This helps with debugging
+            .WithExposedHeaders("*");
     });
 });
 
@@ -45,8 +45,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromHours(3);
-        options.Cookie.SameSite = SameSiteMode.Lax; // Changed from default
+        options.Cookie.SameSite = SameSiteMode.None; // Changed to None for cross-origin
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.HttpOnly = true;
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        };
     });
 
 // Database

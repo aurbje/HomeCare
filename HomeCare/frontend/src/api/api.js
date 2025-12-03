@@ -1,8 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
-  withCredentials: true, // needed for cookie auth
+  baseURL: 'https://localhost:7263/api', // Changed from http://localhost:5148
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 export default api;

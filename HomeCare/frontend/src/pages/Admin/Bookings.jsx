@@ -18,6 +18,7 @@ function BookingsPage() {
     try {
       setLoading(true);
       const data = await getBookings(search);
+      console.log("Bookings data:", data); // Debug log
       setBookings(data);
       setError(null);
     } catch (err) {
@@ -104,10 +105,10 @@ function BookingsPage() {
       <table className="table table-sm table-striped align-middle">
         <thead>
           <tr>
-            <th>BookingID</th>
             <th>BrukerID</th>
+            <th>Navn</th>
             <th>Dato</th>
-            <th>Tid</th>
+            <th>Tidspunkt</th>
             <th>Tjeneste</th>
             <th>AnsattID</th>
             <th>Endre</th>
@@ -122,12 +123,12 @@ function BookingsPage() {
           ) : (
             bookings.map((booking) => (
               <tr key={booking.id}>
-                <td className="text-truncate" style={{ maxWidth: '140px' }}>{booking.id}</td>
-                <td>{booking.clientId}</td>
-                <td>{new Date(booking.date).toLocaleDateString('nb-NO')}</td>
-                <td>{booking.time}</td>
-                <td>{booking.serviceType}</td>
-                <td>{booking.personnelId}</td>
+                <td>{booking.id}</td>
+                <td>{booking.user?.fullName || `Bruker ${booking.userId}`}</td>
+                <td>{new Date(booking.dateTime).toLocaleDateString('nb-NO')}</td>
+                <td>{booking.timeSlot?.slot || 'N/A'}</td>
+                <td>{booking.category?.name || 'N/A'}</td>
+                <td>{booking.caregiverId ? ` ${booking.caregiverId}` : 'Ikke tildelt'}</td>
                 <td>
                   <button
                     onClick={() => handleEdit(booking.id)}

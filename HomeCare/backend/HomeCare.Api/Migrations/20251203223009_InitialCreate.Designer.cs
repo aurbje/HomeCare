@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeCare.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251203192708_Initialcreate")]
-    partial class Initialcreate
+    [Migration("20251203223009_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

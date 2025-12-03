@@ -171,7 +171,30 @@ namespace HomeCare.Api.Controllers
             }
             return Ok(response.Data);
         }
+        // GET: api/admin/bookings/5
+        [HttpGet("bookings/{id:int}")]
+        public async Task<IActionResult> GetBookingById(int id)
+        {
+            var response = await _adminService.GetBookingByIdAsync(id);
+            if (!response.Success)
+            {
+                return NotFound(new { message = response.Message });
+            }
+            // Return the full booking object with related data
+            return Ok(response.Data);
+        }
 
+        // PUT: api/admin/bookings/5
+        [HttpPut("bookings/{id:int}")]
+        public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingDto bookingDto)
+        {
+            var response = await _adminService.UpdateBookingAsync(id, bookingDto);
+            if (!response.Success)
+            {
+                return BadRequest(new { message = response.Message });
+            }
+            return Ok(new { message = response.Data });
+        }
         // DELETE: api/admin/bookings/5
         [HttpDelete("bookings/{id:int}")]
         public async Task<IActionResult> DeleteBooking(int id)

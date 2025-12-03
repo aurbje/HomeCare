@@ -235,5 +235,55 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved sletting av booking");
             }
         }
+        public async Task<ServiceResponse<Booking>> GetBookingByIdAsync(int id)
+        {
+            try
+            {
+                var booking = await _adminRepo.GetBookingByIdAsync(id);
+                if (booking == null)
+                {
+                    return ServiceResponse<Booking>.FailResponse("Booking ikke funnet");
+                }
+                return ServiceResponse<Booking>.SuccessResponse(booking);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching booking by ID {BookingId}", id);
+                return ServiceResponse<Booking>.FailResponse("Feil ved henting av booking");
+            }
+        }
+        public async Task<ServiceResponse<string>> UpdateBookingAsync(int id, UpdateBookingDto bookingDto)
+        {
+            try
+            {
+                var existingBooking = await _adminRepo.GetBookingByIdAsync(id);
+                if (existingBooking == null)
+                {
+                    return ServiceResponse<string>.FailResponse("Booking ikke funnet");
+                }
+
+                // Map properties from DTO to the existing booking entity
+                existingBooking.UserId = bookingDto.UserId;
+                existingBooking.CaregiverId = bookingDto.CaregiverId;
+                existingBooking.DateTime = bookingDto.DateTime;
+                existingBooking.TimeSlotId = bookingDto.TimeSlotId;
+                existingBooking.CategoryId = bookingDto.CategoryId;
+                existingBooking.Notes = bookingDto.Notes;
+
+                var success = await _adminRepo.UpdateBookingAsync(existingBooking);
+                if (!success)
+                {
+                    return ServiceResponse<string>.FailResponse("Kunne ikke oppdatere booking");
+                }
+
+                _logger.LogInformation("Updated booking {BookingId}", id);
+                return ServiceResponse<string>.SuccessResponse("Booking ble oppdatert");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating booking {BookingId}", id);
+                return ServiceResponse<string>.FailResponse("Feil ved oppdatering av booking");
+            }
+        }
     }
 }

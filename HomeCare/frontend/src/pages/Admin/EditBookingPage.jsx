@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getBookingById, updateBooking, getClientsAndCaregivers } from '../../api/adminApi';
+import { getBookingById, updateBooking, getUsers, getCaregivers } from '../../api/adminApi';
 
 function EditBookingPage() {
   const { id } = useParams();
@@ -10,11 +10,11 @@ function EditBookingPage() {
   const [clients, setClients] = useState([]);
   const [caregivers, setCaregivers] = useState([]);
   const [formData, setFormData] = useState({
-    clientId: '',
+    userId: '',
     caregiverId: '',
-    date: '',
-    time: '',
-    serviceType: '',
+    dateTime: '',
+    timeSlotId: '',
+    categoryId: '',
     notes: ''
   });
 
@@ -25,22 +25,28 @@ function EditBookingPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [bookingData, dropdownData] = await Promise.all([
+      const [bookingData, usersData, caregiversData] = await Promise.all([
         getBookingById(id),
-        getClientsAndPersonnel()
+        getUsers(''),
+        getCaregivers('')
       ]);
 
+      console.log("Booking data:", bookingData); // Debug log
+
+      // Extract date and time from the DateTime property
+      const dateTimeValue = bookingData.dateTime ? new Date(bookingData.dateTime).toISOString().slice(0, 16) : '';
+
       setFormData({
-        clientId: bookingData.clientId || '',
+        userId: bookingData.userId || '',
         caregiverId: bookingData.caregiverId || '',
-        date: bookingData.date ? bookingData.date.split('T')[0] : '',
-        time: bookingData.time || '',
-        serviceType: bookingData.serviceType || '',
+        dateTime: dateTimeValue,
+        timeSlotId: bookingData.timeSlotId || '',
+        categoryId: bookingData.categoryId || '',
         notes: bookingData.notes || ''
       });
 
-      setClients(dropdownData.clients || []);
-      setCaregivers(dropdownData.caregivers || []);
+      setClients(usersData || []);
+      setCaregivers(caregiversData || []);
       setError(null);
     } catch (err) {
       setError('Kunne ikke laste booking');
@@ -61,7 +67,17 @@ function EditBookingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateBooking(id, formData);
+      // Convert the data to match backend expectations
+      const updateData = {
+        userId: parseInt(formData.userId),
+        caregiverId: formData.caregiverId ? parseInt(formData.caregiverId) : null,
+        dateTime: formData.dateTime,
+        timeSlotId: parseInt(formData.timeSlotId),
+        categoryId: parseInt(formData.categoryId),
+        notes: formData.notes || null
+      };
+      
+      await updateBooking(id, updateData);
       navigate('/admin/bookings');
     } catch (err) {
       setError('Kunne ikke oppdatere booking');
@@ -86,12 +102,12 @@ function EditBookingPage() {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="clientId" className="form-label">Bruker</label>
+          <label htmlFor="userId" className="form-label">Bruker</label>
           <select
             className="form-select"
-            id="clientId"
-            name="clientId"
-            value={formData.clientId}
+            id="userId"
+            name="userId"
+            value={formData.userId}
             onChange={handleChange}
             required
           >
@@ -113,7 +129,7 @@ function EditBookingPage() {
             value={formData.caregiverId}
             onChange={handleChange}
           >
-            <option value="">-- Velg ansatt --</option>
+            <option value="">-- Velg ansatt (valgfritt) --</option>
             {caregivers.map((caregiver) => (
               <option key={caregiver.id} value={caregiver.id}>
                 {caregiver.fullName} ({caregiver.email})
@@ -123,47 +139,44 @@ function EditBookingPage() {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="date" className="form-label">Dato</label>
+          <label htmlFor="dateTime" className="form-label">Dato og tid</label>
           <input
-            type="date"
+            type="datetime-local"
             className="form-control"
-            id="date"
-            name="date"
-            value={formData.date}
+            id="dateTime"
+            name="dateTime"
+            value={formData.dateTime}
             onChange={handleChange}
             required
           />
         </div>
 
         <div className="mb-3">
-          <label htmlFor="time" className="form-label">Tid</label>
+          <label htmlFor="timeSlotId" className="form-label">Tidsluke ID</label>
           <input
-            type="text"
+            type="number"
             className="form-control"
-            id="time"
-            name="time"
-            value={formData.time}
+            id="timeSlotId"
+            name="timeSlotId"
+            value={formData.timeSlotId}
             onChange={handleChange}
-            placeholder="09:00–10:00"
             required
           />
+          <small className="text-muted">Må matche en eksisterende TimeSlot ID i databasen</small>
         </div>
 
         <div className="mb-3">
-          <label htmlFor="serviceType" className="form-label">Tjenestetype</label>
-          <select
-            className="form-select"
-            id="serviceType"
-            name="serviceType"
-            value={formData.serviceType}
+          <label htmlFor="categoryId" className="form-label">Kategori ID</label>
+          <input
+            type="number"
+            className="form-control"
+            id="categoryId"
+            name="categoryId"
+            value={formData.categoryId}
             onChange={handleChange}
             required
-          >
-            <option value="Cleaning">Cleaning</option>
-            <option value="Nursing">Nursing</option>
-            <option value="Cooking">Cooking</option>
-            <option value="Other">Other</option>
-          </select>
+          />
+          <small className="text-muted">Må matche en eksisterende Category ID i databasen</small>
         </div>
 
         <div className="mb-3">
