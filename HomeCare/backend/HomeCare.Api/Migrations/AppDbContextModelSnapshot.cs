@@ -289,6 +289,41 @@ namespace HomeCare.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "admingata 1",
+                            Email = "admin@oslomet.no",
+                            FullName = "Admin",
+                            PasswordHash = "$2a$11$qvtrhsyDZ1MR9RdSIv11FeGSMZxOLUC4JizZMyBone4hRc1aA.WGm",
+                            Role = "Admin",
+                            TlfNumber = "12345678",
+                            UserName = ""
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "caregivergata 1",
+                            Email = "caregiver@oslomet.no",
+                            FullName = "Caregiver",
+                            PasswordHash = "$2a$11$/sLVDjSby9tYKkzocka7NOPOzHaJXsJK7naLEqkmfxw79hzPY07d.",
+                            Role = "Caregiver",
+                            TlfNumber = "87654321",
+                            UserName = ""
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "Usergata 1",
+                            Email = "user@oslomet.no",
+                            FullName = "User",
+                            PasswordHash = "$2a$11$f73yjHkIJFhi05E.7lFjgOk7d2nlmDYKw3b7DIfKThnaBV3BSp3SK",
+                            Role = "User",
+                            TlfNumber = "12348765",
+                            UserName = ""
+                        });
                 });
 
             modelBuilder.Entity("HomeCare.Api.Models.Booking", b =>

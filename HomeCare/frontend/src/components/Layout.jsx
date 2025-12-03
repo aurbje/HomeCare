@@ -76,12 +76,13 @@ export default function Layout() {
                   </Link>
                 </li>
 
+                {user?.role === "User" && (
                 <li className="nav-item mx-2">
                   <Link className="nav-link" to="/booking">
                     <i className="bi bi-calendar-check me-1"></i> Booking
                   </Link>
                 </li>
-
+                )}
                 {/* HØYRESIDE: avhenger av om bruker er logget inn */}
                 {user ? (
                   <>
@@ -210,6 +211,8 @@ export default function Layout() {
               <Link to="#" onClick={closeMenu}>
                 Jobb hos oss
               </Link>
+              
+              {!user && (
               <Link
                 to="/login"
                 className="hc-side-menu-employee"
@@ -217,7 +220,7 @@ export default function Layout() {
               >
                 Logg inn
               </Link>
-
+              )}
               <hr className="hc-side-menu-divider" />
 
               <div className="hc-side-menu-footer mt-4 pb-4">

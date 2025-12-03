@@ -37,7 +37,7 @@ export default function LoginPage() {
 
       // redirect based on role
       if (role === "Admin") navigate("/admindashboard");
-      else if (role === "Caregiver") navigate("/caregiver");
+      else if (role === "Caregiver") navigate("/caregiver/dashboard");
       else navigate("/dashboard");
       
     } catch (err) {

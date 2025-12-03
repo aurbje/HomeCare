@@ -6,7 +6,7 @@
  */
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { getCurrentUser, logout as apiLogout, logout } from "../api/authApi";
+import { getCurrentUser, logout } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
 
 // Create the authentication context
@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
   // Log out the current user
   const logoutUser = async () => {
     try {
-      await apiLogout();
+      await logout();
     } catch (error) {
       console.error("Logout API call failed:", error);
     }
@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loginUser, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loginUser, logoutUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );

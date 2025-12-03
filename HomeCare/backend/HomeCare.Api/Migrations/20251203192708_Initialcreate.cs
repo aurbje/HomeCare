@@ -210,6 +210,16 @@ namespace HomeCare.Api.Migrations
                     { 6, "Annet" }
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Address", "Email", "FullName", "PasswordHash", "Role", "TlfNumber", "UserName" },
+                values: new object[,]
+                {
+                    { 1, "admingata 1", "admin@oslomet.no", "Admin", "$2a$11$qvtrhsyDZ1MR9RdSIv11FeGSMZxOLUC4JizZMyBone4hRc1aA.WGm", "Admin", "12345678", "" },
+                    { 2, "caregivergata 1", "caregiver@oslomet.no", "Caregiver", "$2a$11$/sLVDjSby9tYKkzocka7NOPOzHaJXsJK7naLEqkmfxw79hzPY07d.", "Caregiver", "87654321", "" },
+                    { 3, "Usergata 1", "user@oslomet.no", "User", "$2a$11$f73yjHkIJFhi05E.7lFjgOk7d2nlmDYKw3b7DIfKThnaBV3BSp3SK", "User", "12348765", "" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AvailableDates_Date",
                 table: "AvailableDates",

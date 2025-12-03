@@ -34,14 +34,13 @@ export async function logout() {
 }
 
 export async function getCurrentUser() {
-    try {
-        const response = await api.get('/account/me');
-        return response.data;
-    } catch (error) {
-        // 401 Unauthorized means user is not logged in - this is expected
-        if (error.response?.status === 401) {
-            return null;
-        }
-        throw error;
-    }
+  const res = await fetch(`${API_URL}/account/me`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (res.status === 401) return null; // not logged in
+  if (!res.ok) throw new Error("Failed to fetch current user");
+
+  return res.json();
 }

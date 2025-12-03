@@ -39,6 +39,7 @@ export default function App() {
         <Route path="admin/users/edit/:id" element={<EditUserPage />} />
         <Route path="admin/bookings/edit/:id" element={<EditBookingPage />} />
         <Route path="admin/caregivers/edit/:id" element={<EditCaregiverPage />} />
+        <Route path="caregiver/dashboard" element={<CaregiverDashboardPage />} />
       </Route>
 
     </Routes>
