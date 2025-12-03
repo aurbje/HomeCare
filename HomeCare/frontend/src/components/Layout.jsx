@@ -211,7 +211,7 @@ export default function Layout() {
                 Jobb hos oss
               </Link>
               <Link
-                to="/caregiver/login"
+                to="/login"
                 className="hc-side-menu-employee"
                 onClick={closeMenu}
               >

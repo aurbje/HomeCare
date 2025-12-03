@@ -24,7 +24,7 @@ export default function LoginPage() {
       const role = result.user.role;
 
       // redirect based on role
-      if (role === "Admin") navigate("/admin");
+      if (role === "Admin") navigate("/admindashboard");
       else if (role === "Caregiver") navigate("/caregiver");
       else navigate("/dashboard");
       
