@@ -2,6 +2,7 @@ using HomeCare.Api.Models;
 
 namespace HomeCare.Api.DAL.Interfaces
 {
+    // Admin data access: list and basic operations on users, caregivers and bookings
     public interface IAdminRepository
     {
         // Users
@@ -11,9 +12,9 @@ namespace HomeCare.Api.DAL.Interfaces
         Task<bool> UpdateUserAsync(User user);
         Task<bool> DeleteUserAsync(int id);
 
-        // Personnel (users with role = Caregiver)
-        Task<IEnumerable<User>> GetPersonnelAsync(string? searchTerm);
-        Task<bool> DeletePersonnelAsync(int id);
+        // Caregivers
+        Task<IEnumerable<User>> GetCaregiversAsync(string? searchTerm);
+        Task<bool> DeleteCaregiverAsync(int id);
 
         // Bookings
         Task<IEnumerable<Booking>> GetBookingsAsync(string? searchTerm);
@@ -24,7 +25,7 @@ namespace HomeCare.Api.DAL.Interfaces
 
         // Helpers for constraints
         Task<bool> HasClientBookingsAsync(int userId);
-        Task<bool> HasPersonnelBookingsAsync(int personnelId);
+        Task<bool> HasCaregiverBookingsAsync(int caregiverUserId);
         Task<int> CountAdminsAsync();
     }
 }

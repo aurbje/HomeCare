@@ -54,12 +54,6 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ICaregiverRepository, CaregiverRepository>();
 
-//Services
-builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<BookingService>();
-builder.Services.AddScoped<CaregiverService>();
-builder.Services.AddScoped<UserService>();
-
 var app = builder.Build();
 
 // Seed database
