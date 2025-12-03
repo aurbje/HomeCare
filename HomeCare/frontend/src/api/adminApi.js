@@ -47,25 +47,25 @@ export const updateUser = async (id, userData) => {
 };
 
 // Personnel operations
-export const getPersonnel = async (searchTerm = '') => {
-  const response = await api.get('/api/admin/personnel', {
+export const getCaregiver = async (searchTerm = '') => {
+  const response = await api.get('/api/admin/caregiver', {
     params: { q: searchTerm }
   });
   return response.data;
 };
 
-export const deletePersonnel = async (id) => {
-  const response = await api.delete(`/api/admin/personnel/${id}`);
+export const deleteCaregiver = async (id) => {
+  const response = await api.delete(`/api/admin/caregiver/${id}`);
   return response.data;
 };
 
-export const getPersonnelById = async (id) => {
-  const response = await api.get(`/api/admin/personnel/${id}`);
+export const getCaregiverById = async (id) => {
+  const response = await api.get(`/api/admin/caregiver/${id}`);
   return response.data;
 };
 
-export const updatePersonnel = async (id, personnelData) => {
-  const response = await api.put(`/api/admin/personnel/${id}`, personnelData);
+export const updateCaregiver = async (id, caregiverData) => {
+  const response = await api.put(`/api/admin/caregiver/${id}`, caregiverData);
   return response.data;
 };
 
