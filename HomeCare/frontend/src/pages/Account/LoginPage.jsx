@@ -1,3 +1,15 @@
+/**
+ * LoginPage.jsx - User Login Page
+ *
+ * Auth: Uses context/AuthContext.jsx (group's pattern)
+ * Backend endpoint: POST /api/account/signin (AccountController.SignIn)
+ *
+ * After successful login:
+ * 1. Calls authApi.loginUser() to authenticate
+ * 2. Calls AuthContext.loginUser() to update global state
+ * 3. Navigates to dashboard
+ */
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/authApi";

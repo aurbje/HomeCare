@@ -1,86 +1,99 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using HomeCare.Api.Models;
 using HomeCare.Api.Data;
+using HomeCare.Api.Models;
+using HomeCare.Api.DAL.Interfaces;
+using HomeCare.Api.Services.Interfaces;
+using HomeCare.Api.DTO;
+using HomeCare.Api.Enums;
+using System.Security.Claims;
 
 namespace HomeCare.Api.Controllers
 {
+    /// <summary>
+    /// Controller for client/user operations.
+    /// Merged from: my ClientController + group's _UserController
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    [Authorize(Roles = UserRoleExtensions.Roles.User)]
+    public class UserController : AuthorizedControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IUserService _userService;
         private readonly ILogger<UserController> _logger;
 
-        public UserController(AppDbContext context, ILogger<UserController> logger)
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
-            _context = context;
+            _userService = userService;
             _logger = logger;
         }
 
         // GET: /api/user/dashboard?year=2025&month=11
         [HttpGet("dashboard")]
-        public async Task<ActionResult<UserDashboardDto>> Dashboard(int? year, int? month)
+        public async Task<IActionResult> Dashboard([FromQuery] int? year, [FromQuery] int? month)
         {
-            try
-            {
-                var targetDate = new DateTime(
-                    year ?? DateTime.Today.Year,
-                    month ?? DateTime.Today.Month,
-                    1
-                );
+            _logger.LogInformation("Dashboard requested. User claims: {Claims}",
+                string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
 
-                _logger.LogInformation("Loading dashboard data for {Year}-{Month}", targetDate.Year, targetDate.Month);
+            var userId = GetCurrentUserId();
+            _logger.LogInformation("User ID: {UserId}", userId);
 
-                // Temporary hardcoded reminders (can later come from DB)
-                var reminders = GetTodayReminders();
+            var dashboard = await _userService.GetDashboardAsync(userId);
 
-                // Fetch upcoming bookings instead of appointments
-                var bookings = await _context.Bookings
-                    .Include(b => b.Category)
-                    .Where(b => b.Date >= DateTime.Today)
-                    .OrderBy(b => b.Date)
-                    .ToListAsync();
+            if (dashboard == null)
+                return NotFound();
 
-                if (!bookings.Any())
-                {
-                    _logger.LogInformation("No upcoming bookings found for dashboard view.");
-                }
-
-                var dto = new UserDashboardDto
-                {
-                    CalendarYear = targetDate.Year,
-                    CalendarMonth = targetDate.Month,
-                    Reminders = reminders,
-                    Bookings = bookings
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading user dashboard data.");
-                return StatusCode(500, new { message = "Unexpected error while loading dashboard data." });
-            }
+            return Ok(dashboard);
         }
-
-        // Temporary dummy reminders for dashboard
-        private List<Reminder> GetTodayReminders()
-        {
-            return new List<Reminder>
-            {
-                new Reminder { Time = "08:00", Message = "Take medication" },
-                new Reminder { Time = "14:00", Message = "Scheduled visit by caregiver" }
-            };
-        }
-    }
-
-    // DTO for React frontend
-    public class UserDashboardDto
-    {
-        public int CalendarYear { get; set; }
-        public int CalendarMonth { get; set; }
-        public List<Reminder> Reminders { get; set; } = new();
-        public List<Booking> Bookings { get; set; } = new();
     }
 }
+
+/* ============================================================
+ * ORIGINAL CODE - Commented out for reference
+ * Reason: Replaced with merged version above that uses IUserService 
+ * instead of direct database access, following the Repository pattern.
+ * The old code used AppDbContext directly which violated separation of concerns.
+ * ============================================================
+ 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using HomeCare.Services.Interfaces;
+using HomeCare.Enums;
+
+namespace HomeCare.Controllers
+{
+    [ApiController]
+    [Route("api/user")]
+    [Authorize(Roles = UserRoleExtensions.Roles.Client)]
+    public class ClientController : AuthorizedControllerBase
+    {
+        private readonly IClientService _clientService;
+        private readonly ILogger<ClientController> _logger;
+
+        public ClientController(IClientService clientService, ILogger<ClientController> logger)
+        {
+            _clientService = clientService;
+            _logger = logger;
+        }
+
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboard([FromQuery] int? year, [FromQuery] int? month)
+        {
+            _logger.LogInformation("Dashboard requested. User claims: {Claims}",
+                string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
+
+            var UserId = GetCurrentUserId();
+            _logger.LogInformation("Client ID: {UserId}", UserId);
+
+            var dashboard = await _clientService.GetDashboardAsync(UserId);
+
+            if (dashboard == null)
+                return NotFound();
+
+            return Ok(dashboard);
+        }
+    }
+}
+
+*/

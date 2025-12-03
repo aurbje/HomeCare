@@ -1,14 +1,14 @@
-using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeCare.Api.Models
 {
-    // category used for appointments and booking
+    /// <summary>
+    /// Service category (e.g., Vask, Omsorg, Kjøkkenarbeid).
+    /// </summary>
+    [Index(nameof(Name), IsUnique = true)]
     public class Category
     {
         public int Id { get; set; }
-
-        // name of the category (like "Medication", "Cooking", "Other")
-        [Required]
         public string Name { get; set; } = string.Empty;
     }
 }

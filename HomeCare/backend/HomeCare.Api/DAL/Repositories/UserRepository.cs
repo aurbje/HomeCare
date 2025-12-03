@@ -1,6 +1,6 @@
 using HomeCare.Api.Data;
-using HomeCare.Api.Models;
 using HomeCare.Api.DAL.Interfaces;
+using HomeCare.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeCare.Api.DAL.Repositories
@@ -8,122 +8,101 @@ namespace HomeCare.Api.DAL.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<UserRepository> _logger;
 
-        public UserRepository(AppDbContext context, ILogger<UserRepository> logger)
+        public UserRepository(AppDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
-        // ------------------------------
-        // BASIC CRUD
-        // ------------------------------
-
-        public async Task<User?> GetUserByIdAsync(int id)
+        // Basic user operations
+        public async Task<User?> GetByIdAsync(int id)
         {
-            try
-            {
-                return await _context.AppUsers
-                    .Include(u => u.Visits)
-                    .FirstOrDefaultAsync(u => u.Id == id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving user by ID {Id}", id);
-                throw;
-            }
+            return await _context.Users.FindAsync(id);
         }
 
         public async Task<User?> GetByEmailAsync(string email)
         {
-            try
-            {
-                return await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving user by email {Email}", email);
-                throw;
-            }
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<bool> EmailExistsAsync(string email)
         {
-            try
-            {
-                return await _context.AppUsers.AnyAsync(u => u.Email == email);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking if email exists {Email}", email);
-                throw;
-            }
-        }
-
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
-        {
-            try
-            {
-                return await _context.AppUsers
-                    .Include(u => u.Visits)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving all users");
-                throw;
-            }
+            return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
         public async Task AddAsync(User user)
         {
-            try
-            {
-                await _context.AppUsers.AddAsync(user);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding new user {Email}", user.Email);
-                throw;
-            }
+            await _context.Users.AddAsync(user);
         }
 
-        public async Task<bool> UpdateUserAsync(User user)
+        // Note: Update() is synchronous in EF Core - it only marks the entity as modified.
+        // The actual DB operation happens in SaveChangesAsync(). 
+        // We keep async signature for interface consistency.
+        public Task UpdateAsync(User user)
         {
-            try
-            {
-                _context.AppUsers.Update(user);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating user {Id}", user.Id);
-                return false;
-            }
+            _context.Users.Update(user);
+            return Task.CompletedTask;
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        // Note: Remove() is synchronous in EF Core - it only marks the entity for deletion.
+        // The actual DB operation happens in SaveChangesAsync().
+        // We keep async signature for interface consistency.
+        public Task DeleteAsync(User user)
         {
-            try
-            {
-                var user = await _context.AppUsers.FindAsync(id);
-                if (user == null) return false;
-
-                _context.AppUsers.Remove(user);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting user {Id}", id);
-                return false;
-            }
+            _context.Users.Remove(user);
+            return Task.CompletedTask;
         }
 
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        // Client-specific dashboard operations (using UserId from Booking/Reminder models)
+        public async Task<List<Reminder>> GetRemindersAsync(int UserId)
+        {
+            return await _context.Reminders
+                .Where(r => r.UserId == UserId && !r.IsCompleted)
+                .OrderBy(r => r.Time)
+                .ToListAsync();
+        }
+
+        public async Task<List<Booking>> GetTodayBookingsAsync(int UserId)
+        {
+            var today = DateTime.Today;
+            var todayEnd = today.AddDays(1);
+
+            return await _context.Bookings
+                .Include(b => b.Category)
+                .Include(b => b.Caregiver)
+                .Where(b => b.UserId == UserId && b.DateTime >= today && b.DateTime < todayEnd)
+                .OrderBy(b => b.DateTime)
+                .ToListAsync();
+        }
+
+        public async Task<List<Booking>> GetUpcomingBookingsAsync(int UserId, int limit = 5)
+        {
+            var todayEnd = DateTime.Today.AddDays(1);
+
+            return await _context.Bookings
+                .Include(b => b.Category)
+                .Include(b => b.Caregiver)
+                .Where(b => b.UserId == UserId && b.DateTime >= todayEnd)
+                .OrderBy(b => b.DateTime)
+                .Take(limit)
+                .ToListAsync();
+        }
+
+        public async Task<List<Booking>> GetCalendarBookingsAsync(int UserId)
+        {
+            var startDate = DateTime.Today.AddMonths(-1);
+
+            return await _context.Bookings
+                .Include(b => b.Category)
+                .Include(b => b.Caregiver)
+                .Where(b => b.UserId == UserId && b.DateTime >= startDate)
+                .OrderBy(b => b.DateTime)
+                .ToListAsync();
         }
     }
 }

@@ -1,96 +1,83 @@
-using HomeCare.Api.Models;
 using HomeCare.Api.DAL.Interfaces;
-using System.Security.Claims;
-using HomeCare.Api.DTO.Shared;
+using HomeCare.Api.Services.Interfaces;
+using HomeCare.Api.DTO;
+using HomeCare.Api.Models;
 
 namespace HomeCare.Api.Services
 {
-    public class CaregiverService
+    public class CaregiverService : ICaregiverService
     {
-        private readonly ICaregiverRepository _caregiverRepo;
-        private readonly IBookingRepository _bookingRepo;
-        private readonly ILogger<CaregiverService> _logger;
+        private readonly ICaregiverRepository _repo;
 
-        public CaregiverService(ICaregiverRepository caregiverRepo, IBookingRepository bookingRepo ,ILogger<CaregiverService> logger)
+        public CaregiverService(ICaregiverRepository repo)
         {
-            _caregiverRepo = caregiverRepo;
-            _bookingRepo = bookingRepo;
-            _logger = logger;
+            _repo = repo;
         }
 
-        // ------------------------------
-        // GET CLIENTS FOR CAREGIVER
-        // ------------------------------
-        public async Task<ServiceResponse<IEnumerable<User>>> GetClientsAsync(ClaimsPrincipal user)
+        public async Task<CaregiverDashboardDto> GetDashboardAsync(int CaregiverId, int? year, int? month)
         {
-            try
-            {
-                var caregiverId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (caregiverId == null)
-                    return ServiceResponse<IEnumerable<User>>.FailResponse("User not authenticated");
+            var model = await _repo.GetDashboardAsync(CaregiverId);
 
-                var clients = await _caregiverRepo.GetClientsForCaregiverAsync(caregiverId);
-                _logger.LogInformation("Loaded {Count} clients for caregiver {CaregiverId}", clients.Count(), caregiverId);
-
-                return ServiceResponse<IEnumerable<User>>.SuccessResponse(clients);
-            }
-            catch (Exception ex)
+            // Add upcoming bookings
+            var bookings = await _repo.GetBookingsForCaregiverAsync(CaregiverId);
+            model.UpcomingBookings = bookings.Select(a => new BookingSummaryDto
             {
-                _logger.LogError(ex, "Error fetching clients for caregiver");
-                return ServiceResponse<IEnumerable<User>>.FailResponse("Failed to load clients for caregiver");
-            }
+                Id = a.Id,
+                DateTime = a.DateTime,
+                CategoryName = a.Category?.Name,
+                CaregiverName = null,
+                Notes = a.Notes
+            }).ToList();
+
+            return model;
         }
 
-        // ------------------------------
-        // GET CAREGIVER SCHEDULE
-        // ------------------------------
-        public async Task<ServiceResponse<IEnumerable<Booking>>> GetScheduleAsync(ClaimsPrincipal user)
+        public Task RegisterAvailabilityAsync(int CaregiverId, DateTime date)
+            => _repo.AddAvailabilityAsync(CaregiverId, date);
+
+        public async Task RegisterMultipleAvailabilityAsync(int CaregiverId, List<DateTime> dates)
         {
-            try
+            foreach (var date in dates)
             {
-                var caregiverId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (caregiverId == null)
-                    return ServiceResponse<IEnumerable<Booking>>.FailResponse("User not authenticated");
-
-                var schedule = await _caregiverRepo.GetBookingsForCaregiverAsync(caregiverId);
-                _logger.LogInformation("Loaded {Count} bookings for caregiver {CaregiverId}", schedule.Count(), caregiverId);
-
-                return ServiceResponse<IEnumerable<Booking>>.SuccessResponse(schedule);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching schedule for caregiver");
-                return ServiceResponse<IEnumerable<Booking>>.FailResponse("Failed to load caregiver schedule");
-            }
-        }
-
-        public async Task<ServiceResponse<object>> CompleteVisitAsync(int bookingId)
-        {
-            try
-            {
-                var booking = await _bookingRepo.GetBookingByIdAsync(bookingId);
-                if (booking == null)
-                    return ServiceResponse<object>.FailResponse("Booking not found");
-
-                booking.Status = "Completed";
-                await _bookingRepo.UpdateBookingAsync(booking);
-
-                _logger.LogInformation("Marked booking {BookingId} as completed", bookingId);
-
-                return ServiceResponse<object>.SuccessResponse(new
+                if (date.Date >= DateTime.Today)
                 {
-                    message = "Visit marked as completed",
-                    booking
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error completing visit for booking {BookingId}", bookingId);
-                return ServiceResponse<object>.FailResponse("Failed to complete visit");
+                    await _repo.AddAvailabilityAsync(CaregiverId, date);
+                }
             }
         }
 
+        public Task DeleteAvailabilityAsync(int CaregiverId, DateTime date)
+            => _repo.DeleteAvailabilityAsync(CaregiverId, date);
 
+        public async Task<bool> RequestAvailabilityDeletionAsync(int CaregiverId, DateTime date)
+        {
+            var deleted = await _repo.TryDeleteAvailabilityWithCheckAsync(CaregiverId, date.Date);
+            if (!deleted)
+            {
+                var Caregiver = await _repo.GetCaregiverByIdAsync(CaregiverId);
+                var fullName = Caregiver?.FullName ?? $"ID {CaregiverId}";
+                var message = $"Personell {CaregiverId}: {fullName} ønsker å slette sin tilgjengelighet for {date:dd.MM.yyyy}, men en kunde har allerede en bestilling på denne datoen.";
+                await _repo.AddAdminNotificationAsync(message);
+            }
+            return deleted;
+        }
+
+        /// <summary>
+        /// Gets today's visits for a caregiver (implements ICaregiverService).
+        /// </summary>
+        public async Task<List<Booking>> GetTodayVisitsAsync(int caregiverId)
+        {
+            var allBookings = await _repo.GetBookingsForCaregiverAsync(caregiverId);
+            return allBookings.Where(b => b.DateTime.Date == DateTime.Today).ToList();
+        }
+
+        /// <summary>
+        /// Gets upcoming bookings for a caregiver (implements ICaregiverService).
+        /// </summary>
+        public async Task<List<Booking>> GetUpcomingBookingsAsync(int caregiverId)
+        {
+            var allBookings = await _repo.GetBookingsForCaregiverAsync(caregiverId);
+            return allBookings.Where(b => b.DateTime.Date >= DateTime.Today).OrderBy(b => b.DateTime).ToList();
+        }
     }
-
 }

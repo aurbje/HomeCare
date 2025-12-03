@@ -1,303 +1,431 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  getBookingPage,
-  createOrUpdateBooking,
-  cancelBooking,
-  getBookingForEdit,
-} from "../../api/bookingApi";
+/**
+ * BookingPage.jsx - Advanced Booking Page with Caregiver Selection
+ *
+ * This is YOUR advanced implementation (kept instead of group's simpler version)
+ * Features that group's version doesn't have:
+ * - Caregiver selection (select specific caregiver for booking)
+ * - Time slot filtering based on caregiver availability
+ * - Edit existing bookings
+ *
+ * Backend endpoints used:
+ * - GET /api/booking/init (BookingController.GetBookingPage)
+ * - GET /api/booking/select-caregiver (BookingController.GetAvailableCaregivers)
+ * - POST /api/booking (BookingController.CreateOrUpdateBooking)
+ * - DELETE /api/booking/{id} (BookingController.CancelBooking)
+ *
+ * Auth: Uses context/AuthContext.jsx (group's pattern)
+ */
+
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import api from '../../api/api'
 
 export default function BookingPage() {
-  const [loading, setLoading] = useState(true);
-  const [availableDates, setAvailableDates] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [appointments, setAppointments] = useState([]);
-  const [availableSlots, setAvailableSlots] = useState([]);
+  const navigate = useNavigate()
+  const { user, isAuthenticated } = useAuth()
 
-  const [editingId, setEditingId] = useState(null);
-  const [message, setMessage] = useState(null);
+  // Main data states - initialized as empty for null safety
+  const [availableDates, setAvailableDates] = useState([])
+  const [categories, setCategories] = useState([])
+  const [bookings, setBookings] = useState([])
+  const [clientName, setClientName] = useState('')
 
-  const [form, setForm] = useState({
-    appointmentId: null,
-    selectedDate: "",
-    timeSlotId: "",
-    categoryId: "",
-    notes: "",
-  });
+  // Selection states
+  const [selectedDateId, setSelectedDateId] = useState(null)
+  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedTimeSlotId, setSelectedTimeSlotId] = useState(null)
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([])
+  const [caregivers, setCaregivers] = useState([])
+  const [selectedCaregiverId, setSelectedCaregiverId] = useState(null)
+  const [categoryId, setCategoryId] = useState(0)
+  const [notes, setNotes] = useState('')
+  const [bookingId, setBookingId] = useState(0)
+  const [editingBookingId, setEditingBookingId] = useState(null)
+  const [success, setSuccess] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
 
-  // ----------------------------------------------------
-  // LOAD BOOKING DATA FROM API
-  // ----------------------------------------------------
-  async function loadBookingPage() {
+  // Load booking data from API
+  const loadBookingData = async () => {
     try {
-      setLoading(true);
-      const data = await getBookingPage();
-
-      setAvailableDates(data.availableDates);
-      setCategories(data.categories);
-      setAppointments(data.bookings);
-
-      setLoading(false);
-    } catch (err) {
-      console.error("Feil ved henting av bookingdata:", err);
-      setMessage("Kunne ikke laste bookingdata.");
-      setLoading(false);
+      const res = await api.get('/booking/init')
+      const data = res.data
+      setAvailableDates(data?.model?.availableDates ?? [])
+      setCategories(data?.model?.categories ?? [])
+      setBookings(data?.bookings ?? [])
+      setClientName(data?.clientName ?? '')
+      setCategoryId(data?.model?.categoryId || 0)
+    } catch {
+      setError('Kunne ikke laste booking data.')
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
-    loadBookingPage();
-  }, []);
+    const role = user?.role?.toLowerCase()
+    const isClient = role === 'user' || role === 'client'
+    if (!isAuthenticated || !isClient) {
+      navigate('/login')
+      return
+    }
+    loadBookingData()
+  }, [isAuthenticated, user?.role, navigate])
 
-  // ----------------------------------------------------
-  // HANDLE DATE SELECTION
-  // ----------------------------------------------------
-  const handleDateChange = (dateId, dateValue) => {
-    setForm({
-      ...form,
-      selectedDate: dateValue,
-      timeSlotId: "",
-    });
+  useEffect(() => {
+    if (!selectedDateId) return
+    const availDate = availableDates.find(d => d.id === selectedDateId)
+    if (!availDate) return
+    const filterTimeSlots = async () => {
+      const filtered = []
+      for (const slot of (availDate.timeSlots ?? [])) {
+        if (slot.isBooked) continue
+        const params = new URLSearchParams({
+          selectedDate: availDate.date,
+          timeSlotId: slot.id.toString(),
+          ...(bookingId > 0 && { bookingId: bookingId.toString() })
+        })
+        try {
+          const res = await api.get(`/booking/select-caregiver?${params}`)
+          const availableCaregivers = res.data
+          if (Array.isArray(availableCaregivers) && availableCaregivers.length > 0) {
+            filtered.push(slot)
+          }
+        } catch { /* skip */ }
+      }
+      setAvailableTimeSlots(filtered)
+      setSelectedTimeSlotId(null)
+      setCaregivers([])
+      setSelectedCaregiverId(null)
+    }
+    filterTimeSlots()
+  }, [selectedDateId, availableDates, bookingId])
 
-    const date = availableDates.find((d) => d.id === dateId);
-    setAvailableSlots(
-      date?.timeSlots.filter((s) => s.isBooked === false) || []
-    );
-  };
+  useEffect(() => {
+    if (!selectedDate || !selectedTimeSlotId) {
+      setCaregivers([])
+      setSelectedCaregiverId(null)
+      return
+    }
+    const params = new URLSearchParams({
+      selectedDate,
+      timeSlotId: selectedTimeSlotId.toString(),
+      ...(bookingId > 0 && { bookingId: bookingId.toString() })
+    })
+    api.get(`/booking/select-caregiver?${params}`)
+      .then(res => setCaregivers(res.data))
+      .catch(() => setCaregivers([]))
+  }, [selectedDate, selectedTimeSlotId, bookingId])
 
-  // ----------------------------------------------------
-  // SUBMIT BOOKING (CREATE OR UPDATE)
-  // ----------------------------------------------------
+  const handleDateChange = (dateId, dateStr) => {
+    setSelectedDateId(dateId)
+    setSelectedDate(dateStr)
+  }
+
+  const handleTimeSlotChange = (slotId) => {
+    setSelectedTimeSlotId(slotId)
+  }
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const payload = {
-        bookingId: form.appointmentId || 0,
-        selectedDate: form.selectedDate,
-        timeSlotId: Number(form.timeSlotId),
-        categoryId: Number(form.categoryId),
-        notes: form.notes,
-      };
-
-      const response = await createOrUpdateBooking(payload);
-
-      setMessage(response.message || "Bestilling lagret!");
-
-      // Reset form
-      setForm({
-        appointmentId: null,
-        selectedDate: "",
-        timeSlotId: "",
-        categoryId: "",
-        notes: "",
-      });
-      setAvailableSlots([]);
-      setEditingId(null);
-
-      // Refresh UI
-      await loadBookingPage();
-    } catch (err) {
-      console.error("Booking-feil:", err);
-      setMessage(err.message || "En feil oppstod under lagring.");
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+    if (!selectedDate || !selectedTimeSlotId || !selectedCaregiverId || !categoryId) {
+      setError('Vennligst fyll ut alle påkrevde felt.')
+      return
     }
-  };
-
-  // ----------------------------------------------------
-  // EDIT BOOKING
-  // ----------------------------------------------------
-  const handleEdit = async (id) => {
-    try {
-      setEditingId(id);
-
-      const data = await getBookingForEdit(id);
-
-      setForm({
-        appointmentId: data.bookingId,
-        selectedDate: data.selectedDate,
-        timeSlotId: data.timeSlotId,
-        categoryId: data.categoryId,
-        notes: data.notes || "",
-      });
-
-      setAvailableSlots(
-        data.availableDates
-          .find((d) => d.id === data.availableDates.find((x) => x.date === data.selectedDate)?.id)
-          ?.timeSlots.filter((s) => s.isBooked === false) || []
-      );
-    } catch (err) {
-      console.error("Feil ved lasting av booking:", err);
-      setMessage("Kunne ikke laste booking for redigering.");
+    const payload = {
+      selectedDate,
+      timeSlotId: selectedTimeSlotId,
+      categoryId,
+      notes,
+      selectedCaregiverId,
+      bookingId
     }
-  };
+    try {
+      await api.post('/booking', payload)
+      setSuccess('Booking vellykket!')
+      setTimeout(() => {
+        setSelectedDateId(null)
+        setSelectedDate('')
+        setAvailableTimeSlots([])
+        setSelectedTimeSlotId(null)
+        setCaregivers([])
+        setSelectedCaregiverId(null)
+        setNotes('')
+        setBookingId(0)
+        setEditingBookingId(null)
+        setSuccess('')
+        loadBookingData()
+      }, 1500)
+    } catch (err) {
+      const messages = Object.values(err.response?.data?.errors || {}).flat().join(' ')
+      setError(messages || 'Booking feilet.')
+    }
+  }
 
-  // ----------------------------------------------------
-  // CANCEL BOOKING
-  // ----------------------------------------------------
+  const handleEdit = async (booking) => {
+    setEditingBookingId(booking.id)
+    setBookingId(booking.id)
+    setNotes(booking.notes || '')
+    setCategoryId(booking.category?.id || 0)
+    const dateStr = new Date(booking.dateTime).toISOString().split('T')[0]
+    const availDate = availableDates.find(d => d.date === dateStr)
+    if (availDate) {
+      setSelectedDateId(availDate.id)
+      setSelectedDate(dateStr)
+      setSelectedTimeSlotId(booking.timeSlotId)
+      const params = new URLSearchParams({
+        selectedDate: dateStr,
+        timeSlotId: booking.timeSlotId.toString(),
+        bookingId: booking.id.toString()
+      })
+      api.get(`/booking/select-caregiver?${params}`)
+        .then(res => {
+          setCaregivers(res.data)
+          setSelectedCaregiverId(booking.caregiver?.id || null)
+        })
+        .catch(() => setCaregivers([]))
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const handleCancel = async (id) => {
-    if (!window.confirm("Vil du avlyse denne timen?")) return;
-
+    if (!confirm('Er du sikker på at du vil avbestille denne timen?')) return
     try {
-      await cancelBooking(id);
-      setMessage("Timen ble kansellert.");
-      await loadBookingPage();
-    } catch (err) {
-      console.error("Avbestilling feilet:", err);
-      setMessage("Kunne ikke kansellere timen.");
+      await api.delete(`/booking/${id}`)
+      setSuccess('Booking avbestilt.')
+      setEditingBookingId(null)
+      setTimeout(() => {
+        loadBookingData()
+        setSuccess('')
+      }, 1000)
+    } catch {
+      setError('Kunne ikke avbestille.')
     }
-  };
+  }
 
-  // ----------------------------------------------------
-  // UI RENDER
-  // ----------------------------------------------------
-  if (loading) return <p>Laster booking...</p>;
+  const handleCancelEdit = () => {
+    setEditingBookingId(null)
+    setBookingId(0)
+    setSelectedDateId(null)
+    setSelectedDate('')
+    setAvailableTimeSlots([])
+    setSelectedTimeSlotId(null)
+    setCaregivers([])
+    setSelectedCaregiverId(null)
+    setNotes('')
+    setCategoryId(0)
+  }
+
+  if (loading) {
+    return <div className="container mt-5">Laster...</div>
+  }
+
+  const selectedCategory = categories.find(c => c.id === categoryId)
+  const requireNotes = selectedCategory?.name?.toUpperCase() === 'ANNET'
 
   return (
-    <div className="booking-container">
-      <div className="booking-form">
-        <h2>Book time her</h2>
-
-        {message && <div className="alert alert-info">{message}</div>}
-
-        <form onSubmit={handleSubmit}>
-          {/* DATE PICKER */}
-          <div className="form-group">
-            <label>Dato</label>
-            <div className="date-options">
-              {availableDates.map((date) => (
-                <label key={date.id} className="date-option btn btn-outline-secondary m-1">
-                  <input
-                    type="radio"
-                    name="selectedDate"
-                    checked={form.selectedDate === date.date}
-                    onChange={() => handleDateChange(date.id, date.date)}
-                  />
-                  {new Date(date.date).toLocaleDateString("no-NO", {
-                    day: "2-digit",
-                    month: "short",
-                  })}
-                </label>
-              ))}
-            </div>
+    <div className="font-resizable-area user-dashboard">
+      <div className="container py-4">
+        {clientName && (
+          <div className="text-center mb-4">
+            <h1>Bestill time</h1>
           </div>
-
-          {/* TIME SLOTS */}
-          <div className="form-group">
-            <label>Tidspunkt</label>
-            <div className="mt-2">
-              {availableSlots.length > 0 ? (
-                availableSlots.map((slot) => (
-                  <button
-                    key={slot.id}
-                    type="button"
-                    className={`btn btn-outline-primary mb-1 ${
-                      form.timeSlotId == slot.id ? "active" : ""
-                    }`}
-                    onClick={() => setForm({ ...form, timeSlotId: slot.id })}
-                  >
-                    {slot.slot}
-                  </button>
-                ))
-              ) : (
-                <p className="text-muted">Velg en dato først.</p>
-              )}
-            </div>
-          </div>
-
-          {/* CATEGORY */}
-          <div className="form-group">
-            <label>Kategori</label>
-            <select
-              className="form-control"
-              value={form.categoryId}
-              onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-            >
-              <option value="">Velg kategori</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* NOTES */}
-          {categories.find((c) => c.id == form.categoryId)?.name === "OTHER" && (
-            <div className="form-group">
-              <label>Notater</label>
-              <textarea
-                className="form-control"
-                value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
-              />
-            </div>
-          )}
-
-          <button type="submit" className="btn btn-primary mt-3">
-            {form.appointmentId ? "Oppdater timen" : "Book Time"}
-          </button>
-        </form>
-      </div>
-
-      {/* FUTURE APPOINTMENTS */}
-      <div className="booking-list">
-        <h2>Fremtidige Timer</h2>
-
-        {appointments.length === 0 ? (
-          <p>Ingen avtaler funnet.</p>
-        ) : (
-          <table className="table table-custom">
-            <thead>
-              <tr>
-                <th>Dato & Tidspunkt</th>
-                <th>Kategori</th>
-                <th>Notater</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {appointments.map((a) => (
-                <tr key={a.id} className={editingId === a.id ? "editing-row" : ""}>
-                  <td>
-                    {new Date(a.date).toLocaleDateString("no-NO")}{" "}
-                    {a.time}
-                    {editingId === a.id && (
-                      <span className="badge bg-warning text-dark ms-2">
-                        Endre timen
-                      </span>
-                    )}
-                  </td>
-                  <td>{a.serviceType}</td>
-                  <td>{a.notes}</td>
-                  <td className="text-end">
-                    <button
-                      className="btn btn-sm btn-outline-primary me-1"
-                      onClick={() => handleEdit(a.id)}
-                      disabled={editingId && editingId !== a.id}
-                    >
-                      Endre timen
-                    </button>
-
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => handleCancel(a.id)}
-                      disabled={editingId && editingId !== a.id}
-                    >
-                      Kanseller timen
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         )}
-      </div>
-
-      <div className="mt-3 text-center">
-        <Link to="/dashboard" className="btn btn-secondary">
-          Tilbake til Min Side
-        </Link>
+        {success && <div className="alert alert-success">{success}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
+        <div className="row g-4">
+          <div className="col-12 col-lg-6">
+            <section aria-labelledby="booking-heading">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <h2 id="booking-heading" className="fs-4 mb-3">Bestill her</h2>
+                  {editingBookingId && (
+                    <div className="alert alert-info d-flex justify-content-between align-items-center">
+                      <span><i className="bi bi-pencil me-2"></i> Redigerer booking</span>
+                      <button type="button" className="btn btn-sm btn-outline-secondary" onClick={handleCancelEdit}>
+                        Avbryt redigering
+                      </button>
+                    </div>
+                  )}
+                  <form onSubmit={handleSubmit}>
+                    <div className="form-group mb-3">
+                      <label className="form-label fw-bold">Dato</label>
+                      <div className="date-options">
+                        {availableDates.length > 0 ? (
+                          availableDates.map(d => (
+                            <label
+                              key={d.id}
+                              className={`date-option btn btn-outline-secondary m-1 ${selectedDateId === d.id ? 'active btn-success text-white' : ''}`}
+                            >
+                              <input
+                                type="radio"
+                                name="selectedDate"
+                                value={d.date}
+                                checked={selectedDateId === d.id}
+                                onChange={() => handleDateChange(d.id, d.date)}
+                                style={{ display: 'none' }}
+                              />
+                              {new Date(d.date).toLocaleDateString('nb-NO', { month: 'short', day: 'numeric' })}
+                            </label>
+                          ))
+                        ) : (
+                          <p className="text-danger">Ingen tilgjengelige datoer.</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="form-group mb-3">
+                      <label className="form-label fw-bold">Tidspunkt</label>
+                      <div id="time-slot-wrapper" className="mt-2">
+                        {availableTimeSlots.length > 0 ? (
+                          <div className="btn-group-vertical w-100" role="group">
+                            {availableTimeSlots.map(ts => (
+                              <button
+                                key={ts.id}
+                                type="button"
+                                className={`btn btn-outline-primary text-start ${selectedTimeSlotId === ts.id ? 'active' : ''}`}
+                                onClick={() => handleTimeSlotChange(ts.id)}
+                              >
+                                {ts.slot}
+                              </button>
+                            ))}
+                          </div>
+                        ) : selectedDateId ? (
+                          <p className="text-danger">Ingen tilgjengelige tidspunkter.</p>
+                        ) : (
+                          <p className="text-muted">Velg en dato først.</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="form-group mb-3">
+                      <label className="form-label fw-bold">Velg ansatt</label>
+                      <div id="caregiverContainer">
+                        {caregivers.length > 0 ? (
+                          <select
+                            className="form-select"
+                            value={selectedCaregiverId || ''}
+                            onChange={e => setSelectedCaregiverId(Number(e.target.value))}
+                            required
+                          >
+                            <option value="">-- Velg ansatt --</option>
+                            {caregivers.map(p => (
+                              <option key={p.id} value={p.id}>{p.fullName}</option>
+                            ))}
+                          </select>
+                        ) : selectedTimeSlotId ? (
+                          <p className="text-danger">Ingen tilgjengelige ansatte.</p>
+                        ) : (
+                          <p className="text-muted">Velg et tidspunkt først.</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="form-group mb-3">
+                      <label htmlFor="categoryId" className="form-label fw-bold">Kategori</label>
+                      <select
+                        id="categoryId"
+                        className="form-select"
+                        value={categoryId}
+                        onChange={e => setCategoryId(Number(e.target.value))}
+                        required
+                      >
+                        <option value="">-- Velg kategori --</option>
+                        {categories.map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group mb-3">
+                      <label htmlFor="notes" className="form-label fw-bold">
+                        Notater {requireNotes ? '(påkrevd)' : '(valgfritt)'}
+                      </label>
+                      <textarea
+                        id="notes"
+                        className="form-control"
+                        rows={3}
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                        required={requireNotes}
+                      />
+                    </div>
+                    <button type="submit" className="btn btn-success w-100 btn-lg">
+                      {editingBookingId ? 'Oppdater booking' : 'Bestill time'}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </section>
+          </div>
+          <div className="col-12 col-lg-6">
+            <section aria-labelledby="bookings-heading">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <h2 id="bookings-heading" className="fs-4 mb-3">Dine timer</h2>
+                  {bookings.length > 0 ? (
+                    <div className="list-group">
+                      {bookings.map(b => (
+                        <div
+                          key={b.id}
+                          className={`list-group-item ${editingBookingId === b.id ? 'list-group-item-warning border-warning border-2' : ''}`}
+                        >
+                          {editingBookingId === b.id && (
+                            <span className="badge bg-warning text-dark mb-2">Redigerer</span>
+                          )}
+                          <div className="d-flex justify-content-between align-items-start">
+                            <div>
+                              <h6 className="mb-1">
+                                {new Date(b.dateTime).toLocaleDateString('nb-NO', {
+                                  weekday: 'long',
+                                  day: 'numeric',
+                                  month: 'long',
+                                  year: 'numeric'
+                                })}
+                              </h6>
+                              <p className="mb-1">
+                                <strong>Tid:</strong> {new Date(b.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                              <p className="mb-1">
+                                <strong>Kategori:</strong> {b.category?.name || 'N/A'}
+                              </p>
+                              <p className="mb-1">
+                                <strong>Ansatt:</strong> {b.caregiver?.fullName || 'N/A'}
+                              </p>
+                              {b.notes && (
+                                <p className="mb-0 text-muted">
+                                  <small>Notater: {b.notes}</small>
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="mt-2 d-flex gap-2">
+                            <button
+                              className="btn btn-sm btn-outline-warning"
+                              onClick={() => handleEdit(b)}
+                              disabled={editingBookingId !== null && editingBookingId !== b.id}
+                            >
+                              <i className="bi bi-pencil me-1"></i> Rediger
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleCancel(b.id)}
+                              disabled={editingBookingId !== null && editingBookingId !== b.id}
+                            >
+                              <i className="bi bi-trash me-1"></i> Avbestill
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted">Ingen bookinger ennå.</p>
+                  )}
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
     </div>
-  );
+  )
 }

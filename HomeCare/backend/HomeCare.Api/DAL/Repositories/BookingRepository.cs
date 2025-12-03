@@ -8,175 +8,131 @@ namespace HomeCare.Api.DAL.Repositories
     public class BookingRepository : IBookingRepository
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<BookingRepository> _logger;
 
-        public BookingRepository(AppDbContext context, ILogger<BookingRepository> logger)
+        public BookingRepository(AppDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
-        // ------------------------------
-        // BOOKINGS CRUD
-        // ------------------------------
-        public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
+        public async Task<User?> GetUserByFullNameAsync(string fullName) =>
+            await _context.Users.FirstOrDefaultAsync(u => u.FullName == fullName);
+
+        public async Task AddCaregiverAvailabilityAsync(int CaregiverId, DateTime date)
         {
-            try
+            var exists = await _context.CaregiverAvailabilities
+                .AnyAsync(a => a.CaregiverId == CaregiverId && a.Date.Date == date.Date);
+
+            if (!exists)
             {
-                return await _context.Bookings
-                    .Include(b => b.User)
-                    .Include(b => b.TimeSlot)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving all bookings");
-                throw;
+                var availability = new CaregiverAvailability
+                {
+                    CaregiverId = CaregiverId,
+                    Date = date
+                };
+
+                _context.CaregiverAvailabilities.Add(availability);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<Booking?> GetBookingByIdAsync(int id)
-        {
-            try
-            {
-                return await _context.Bookings
-                    .Include(b => b.User)
-                    .Include(b => b.TimeSlot)
-                    .FirstOrDefaultAsync(b => b.Id == id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving booking by ID {Id}", id);
-                throw;
-            }
-        }
+        public async Task<AvailableDate?> GetAvailableDateByDateAsync(DateTime date) =>
+            await _context.AvailableDates
+                .Include(d => d.TimeSlots)
+                .FirstOrDefaultAsync(d => d.Date == date);
+
+        public async Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync() =>
+            await _context.AvailableDates
+                .Include(d => d.TimeSlots)
+                .Where(d => d.Date >= DateTime.Today)
+                .OrderBy(d => d.Date)
+                .ToListAsync();
+
+        public async Task<IEnumerable<Category>> GetCategoriesAsync() =>
+            await _context.Categories
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+
+        public async Task<IEnumerable<Booking>> GetUpcomingBookingsAsync() =>
+            await _context.Bookings
+                .Include(a => a.TimeSlot)
+                    .ThenInclude(ts => ts.AvailableDate)
+                .Include(a => a.Category)
+                .Include(a => a.User)
+                .Include(a => a.Caregiver)
+                .Where(a => a.DateTime >= DateTime.Today)
+                .OrderBy(a => a.DateTime)
+                .ToListAsync();
+
+        public async Task<Booking?> GetBookingByIdAsync(int id) =>
+            await _context.Bookings
+                .Include(a => a.TimeSlot)
+                    .ThenInclude(ts => ts.AvailableDate)
+                .Include(a => a.Category)
+                .Include(a => a.User)
+                .Include(a => a.Caregiver)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
         public async Task AddBookingAsync(Booking booking)
         {
-            try
-            {
-                _context.Bookings.Add(booking);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding booking");
-                throw;
-            }
-        }
-
-        public async Task<bool> UpdateBookingAsync(Booking booking)
-        {
-            try
-            {
-                _context.Bookings.Update(booking);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating booking {Id}", booking.Id);
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteBookingAsync(int id)
-        {
-            try
-            {
-                var booking = await _context.Bookings.FindAsync(id);
-                if (booking == null) return false;
-
-                _context.Bookings.Remove(booking);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting booking {Id}", id);
-                return false;
-            }
-        }
-
-        // ------------------------------
-        // DATES, TIMESLOTS, CATEGORIES
-        // ------------------------------
-        public async Task<IEnumerable<AvailableDate>> GetAvailableDatesAsync()
-        {
-            try
-            {
-                return await _context.AvailableDates
-                    .Include(d => d.TimeSlots)
-                    .Where(d => d.Date >= DateTime.Today && d.TimeSlots.Any(ts => !ts.IsBooked))
-                    .OrderBy(d => d.Date)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving available dates");
-                throw;
-            }
-        }
-
-        public async Task<IEnumerable<Category>> GetCategoriesAsync()
-        {
-            try
-            {
-                return await _context.Categories
-                    .OrderBy(c => c.Name)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving categories");
-                throw;
-            }
-        }
-
-        public async Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId)
-        {
-            try
-            {
-                return await _context.TimeSlots
-                    .Include(ts => ts.AvailableDate)
-                    .FirstOrDefaultAsync(ts => ts.Id == timeSlotId && !ts.IsBooked);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving available time slot {Id}", timeSlotId);
-                throw;
-            }
-        }
-
-        public async Task<Category?> GetCategoryByIdAsync(int categoryId)
-        {
-            try
-            {
-                return await _context.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving category {Id}", categoryId);
-                throw;
-            }
-        }
-
-        public async Task<bool> UpdateTimeSlotAsync(TimeSlot timeSlot)
-        {
-            try
-            {
-                _context.TimeSlots.Update(timeSlot);
-                return await _context.SaveChangesAsync() > 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating time slot {Id}", timeSlot.Id);
-                return false;
-            }
-        }
-
-        public async Task SaveChangesAsync()
-        {
+            _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateBookingAsync(Booking booking)
+        {
+            var existing = await _context.Bookings.FirstOrDefaultAsync(a => a.Id == booking.Id);
+            if (existing == null)
+                throw new InvalidOperationException($"Booking {booking.Id} not found.");
+
+            existing.TimeSlotId = booking.TimeSlotId;
+            existing.DateTime = booking.DateTime;
+            existing.CaregiverId = booking.CaregiverId;
+            existing.CategoryId = booking.CategoryId;
+            existing.Notes = booking.Notes;
+
+            _context.Bookings.Update(existing);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteBookingAsync(int id)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking != null)
+            {
+                _context.Bookings.Remove(booking);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId) =>
+            await _context.TimeSlots.Include(ts => ts.AvailableDate)
+            .FirstOrDefaultAsync(ts => ts.Id == timeSlotId);
+
+        public async Task<Category?> GetCategoryByIdAsync(int categoryId) =>
+            await _context.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+
+        public async Task UpdateTimeSlotAsync(TimeSlot timeSlot)
+        {
+            _context.TimeSlots.Update(timeSlot);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAvailableDateAsync(AvailableDate availableDate)
+        {
+            _context.AvailableDates.Update(availableDate);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+
+        public async Task<IEnumerable<User>> GetAvailableCaregiverByDateAsync(DateTime date) =>
+            await _context.CaregiverAvailabilities
+                .Where(a => a.Date.Date == date.Date)
+                .Select(a => a.Caregiver)
+                .Distinct()
+                .ToListAsync();
+
+        public async Task<User?> GetUserByIdAsync(int selectedCaregiverId) =>
+            await _context.Users.FindAsync(selectedCaregiverId);
     }
 }
