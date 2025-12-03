@@ -1,6 +1,6 @@
 /**
  * Navbar.jsx - Main Navigation Bar
- * 
+ *
  * Auth: Uses context/AuthContext.jsx (group's pattern)
  * Shows different nav items based on user role and login state
  */
@@ -100,14 +100,14 @@ export default function Navbar() {
                   <i className="bi bi-house-door me-1"></i> Hjem
                 </a>
               </li>
-              
+
               {/* About link */}
               <li className="nav-item">
                 <a href="/about" className="nav-link px-3 py-2 fs-5">
                   <i className="bi bi-info-circle me-1"></i> Om oss
                 </a>
               </li>
-              
+
               {/* Caregiver schedule - only for caregivers */}
               {user && user.role === 'Caregiver' && (
                 <li className="nav-item">
@@ -116,7 +116,7 @@ export default function Navbar() {
                   </a>
                 </li>
               )}
-              
+
               {/* Admin panel - only for admins */}
               {user && user.role === 'Admin' && (
                 <li className="nav-item">
@@ -125,7 +125,7 @@ export default function Navbar() {
                   </a>
                 </li>
               )}
-              
+
               {/* My page - only for clients */}
               {user && user.role === 'Client' && (
                 <li className="nav-item">
@@ -134,7 +134,7 @@ export default function Navbar() {
                   </a>
                 </li>
               )}
-              
+
               {/* Booking - only for clients */}
               {user && user.role === 'Client' && (
                 <li className="nav-item">
@@ -143,7 +143,7 @@ export default function Navbar() {
                   </a>
                 </li>
               )}
-              
+
               {/* Contact link */}
               <li className="nav-item">
                 <a href="/contact" className="nav-link px-3 py-2 fs-5">
