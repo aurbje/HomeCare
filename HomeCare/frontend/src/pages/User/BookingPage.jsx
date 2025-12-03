@@ -231,7 +231,7 @@ export default function BookingPage() {
       <div className="container py-4">
         {clientName && (
           <div className="text-center mb-4">
-            <h1>Bestill time, {clientName}</h1>
+            <h1>Bestill time</h1>
           </div>
         )}
         {success && <div className="alert alert-success">{success}</div>}

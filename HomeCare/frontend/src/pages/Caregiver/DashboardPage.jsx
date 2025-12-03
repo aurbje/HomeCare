@@ -43,10 +43,13 @@ export default function CaregiverDashboardPage() {
   const [selectedDates, setSelectedDates] = useState(new Set())
 
   /**
-   * Convert date to YYYY-MM-DD string format
+   * Convert date to YYYY-MM-DD string format (local timezone)
    */
   const toDateString = (date) => {
-    return date.toISOString().split('T')[0]
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   }
 
   /**
@@ -122,6 +125,22 @@ export default function CaregiverDashboardPage() {
       .map(d => new Date(d))
       .sort((a, b) => a.getTime() - b.getTime())
   }, [data?.availableDates])
+
+  /**
+   * Map of calendar events by date for quick lookup
+   */
+  const eventsByDate = useMemo(() => {
+    const events = data?.model?.calendarEvents ?? []
+    const map = new Map()
+    events.forEach(event => {
+      const dateStr = toDateString(new Date(event.startTime))
+      if (!map.has(dateStr)) {
+        map.set(dateStr, [])
+      }
+      map.get(dateStr).push(event)
+    })
+    return map
+  }, [data?.model?.calendarEvents])
 
   /**
    * Navigate to previous month
@@ -274,7 +293,7 @@ export default function CaregiverDashboardPage() {
         {/* Header */}
         <div className="mb-3">
           <h1 className="display-6 fw-bold text-success mb-1">Min arbeidsplan</h1>
-          <p className="lead text-muted mb-0">{model?.caregiverName || ''}</p>
+          <p className="lead text-muted mb-0">Du er logget inn som {model?.caregiverName || ''}.</p>
         </div>
 
         {/* Alert messages */}
@@ -403,6 +422,7 @@ export default function CaregiverDashboardPage() {
                             const isAvailable = availableDateSet.has(dateStr)
                             const isSelected = selectedDates.has(dateStr)
                             const isToday = date.toDateString() === today.toDateString()
+                            const dayEvents = eventsByDate.get(dateStr) || []
 
                             return (
                               <td
@@ -412,9 +432,28 @@ export default function CaregiverDashboardPage() {
                                   ${isAvailable ? 'bg-success-subtle' : ''}
                                   ${isToday ? 'border-primary border-2' : ''}
                                 `}
-                                style={{ minWidth: '80px', verticalAlign: 'top', padding: '8px' }}
+                                style={{ minWidth: '100px', verticalAlign: 'top', padding: '8px' }}
                               >
                                 <div className="fw-bold mb-1">{date.getDate()}</div>
+
+                                {/* Display bookings for this day */}
+                                {dayEvents.length > 0 && (
+                                  <div className="mb-2">
+                                    {dayEvents.map((event, eventIdx) => (
+                                      <div
+                                        key={eventIdx}
+                                        className="small text-dark"
+                                        style={{ fontSize: '0.75rem' }}
+                                      >
+                                        <span className="fw-bold">
+                                          {new Date(event.startTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                        <span className="ms-1">{event.clientName}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
                                 {!isPast && (
                                   <div>
                                     {isAvailable ? (

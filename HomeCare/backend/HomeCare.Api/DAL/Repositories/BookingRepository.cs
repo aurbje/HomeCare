@@ -57,7 +57,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .Include(a => a.TimeSlot)
                     .ThenInclude(ts => ts.AvailableDate)
                 .Include(a => a.Category)
-                .Include(a => a.Client)
+                .Include(a => a.User)
                 .Include(a => a.Caregiver)
                 .Where(a => a.DateTime >= DateTime.Today)
                 .OrderBy(a => a.DateTime)
@@ -68,7 +68,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .Include(a => a.TimeSlot)
                     .ThenInclude(ts => ts.AvailableDate)
                 .Include(a => a.Category)
-                .Include(a => a.Client)
+                .Include(a => a.User)
                 .Include(a => a.Caregiver)
                 .FirstOrDefaultAsync(a => a.Id == id);
 

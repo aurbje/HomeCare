@@ -76,8 +76,10 @@ namespace HomeCare.Api.Data
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Vask" },
                 new Category { Id = 2, Name = "Omsorg" },
-                new Category { Id = 3, Name = "Matstell" },
-                new Category { Id = 4, Name = "Annet" }
+                new Category { Id = 3, Name = "Mating" },
+                new Category { Id = 4, Name = "Medisinering" },
+                new Category { Id = 5, Name = "Stell" },
+                new Category { Id = 6, Name = "Annet" }
             );
         }
     }

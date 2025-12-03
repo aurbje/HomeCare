@@ -45,15 +45,50 @@ export default function DashboardPage() {
   }, [])
 
   /**
+   * Convert date to YYYY-MM-DD string format (local timezone)
+   */
+  const toDateString = (date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  /**
    * Set of booked date strings for calendar highlighting
    */
   const bookedDateSet = useMemo(() => {
     const dates = data?.bookings ?? []
     return new Set(dates.map(b => {
       const d = new Date(b.dateTime)
-      return d.toISOString().split('T')[0]
+      return toDateString(d)
     }))
   }, [data?.bookings])
+
+  /**
+   * Map of bookings by date for calendar display
+   */
+  const bookingsByDate = useMemo(() => {
+    const bookings = data?.bookings ?? []
+    const map = new Map()
+    bookings.forEach(booking => {
+      const d = new Date(booking.dateTime)
+      const dateStr = toDateString(d)
+      if (!map.has(dateStr)) {
+        map.set(dateStr, [])
+      }
+      map.get(dateStr).push(booking)
+    })
+    return map
+  }, [data?.bookings])
+
+  /**
+   * Get today's bookings for "Dine timer" section
+   */
+  const todayBookings = useMemo(() => {
+    const todayStr = toDateString(new Date())
+    return bookingsByDate.get(todayStr) || []
+  }, [bookingsByDate])
 
   /**
    * Navigate to previous month
@@ -129,41 +164,30 @@ export default function DashboardPage() {
           <div className="col-12 col-lg-4">
             <div className="d-flex flex-column w-100" style={{ gap: '0.5rem' }}>
 
-              {/* Bookings Section (Dine timer) */}
+              {/* Today's Bookings Section (Dine timer i dag) */}
               <div className="card shadow-sm">
                 <div className="card-body">
                   <h2 className="card-title fs-4 mb-3">
-                    <i className="bi bi-calendar-check me-2"></i>Dine timer
+                    <i className="bi bi-calendar-day me-2"></i>Dine timer i dag
                   </h2>
-                  {data.bookings && data.bookings.length > 0 ? (
+                  {todayBookings.length > 0 ? (
                     <ul className="list-group" style={{ maxHeight: '280px', overflowY: 'auto' }}>
-                      {data.bookings.map(booking => (
+                      {todayBookings.map(booking => (
                         <li key={booking.id} className="list-group-item">
                           <div className="fw-bold">
-                            {new Date(booking.dateTime).toLocaleDateString('nb-NO', {
-                              weekday: 'long',
-                              day: '2-digit',
-                              month: 'long'
-                            })}
-                          </div>
-                          <div className="small text-muted">
                             <i className="bi bi-clock me-1"></i>
                             {new Date(booking.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
                           </div>
                           <div className="small">
-                            <i className="bi bi-tag me-1"></i>{booking.category?.name || 'N/A'}
+                            <i className="bi bi-person me-1"></i>
+                            {booking.caregiver?.fullName || 'Ikke tildelt'} ({booking.category?.name || 'N/A'})
                           </div>
-                          {booking.caregiver && (
-                            <div className="small">
-                              <i className="bi bi-person me-1"></i>{booking.caregiver.fullName}
-                            </div>
-                          )}
                         </li>
                       ))}
                     </ul>
                   ) : (
                     <p className="text-muted mb-0">
-                      <i className="bi bi-info-circle me-2"></i>Ingen kommende timer.
+                      <i className="bi bi-check-circle me-2"></i>Ingen timer i dag.
                     </p>
                   )}
                   <div className="mt-3">
@@ -243,10 +267,11 @@ export default function DashboardPage() {
                               return <td key={dayIdx} className="bg-light" style={{ minHeight: '60px' }}></td>
                             }
 
-                            const dateStr = date.toISOString().split('T')[0]
+                            const dateStr = toDateString(date)
                             const isPast = date < today
                             const hasBooking = bookedDateSet.has(dateStr)
                             const isToday = date.toDateString() === today.toDateString()
+                            const dayBookings = bookingsByDate.get(dateStr) || []
 
                             return (
                               <td
@@ -259,11 +284,13 @@ export default function DashboardPage() {
                                 style={{ minWidth: '80px', minHeight: '60px', verticalAlign: 'top', padding: '8px' }}
                               >
                                 <div className="fw-bold mb-1">{date.getDate()}</div>
-                                {hasBooking && (
+                                {dayBookings.length > 0 && (
                                   <div>
-                                    <span className="badge bg-success">
-                                      <i className="bi bi-check"></i>
-                                    </span>
+                                    {dayBookings.map((booking, idx) => (
+                                      <div key={idx} className="small text-success" style={{ fontSize: '0.75rem' }}>
+                                        {new Date(booking.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </td>

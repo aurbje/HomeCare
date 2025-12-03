@@ -39,7 +39,9 @@ namespace HomeCare.Api.Data
             {
                 new Category { Name = "Vask" },
                 new Category { Name = "Omsorg" },
-                new Category { Name = "Matstell" },
+                new Category { Name = "Mating" },
+                new Category { Name = "Medisinering" },
+                new Category { Name = "Stell" },
                 new Category { Name = "Annet" }
             };
                 context.Categories.AddRange(categories);
