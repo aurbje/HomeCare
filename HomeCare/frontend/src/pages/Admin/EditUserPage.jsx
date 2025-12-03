@@ -20,27 +20,27 @@ function EditUserPage() {
     fetchUser();
   }, [id]);
 
-  const fetchUser = async () => {
+const fetchUser = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const data = await getUserById(id);
-      console.log('Fetched user data:', data); // Debug log
-      setFormData({
-        id: data.id,
-        fullName: data.fullName || '',
-        email: data.email || '',
-        tlfNumber: data.tlfNumber || '',
-        address: data.address || '',
-        role: data.role || 'Client'
-      });
+        setLoading(true);
+        setError(null);
+        const data = await getUserById(id);
+        console.log('Fetched user data:', data); // Debug log
+        setFormData({
+            id: data.id,
+            fullName: data.fullName || '',
+            email: data.email || '',
+            tlfNumber: data.tlfNumber || '',
+            address: data.address || '',
+            role: data.role || 'Client'
+        });
     } catch (err) {
-      console.error('Error fetching user:', err);
-      setError('Kunne ikke laste bruker: ' + (err.response?.data?.message || err.message));
+        console.error('Error fetching user:', err);
+        setError('Kunne ikke laste bruker: ' + (err.response?.data?.message || err.message));
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,15 +51,15 @@ function EditUserPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      console.log('Submitting data:', formData); // Debug log
-      await updateUser(id, formData); // Send complete formData including role
-      navigate('/admin/users');
-    } catch (err) {
-      console.error('Error updating user:', err);
-      setError('Kunne ikke oppdatere bruker: ' + (err.response?.data?.message || err.message));
-    }
+      e.preventDefault();
+      try {
+          console.log('Submitting data:', formData); // Debug log
+          await updateUser(id, formData); // Send complete formData including role
+          navigate('/admin/users');
+      } catch (err) {
+          console.error('Error updating user:', err);
+          setError('Kunne ikke oppdatere bruker: ' + (err.response?.data?.message || err.message));
+      }
   };
 
   if (loading) {

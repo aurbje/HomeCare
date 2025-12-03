@@ -1,7 +1,7 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HomeCare.Api.DTO.Admin
 {
-    using System.ComponentModel.DataAnnotations;
-
     public class UpdateUserDto
     {
         [Required]

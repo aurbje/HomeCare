@@ -75,14 +75,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             try
             {
-                var existing = await _context.AppUsers.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == user.Id);
-                if (existing == null) return false;
-
-                // Preserve the original role and password
-                user.Role = existing.Role;
-                user.PasswordHash = existing.PasswordHash;
-
+                // This method now receives the full user entity from the controller
                 _context.AppUsers.Update(user);
                 await _context.SaveChangesAsync();
                 return true;
@@ -90,7 +83,7 @@ namespace HomeCare.Api.DAL.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating user {Id}", user.Id);
-                throw;
+                return false;
             }
         }
 

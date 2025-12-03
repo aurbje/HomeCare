@@ -56,30 +56,34 @@ namespace HomeCare.Api.Controllers
         }
 
         [HttpPut("users/{id:int}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User input)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto input)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
-            var existing = await _adminRepo.GetUserByIdAsync(id);
-            if (existing == null) return NotFound();
+            var existingUser = await _adminRepo.GetUserByIdAsync(id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
 
-            existing.FullName = input.FullName;
-            existing.Email = input.Email;
-            existing.TlfNumber = input.TlfNumber ?? existing.TlfNumber;
-            existing.Address = input.Address ?? existing.Address;
+            // Map the changes from the DTO to the existing user entity
+            existingUser.FullName = input.FullName;
+            existingUser.Email = input.Email;
+            existingUser.TlfNumber = input.TlfNumber;
+            existingUser.Address = input.Address;
 
-            var success = await _adminRepo.UpdateUserAsync(existing);
-            if (!success) return StatusCode(500, new { message = "Failed to update user" });
+            // Now, update the user with the complete, valid entity
+            var success = await _adminRepo.UpdateUserAsync(existingUser);
 
-            return Ok(new { message = "User updated" });
-        }
+            if (!success)
+            {
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
 
-        [HttpDelete("users/{id:int}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var ok = await _adminRepo.DeleteUserAsync(id);
-            return ok ? Ok(new { message = "User deleted" }) : NotFound(new { message = "User not found or cannot delete" });
+            return Ok(new { message = "User updated successfully." });
         }
 
         //Caregivers
