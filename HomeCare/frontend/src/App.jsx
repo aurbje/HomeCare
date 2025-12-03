@@ -1,6 +1,6 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
+import React from "react";
+import { Routes, Route } from "react-router-dom";   // <-- viktig!
+import Layout from "./components/Layout";
 
 import LoginPage from "./pages/Account/LoginPage";
 import RegisterPage from "./pages/Account/RegisterPage";
@@ -9,27 +9,24 @@ import HomePage from "./pages/Home/HomePage";
 import AboutPage from "./pages/Home/AboutPage";
 import ContactPage from "./pages/Home/ContactPage";
 import BookingPage from "./pages/User/BookingPage";
+import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
+    <Routes>
 
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="contact" element={<ContactPage />} />
-          <Route path="booking" element={<BookingPage />} />
+      <Route path="/" element={<Layout />}>
+        <Route index element={<HomePage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactPage />} />
+        <Route path="booking" element={<BookingPage />} />
+        <Route path="register" element={<RegisterPage />} />
 
-          <Route path="register" element={<RegisterPage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="admin" element={<AdminDashboardPage />} />
+      </Route>
 
-          <Route path="dashboard" element={<DashboardPage />} />
-        </Route>
-
-      </Routes>
-    </Router>
+    </Routes>
   );
 }
-
-

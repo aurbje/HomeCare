@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/authApi";
 
 export default function RegisterPage() {
-  const navigate = useNavigate();
-
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -15,6 +13,9 @@ export default function RegisterPage() {
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,20 +24,26 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (form.password !== form.confirmPassword) {
-      return setError("Passordene matcher ikke.");
+      setError("Passordene matcher ikke");
+      return;
     }
 
     try {
-      const result = await registerUser(form);
+      await registerUser(form);
 
-      console.log("Registration success:", result);
+      // Vis suksessmelding
+      setSuccess("Konto opprettet! Du videresendes til innlogging...");
 
-      // Send brukeren til login etter registrering
-      navigate("/login");
+      // Redirect etter 1.5 sek
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+
     } catch (err) {
-      setError(err.message || "Registrering feilet.");
+      setError(err.message || "Registrering feilet");
     }
   };
 
@@ -45,87 +52,79 @@ export default function RegisterPage() {
       <div className="signup-card">
         <Link to="/" className="back-btn">← Tilbake til forsiden</Link>
 
-        <h2 className="text-center mb-4">Opprett HomeCare-konto</h2>
-        <p className="text-center text-muted mb-4">
-          Fyll inn informasjonen under for å komme i gang.
-          <br />Vi hjelper deg med å holde hjemmet trygt og komfortabelt.
-        </p>
+        <h2 className="text-center mb-4">Opprett konto</h2>
 
+        {/* FEILMELDING */}
         {error && <div className="alert alert-danger">{error}</div>}
 
-        <form onSubmit={handleSubmit} noValidate>
+        {/* SUKSESSMELDING */}
+        {success && <div className="alert alert-success">{success}</div>}
+
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Fullt navn</label>
+            <label>Fullt navn</label>
             <input
               name="fullName"
               className="form-control"
-              placeholder="Skriv inn ditt fulle navn"
               value={form.fullName}
               onChange={handleChange}
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label">E-postadresse</label>
+            <label>E-post</label>
             <input
               name="email"
               type="email"
               className="form-control"
-              placeholder="F.eks. anna@epost.no"
               value={form.email}
               onChange={handleChange}
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Adresse</label>
+            <label>Adresse</label>
             <input
               name="address"
               className="form-control"
-              placeholder="F.eks. Solsiden 12, Oslo"
               value={form.address}
               onChange={handleChange}
             />
           </div>
 
-          <div className="mb-4">
-            <label className="form-label">Telefonnummer</label>
+          <div className="mb-3">
+            <label>Telefonnummer</label>
             <input
               name="tlfNumber"
               className="form-control"
-              placeholder="F.eks. 91234567"
               value={form.tlfNumber}
               onChange={handleChange}
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Passord</label>
+            <label>Passord</label>
             <input
               name="password"
               type="password"
               className="form-control"
-              placeholder="Velg et passord"
               value={form.password}
               onChange={handleChange}
             />
           </div>
 
           <div className="mb-4">
-            <label className="form-label">Bekreft passord</label>
+            <label>Bekreft passord</label>
             <input
               name="confirmPassword"
               type="password"
               className="form-control"
-              placeholder="Gjenta passordet"
               value={form.confirmPassword}
               onChange={handleChange}
             />
           </div>
 
-          <button className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">
-            Opprett konto
-          </button>
+          <button className="btn btn-success w-100">Opprett konto</button>
         </form>
       </div>
     </div>

@@ -1,74 +1,43 @@
-// src/api/authApi.js
+// frontend/src/api/authApi.js
 
-const API_BASE = "https://localhost:7016/api/auth";
+const API_URL = "https://localhost:7263/api";
 
-// Helper: same as bookingApi
-async function handleResponse(response) {
-    if (!response.ok) {
-        let error = "Ukjent feil";
+export async function login(credentials) {
+  const res = await fetch(`${API_URL}/account/signin`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(credentials),
+  });
 
-        try {
-            const data = await response.json();
-            error = data.message || JSON.stringify(data);
-        } catch {
-            error = response.statusText;
-        }
-
-        throw new Error(error);
-    }
-
-    if (response.status === 204) return null;
-    return response.json();
+  if (!res.ok) throw new Error("Login failed");
+  return res.json();
 }
 
-/* =============================================
-   POST /api/auth/login
-============================================= */
-export async function loginUser(credentials) {
-    const response = await fetch(`${API_BASE}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",  // for cookies/session
-        body: JSON.stringify(credentials),
-    });
+export async function registerUser(data) {
+  const res = await fetch(`${API_URL}/account/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
 
-    return handleResponse(response);
+  if (!res.ok) throw new Error("Registration failed");
+  return res.json();
 }
 
-/* =============================================
-   POST /api/auth/register
-============================================= */
-export async function registerUser(model) {
-    const response = await fetch(`${API_BASE}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(model),
-    });
-
-    return handleResponse(response);
+export async function logout() {
+  await fetch(`${API_URL}/account/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
 }
 
-/* =============================================
-   POST /api/auth/logout
-============================================= */
-export async function logoutUser() {
-    const response = await fetch(`${API_BASE}/logout`, {
-        method: "POST",
-        credentials: "include",
-    });
-
-    return handleResponse(response);
-}
-
-/* =============================================
-   GET /api/auth/me (optional)
-============================================= */
 export async function getCurrentUser() {
-    const response = await fetch(`${API_BASE}/me`, {
-        method: "GET",
-        credentials: "include",
-    });
+  const res = await fetch(`${API_URL}/account/me`, {
+    credentials: "include",
+  });
 
-    return handleResponse(response);
+  if (!res.ok) return null;
+  return res.json();
 }
