@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HomeCare.Api.Controllers
 {
+    // Controller for admin-only management operations
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
@@ -19,7 +20,7 @@ namespace HomeCare.Api.Controllers
             _logger = logger;
         }
 
-        // GET: api/admin/users
+        // Retrieves all users with optional search filtering
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers([FromQuery(Name = "q")] string? q)
         {
@@ -28,6 +29,7 @@ namespace HomeCare.Api.Controllers
             {
                 return StatusCode(500, new { message = response.Message });
             }
+
             var shaped = response.Data.Select(u => new
             {
                 id = u.Id,
@@ -37,10 +39,11 @@ namespace HomeCare.Api.Controllers
                 tlfNumber = u.TlfNumber,
                 role = u.Role
             });
+
             return Ok(shaped);
         }
 
-        // GET: api/admin/users/5
+        // Retrieves a single user by ID
         [HttpGet("users/{id:int}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -49,7 +52,10 @@ namespace HomeCare.Api.Controllers
             {
                 return NotFound(new { message = response.Message });
             }
+
             var user = response.Data;
+
+            // Returns user in a uniform response structure
             var shaped = new
             {
                 id = user.Id,
@@ -59,10 +65,11 @@ namespace HomeCare.Api.Controllers
                 tlfNumber = user.TlfNumber,
                 role = user.Role
             };
+
             return Ok(shaped);
         }
 
-        // PUT: api/admin/users/5
+        // Updates an existing user record
         [HttpPut("users/{id:int}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto userDto)
         {
@@ -71,10 +78,11 @@ namespace HomeCare.Api.Controllers
             {
                 return BadRequest(new { message = response.Message });
             }
+
             return Ok(new { message = response.Data });
         }
 
-        // DELETE: api/admin/users/5
+        // Deletes a user account by ID
         [HttpDelete("users/{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -83,10 +91,11 @@ namespace HomeCare.Api.Controllers
             {
                 return BadRequest(new { message = response.Message });
             }
+
             return Ok(new { message = response.Data });
         }
 
-        // GET: api/admin/caregivers
+        // Retrieves all caregivers with optional query filtering
         [HttpGet("caregivers")]
         public async Task<IActionResult> GetCaregivers([FromQuery(Name = "q")] string? q)
         {
@@ -95,6 +104,7 @@ namespace HomeCare.Api.Controllers
             {
                 return StatusCode(500, new { message = response.Message });
             }
+
             var shaped = response.Data.Select(u => new
             {
                 id = u.Id,
@@ -104,26 +114,29 @@ namespace HomeCare.Api.Controllers
                 tlfNumber = u.TlfNumber,
                 role = u.Role
             });
+
             return Ok(shaped);
         }
 
-        // GET: api/admin/caregivers/5
+        // Retrieves a single caregiver by ID
         [HttpGet("caregivers/{id:int}")]
         public async Task<IActionResult> GetCaregiverById(int id)
         {
             _logger.LogInformation("GetCaregiverById called with id: {Id}", id);
             _logger.LogInformation("User authenticated: {IsAuth}", User.Identity?.IsAuthenticated);
             _logger.LogInformation("User role: {Role}", User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value);
-            
+
             var response = await _adminService.GetCaregiverByIdAsync(id);
-            
+
             _logger.LogInformation("Service response success: {Success}, message: {Message}", response.Success, response.Message);
-            
+
             if (!response.Success)
             {
                 return NotFound(new { message = response.Message });
             }
+
             var user = response.Data;
+            
             var shaped = new
             {
                 id = user.Id,
@@ -133,10 +146,11 @@ namespace HomeCare.Api.Controllers
                 tlfNumber = user.TlfNumber,
                 role = user.Role
             };
+
             return Ok(shaped);
         }
 
-        // PUT: api/admin/caregivers/5
+        // Updates caregiver details by ID
         [HttpPut("caregivers/{id:int}")]
         public async Task<IActionResult> UpdateCaregiver(int id, [FromBody] UpdateCaregiverDto caregiverDto)
         {
@@ -145,10 +159,11 @@ namespace HomeCare.Api.Controllers
             {
                 return BadRequest(new { message = response.Message });
             }
+
             return Ok(new { message = response.Data });
         }
 
-        // DELETE: api/admin/caregivers/5
+        // Removes a caregiver from the system
         [HttpDelete("caregivers/{id:int}")]
         public async Task<IActionResult> DeleteCaregiver(int id)
         {
@@ -157,10 +172,11 @@ namespace HomeCare.Api.Controllers
             {
                 return BadRequest(new { message = response.Message });
             }
+
             return Ok(new { message = response.Data });
         }
 
-        // GET: api/admin/bookings
+        // Retrieves all bookings with optional filtering
         [HttpGet("bookings")]
         public async Task<IActionResult> GetBookings([FromQuery(Name = "q")] string? q)
         {
@@ -169,9 +185,11 @@ namespace HomeCare.Api.Controllers
             {
                 return StatusCode(500, new { message = response.Message });
             }
+
             return Ok(response.Data);
         }
-        // GET: api/admin/bookings/5
+
+        // Retrieves detailed booking information by ID
         [HttpGet("bookings/{id:int}")]
         public async Task<IActionResult> GetBookingById(int id)
         {
@@ -180,11 +198,11 @@ namespace HomeCare.Api.Controllers
             {
                 return NotFound(new { message = response.Message });
             }
-            // Return the full booking object with related data
+
             return Ok(response.Data);
         }
 
-        // PUT: api/admin/bookings/5
+        // Updates booking information
         [HttpPut("bookings/{id:int}")]
         public async Task<IActionResult> UpdateBooking(int id, [FromBody] UpdateBookingDto bookingDto)
         {
@@ -193,9 +211,11 @@ namespace HomeCare.Api.Controllers
             {
                 return BadRequest(new { message = response.Message });
             }
+
             return Ok(new { message = response.Data });
         }
-        // DELETE: api/admin/bookings/5
+
+        // Deletes a booking from the system
         [HttpDelete("bookings/{id:int}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
@@ -204,6 +224,7 @@ namespace HomeCare.Api.Controllers
             {
                 return BadRequest(new { message = response.Message });
             }
+
             return Ok(new { message = response.Data });
         }
     }

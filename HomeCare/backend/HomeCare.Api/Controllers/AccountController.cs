@@ -10,16 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace HomeCare.Api.Controllers
 {
-    /// <summary>
-    /// Handles user authentication operations including login, logout, and registration.
-    /// This controller manages cookie-based authentication for the HomeCare application.
-    /// 
-    /// Frontend files that use this controller:
-    /// - frontend/src/api/authApi.js (API calls)
-    /// - frontend/src/context/AuthContext.jsx (authentication state management)
-    /// - frontend/src/pages/Account/LoginPage.jsx (login form)
-    /// - frontend/src/pages/Account/RegisterPage.jsx (registration form)
-    /// </summary>
+    // Controller for handling user authentication operations
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -33,19 +24,13 @@ namespace HomeCare.Api.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Authenticates a user and creates a session cookie.
-        /// Used by: frontend/src/api/authApi.js -> loginUser()
-        /// Called from: frontend/src/pages/Account/LoginPage.jsx
-        /// </summary>
-        /// <param name="model">Login credentials (email and password)</param>
-        /// <returns>User data on success, error message on failure</returns>
-        // POST: /api/account/signin
+        // Validates user credentials and issues an authentication cookie
         [HttpPost("signin")]
         public async Task<ActionResult<AuthResponseDto>> SignIn([FromBody] LoginDto model)
         {
             if (!ModelState.IsValid)
             {
+                // Returns validation errors for incorrect input
                 var errors = ModelState
                     .Where(kvp => kvp.Value?.Errors.Any() == true)
                     .ToDictionary(
@@ -58,14 +43,17 @@ namespace HomeCare.Api.Controllers
 
             try
             {
+                // Attempts to retrieve user by email
                 var user = await _userRepo.GetByEmailAsync(model.Email);
 
+                // Verifies email and password
                 if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
                 {
                     _logger.LogWarning("Invalid login attempt for email {Email}", model.Email);
                     return Unauthorized(new { message = "Invalid email or password" });
                 }
 
+                // Creates user identity with essential claims
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -77,6 +65,7 @@ namespace HomeCare.Api.Controllers
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
 
+                // Signs the user in with a persistent authentication cookie
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     principal,
@@ -88,6 +77,7 @@ namespace HomeCare.Api.Controllers
 
                 _logger.LogInformation("User {Email} logged in successfully", model.Email);
 
+                // Builds response containing essential user details
                 var response = new AuthResponseDto
                 {
                     UserId = user.Id,
@@ -100,18 +90,20 @@ namespace HomeCare.Api.Controllers
             }
             catch (Exception e)
             {
+                // Logs unexpected errors during login
                 _logger.LogError(e, "Unexpected error during login for email {Email}", model.Email);
-                // DEBUG: Return detailed error for troubleshooting
                 return StatusCode(500, new { message = "Unexpected error during login.", error = e.Message, stackTrace = e.StackTrace });
             }
         }
 
+        // Retrieves the currently authenticated user's information
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {
             if (!User.Identity?.IsAuthenticated ?? false)
                 return Unauthorized(new { message = "Not logged in" });
 
+            // Returns basic user identity claims
             return Ok(new {
                 id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                 fullName = User.FindFirst(ClaimTypes.Name)?.Value,
@@ -120,41 +112,7 @@ namespace HomeCare.Api.Controllers
             });
         }
 
-        
-        
-        /// <summary>
-        /// Returns the currently authenticated user's information from claims.
-        /// This endpoint is used by AuthContext to check if a user is logged in on app load.
-        /// Used by: frontend/src/api/authApi.js -> getCurrentUser()
-        /// Called from: frontend/src/context/AuthContext.jsx (on app initialization)
-        /// </summary>
-        /// <returns>User info (id, fullName, email, role) or 401 if not logged in</returns>
-        // GET: /api/account/me
-        // Added from group's Final_Alexander branch for AuthContext integration
-        // [HttpGet("me")]
-        // public IActionResult GetCurrentUser()
-        // {
-        //     if (!(User.Identity?.IsAuthenticated ?? false))
-        //     {
-        //         return Unauthorized(new { message = "Not logged in" });
-        //     }
-
-        //     return Ok(new
-        //     {
-        //         id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-        //         fullName = User.FindFirst(ClaimTypes.Name)?.Value,
-        //         email = User.FindFirst(ClaimTypes.Email)?.Value,
-        //         role = User.FindFirst(ClaimTypes.Role)?.Value
-        //     });
-        // }
-
-        /// <summary>
-        /// Signs out the current user by removing the authentication cookie.
-        /// Used by: frontend/src/api/authApi.js -> logoutUser()
-        /// Called from: frontend/src/context/AuthContext.jsx -> logoutUser()
-        /// </summary>
-        /// <returns>Success message</returns>
-        // POST: /api/account/logout
+        // Signs out the authenticated user by clearing authentication cookies
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -163,20 +121,13 @@ namespace HomeCare.Api.Controllers
             return Ok(new { message = "User logged out successfully" });
         }
 
-        /// <summary>
-        /// Registers a new user account with the provided information.
-        /// Creates a new User with hashed password and default "User" role.
-        /// Used by: frontend/src/api/authApi.js -> registerUser()
-        /// Called from: frontend/src/pages/Account/RegisterPage.jsx
-        /// </summary>
-        /// <param name="model">Registration data (name, email, password, phone, address)</param>
-        /// <returns>Created user data on success, error message on failure</returns>
-        // POST: /api/account/signup
+        // Registers a new user account with hashed password and default role
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] RegisterDto model)
         {
             if (!ModelState.IsValid)
             {
+                // Returns validation error details
                 var errors = ModelState
                     .Where(kvp => kvp.Value?.Errors.Any() == true)
                     .ToDictionary(
@@ -189,15 +140,17 @@ namespace HomeCare.Api.Controllers
 
             try
             {
+                // Checks if email is already registered
                 if (await _userRepo.EmailExistsAsync(model.Email))
                 {
                     return Conflict(new { message = "Email already registered" });
                 }
 
+                // Creates new user entity with secure password hashing
                 var user = new User
                 {
                     FullName = model.FullName,
-                    UserName = model.Email, // Use email as username
+                    UserName = model.Email,
                     Email = model.Email,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
                     Role = "User",
@@ -205,9 +158,11 @@ namespace HomeCare.Api.Controllers
                     Address = model.Address
                 };
 
+                // Saves the new user record
                 await _userRepo.AddAsync(user);
                 await _userRepo.SaveChangesAsync();
 
+                // Builds response object with user details
                 var response = new AuthResponseDto
                 {
                     UserId = user.Id,
@@ -222,18 +177,14 @@ namespace HomeCare.Api.Controllers
             }
             catch (Exception e)
             {
+                // Logs unexpected errors during registration
                 _logger.LogError(e, "Error during user registration for {Email}", model.Email);
-                // Return detailed error for debugging
                 return StatusCode(500, new { message = "Unexpected error during registration.", error = e.Message, innerError = e.InnerException?.Message });
             }
         }
     }
 
-    /// <summary>
-    /// Data transfer object for authentication responses.
-    /// Contains basic user information returned after login/registration.
-    /// Used in: AccountController.SignIn(), AccountController.SignUp()
-    /// </summary>
+    // Data structure returned after authentication events
     public class AuthResponseDto
     {
         public int UserId { get; set; }
