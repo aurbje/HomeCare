@@ -14,7 +14,7 @@ namespace HomeCare.Api.DAL.Repositories
             _context = context;
         }
 
-        // Basic user operations
+        // basic user operations
         public async Task<User?> GetByIdAsync(int id)
         {
             return await _context.Users.FindAsync(id);
@@ -35,18 +35,13 @@ namespace HomeCare.Api.DAL.Repositories
             await _context.Users.AddAsync(user);
         }
 
-        // Note: Update() is synchronous in EF Core - it only marks the entity as modified.
-        // The actual DB operation happens in SaveChangesAsync(). 
-        // We keep async signature for interface consistency.
         public Task UpdateAsync(User user)
         {
             _context.Users.Update(user);
             return Task.CompletedTask;
         }
 
-        // Note: Remove() is synchronous in EF Core - it only marks the entity for deletion.
-        // The actual DB operation happens in SaveChangesAsync().
-        // We keep async signature for interface consistency.
+// basic user operations
         public Task DeleteAsync(User user)
         {
             _context.Users.Remove(user);
@@ -58,7 +53,7 @@ namespace HomeCare.Api.DAL.Repositories
             await _context.SaveChangesAsync();
         }
 
-        // Client-specific dashboard operations (using UserId from Booking/Reminder models)
+        // client-specific dashboard operations (using UserId from Booking/Reminder models)
         public async Task<List<Reminder>> GetRemindersAsync(int UserId)
         {
             return await _context.Reminders
@@ -66,7 +61,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .OrderBy(r => r.Time)
                 .ToListAsync();
         }
-
+// client-specific dashboard operations (using UserId from Booking/Reminder models)
         public async Task<List<Booking>> GetTodayBookingsAsync(int UserId)
         {
             var today = DateTime.Today;
@@ -92,7 +87,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .Take(limit)
                 .ToListAsync();
         }
-
+        
         public async Task<List<Booking>> GetCalendarBookingsAsync(int UserId)
         {
             var startDate = DateTime.Today.AddMonths(-1);

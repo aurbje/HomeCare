@@ -1,6 +1,6 @@
 namespace HomeCare.Api.DTO.User
 {
-    public class CaregiverDashboardDto
+    public class CaregiverDashboardDto   // DTO for Caregiver Dashboard
     {
         public string CaregiverName { get; set; } = string.Empty;
         public int CaregiverId { get; set; }
@@ -11,7 +11,7 @@ namespace HomeCare.Api.DTO.User
         public List<BookingSummaryDto> PastBookings { get; set; } = new();
     }
 
-    public class VisitInfoDto
+    public class VisitInfoDto // DTO for Visit Information
     {
         public DateTime Time { get; set; }
         public string ClientName { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace HomeCare.Api.DTO.User
         public List<string> Tasks { get; set; } = new();
     }
 
-    public class CalendarEventDto
+    public class CalendarEventDto // DTO for Booking Summary
     {
         public DateTime StartTime { get; set; }
         public string Title { get; set; } = string.Empty;

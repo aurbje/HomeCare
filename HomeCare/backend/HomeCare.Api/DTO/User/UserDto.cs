@@ -1,6 +1,6 @@
 namespace HomeCare.Api.DTO.User
 {
-    public class UserDto
+    public class UserDto  // detailed user information
     {
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;
@@ -10,7 +10,7 @@ namespace HomeCare.Api.DTO.User
         public string? Address { get; set; }
     }
 
-    public class UserSummaryDto
+    public class UserSummaryDto // summary information about a user
     {
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;

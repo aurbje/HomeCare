@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeCare.Api.DAL.Repositories
 {
+    // repository for managing bookings and related data
     public class BookingRepository : IBookingRepository
     {
         private readonly AppDbContext _context;
@@ -13,7 +14,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             _context = context;
         }
-
+// get user by full name
         public async Task<User?> GetUserByFullNameAsync(string fullName) =>
             await _context.Users.FirstOrDefaultAsync(u => u.FullName == fullName);
 
@@ -34,7 +35,7 @@ namespace HomeCare.Api.DAL.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
+// get available date by specific date
         public async Task<AvailableDate?> GetAvailableDateByDateAsync(DateTime date) =>
             await _context.AvailableDates
                 .Include(d => d.TimeSlots)
@@ -46,7 +47,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .Where(d => d.Date >= DateTime.Today)
                 .OrderBy(d => d.Date)
                 .ToListAsync();
-
+// get all categories
         public async Task<IEnumerable<Category>> GetCategoriesAsync() =>
             await _context.Categories
                 .OrderBy(c => c.Name)
@@ -62,7 +63,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .Where(a => a.DateTime >= DateTime.Today)
                 .OrderBy(a => a.DateTime)
                 .ToListAsync();
-
+// get booking by id
         public async Task<Booking?> GetBookingByIdAsync(int id) =>
             await _context.Bookings
                 .Include(a => a.TimeSlot)
@@ -77,7 +78,7 @@ namespace HomeCare.Api.DAL.Repositories
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
         }
-
+// update existing booking
         public async Task UpdateBookingAsync(Booking booking)
         {
             var existing = await _context.Bookings.FirstOrDefaultAsync(a => a.Id == booking.Id);
@@ -93,7 +94,7 @@ namespace HomeCare.Api.DAL.Repositories
             _context.Bookings.Update(existing);
             await _context.SaveChangesAsync();
         }
-
+// delete booking by id
         public async Task DeleteBookingAsync(int id)
         {
             var booking = await _context.Bookings.FindAsync(id);
@@ -103,7 +104,7 @@ namespace HomeCare.Api.DAL.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
+//  get available time slot by id
         public async Task<TimeSlot?> GetAvailableTimeSlotAsync(int timeSlotId) =>
             await _context.TimeSlots.Include(ts => ts.AvailableDate)
             .FirstOrDefaultAsync(ts => ts.Id == timeSlotId);
@@ -122,7 +123,7 @@ namespace HomeCare.Api.DAL.Repositories
             _context.AvailableDates.Update(availableDate);
             await _context.SaveChangesAsync();
         }
-
+// save changes to the database
         public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
         public async Task<IEnumerable<User>> GetAvailableCaregiverByDateAsync(DateTime date) =>
@@ -131,7 +132,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .Select(a => a.Caregiver)
                 .Distinct()
                 .ToListAsync();
-
+// get user by id
         public async Task<User?> GetUserByIdAsync(int selectedCaregiverId) =>
             await _context.Users.FindAsync(selectedCaregiverId);
     }
