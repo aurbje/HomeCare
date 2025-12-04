@@ -103,7 +103,7 @@ function UsersPage() {
           <button type="submit" className="btn btn-sm btn-primary">Søk</button>
         </div>
         <div className="col-auto">
-          <button type="button" onClick={handleReset} className="btn btn-sm btn-outline-secondary">
+          <button type="button" onClick={handleReset} className="btn btn-primary btn-sm">
             Nullstill
           </button>
         </div>
@@ -143,7 +143,7 @@ function UsersPage() {
                 <td>
                   <button
                     onClick={() => handleEdit(user.id)}
-                    className="btn btn-sm btn-warning"
+                    className="btn btn-sm btn-primary"
                   >
                     Endre
                   </button>
@@ -163,7 +163,7 @@ function UsersPage() {
         </tbody>
       </table>
 
-      <button onClick={() => navigate("/admindashboard")} className="btn btn-outline-secondary btn-sm">
+      <button onClick={() => navigate("/admindashboard")} className="btn btn-primary btn-sm">
         Tilbake
       </button>
     </div>
