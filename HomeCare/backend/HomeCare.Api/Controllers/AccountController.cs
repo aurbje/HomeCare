@@ -95,7 +95,8 @@ namespace HomeCare.Api.Controllers
             if (!User.Identity?.IsAuthenticated ?? false)
                 return Unauthorized(new { message = "Not logged in" });
 
-            return Ok(new {
+            return Ok(new
+            {
                 id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                 fullName = User.FindFirst(ClaimTypes.Name)?.Value,
                 email = User.FindFirst(ClaimTypes.Email)?.Value,

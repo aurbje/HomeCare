@@ -1,4 +1,4 @@
-namespace HomeCare.Api.DTO.User
+namespace HomeCare.Api.DTO
 {
     public class AvailableDateDto // represents a date with available time slots for a user
     {

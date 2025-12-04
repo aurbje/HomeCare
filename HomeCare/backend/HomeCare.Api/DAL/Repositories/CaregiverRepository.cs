@@ -1,6 +1,6 @@
 using HomeCare.Api.Data;
 using HomeCare.Api.DAL.Interfaces;
-using HomeCare.Api.DTO.User;
+using HomeCare.Api.DTO;
 using HomeCare.Api.Models;
 using Microsoft.EntityFrameworkCore;
 

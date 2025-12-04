@@ -23,7 +23,7 @@ namespace HomeCare.Api.Models
         public int UserId { get; set; }
         public User User { get; set; } = null!;
 
-        // Alias property for backward compatibility with code using "Client" instead of "User"
+        // compatibility with code using "Client" instead of "User"
         [NotMapped]
         public User? Client
         {
