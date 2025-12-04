@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Admin dashboard landing page 
 function AdminDashboardPage() {
   const navigate = useNavigate();
 
@@ -9,6 +10,8 @@ function AdminDashboardPage() {
       <h1 className="mb-4 text-center">Administratorside</h1>
 
       <div className="row g-4">
+
+        {/* User management */}
         <div className="col-12 col-md-4">
           <div
             className="text-decoration-none card shadow-sm h-100 border-0 hover-shadow"
@@ -22,6 +25,8 @@ function AdminDashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Booking management */}
         <div className="col-12 col-md-4">
           <div
             className="text-decoration-none card shadow-sm h-100 border-0 hover-shadow"
@@ -35,6 +40,8 @@ function AdminDashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Caregiver/staff management */}
         <div className="col-12 col-md-4">
           <div
             className="text-decoration-none card shadow-sm h-100 border-0 hover-shadow"
@@ -48,8 +55,10 @@ function AdminDashboardPage() {
             </div>
           </div>
         </div>
+
       </div>
 
+      {/* Hover effect for dashboard tiles */}
       <style jsx>{`
         .hover-shadow:hover {
           box-shadow: 0 0.75rem 1.25rem rgba(0, 0, 0, 0.15);

@@ -1,6 +1,8 @@
 import React from "react";
 
+// Displays a list of appointments or a fallback message when none exist
 const AppointmentList = ({ appointments }) => {
+  // Renders an empty-state table when no appointments are available
   if (!appointments || appointments.length === 0) {
     return (
       <table className="table table-booking-custom">
@@ -22,6 +24,7 @@ const AppointmentList = ({ appointments }) => {
     );
   }
 
+  // Renders a full appointment table when data is available
   return (
     <table className="table table-booking-custom">
       <thead>
@@ -42,6 +45,7 @@ const AppointmentList = ({ appointments }) => {
             <td>{a.serviceType}</td>
             <td>{a.notes}</td>
             <td>
+              {/* Links for editing or cancelling a specific appointment */}
               <a className="btn btn-outline-primary btn-sm" href={`/booking/edit/${a.id}`}>
                 Endre
               </a>

@@ -1,62 +1,41 @@
-// src/api/bookingApi.js
-// Uses axios api instance with baseURL from .env (REACT_APP_API_URL)
-
 import api from './api';
 
-/* =============================================
-   GET: Hent komplett bookingside-data
-   GET /booking
-============================================= */
+// Retrieves complete data for the booking overview page
 export async function getBookingPage() {
   const response = await api.get('/booking');
   return response.data;
 }
 
-/* =============================================
-   GET: Hent booking init data
-   GET /booking/init
-============================================= */
+// Loads initial data required to start creating a new booking
 export async function getBookingInit() {
   const response = await api.get('/booking/init');
   return response.data;
 }
 
-/* =============================================
-   GET: Hent booking for redigering
-   GET /booking/{id}
-============================================= */
+// Fetches booking details needed for editing an existing booking
 export async function getBookingForEdit(id) {
   const response = await api.get(`/booking/${id}`);
   return response.data;
 }
 
-/* =============================================
-   POST: Opprett eller oppdater booking
-   POST /booking
-============================================= */
+// Creates a new booking or updates an existing one
 export async function createOrUpdateBooking(model) {
   const response = await api.post('/booking', model);
   return response.data;
 }
 
-/* =============================================
-   DELETE: Avbryt booking
-   DELETE /booking/{id}
-============================================= */
+// Cancels or deletes a booking by ID
 export async function cancelBooking(id) {
   const response = await api.delete(`/booking/${id}`);
   return response.data;
 }
 
-/* =============================================
-   GET: Hent tilgjengelige caregivers for slot
-   GET /booking/select-caregiver
-============================================= */
+// Retrieves available caregivers based on date, time slot, and optional booking ID
 export async function getAvailableCaregivers(selectedDate, timeSlotId, bookingId) {
   const params = new URLSearchParams({ selectedDate });
   if (timeSlotId) params.append('timeSlotId', timeSlotId);
   if (bookingId) params.append('bookingId', bookingId);
-  
+
   const response = await api.get(`/booking/select-caregiver?${params}`);
   return response.data;
 }

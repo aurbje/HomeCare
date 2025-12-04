@@ -5,15 +5,17 @@ export default function Contact() {
     <div className="container py-5">
       <div className="row align-items-center">
 
-        {/* Contact Info */}
+        {/* Left column – Contact information section */}
         <div className="col-lg-6 mb-4 mb-lg-0">
           <h1 className="fw-bold mb-4">Kontakt HomeCare</h1>
 
+          {/* Intro text explaining purpose of the contact page */}
           <p className="lead">
             Vi er her for å hjelpe deg – enten du ønsker informasjon,
             trenger veiledning eller vil bestille hjelp i hjemmet.
           </p>
 
+          {/* List of contact details */}
           <ul className="list-unstyled mt-4">
             <li className="mb-2">
               <i className="bi bi-telephone me-2"></i>
@@ -46,23 +48,27 @@ export default function Contact() {
             </li>
           </ul>
 
-          {/* FORM */}
+          {/* Contact form – Non-functional form for user messages */}
           <div className="mt-4">
             <h5 className="fw-semibold text-secondary">Send oss en melding</h5>
 
             <form>
+              {/* Name input */}
               <div className="mb-3">
                 <input type="text" className="form-control" placeholder="Navn" required />
               </div>
 
+              {/* Email input */}
               <div className="mb-3">
                 <input type="email" className="form-control" placeholder="E-post" required />
               </div>
 
+              {/* Message input */}
               <div className="mb-3">
                 <textarea className="form-control" rows="4" placeholder="Din melding..." required></textarea>
               </div>
 
+              {/* Submit button */}
               <button type="submit" className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">
                 Send oss melding
               </button>
@@ -70,7 +76,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Image */}
+        {/* Right column – Contact page Image */}
         <div className="col-lg-6 text-center">
           <img
             src="/images/forside5.png"

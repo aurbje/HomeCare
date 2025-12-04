@@ -61,9 +61,8 @@ export function AuthProvider({ children }) {
   );
 }
 
-/**
- * Custom hook to access authentication context
- */
+//Custom hook to access authentication context
+
 export function useAuth() {
   return useContext(AuthContext);
 }

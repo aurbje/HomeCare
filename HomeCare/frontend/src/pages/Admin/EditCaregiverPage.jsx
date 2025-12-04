@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCaregiverById, updateCaregiver } from '../../api/adminApi';
 
+// Admin page for editing an existing caregiver profile
 function EditCaregiverPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -13,12 +15,14 @@ function EditCaregiverPage() {
     email: '',
     tlfNumber: '',
     address: '',
-   });
+  });
 
+  // Loads caregiver data 
   useEffect(() => {
     fetchCaregiver();
   }, [id]);
 
+  // Fetches caregiver details from API
   const fetchCaregiver = async () => {
     try {
       setLoading(true);
@@ -29,7 +33,7 @@ function EditCaregiverPage() {
         email: data.email || '',
         tlfNumber: data.tlfNumber || '',
         address: data.address || '',
-        });
+      });
       setError(null);
     } catch (err) {
       setError('Kunne ikke laste ansatt');
@@ -39,6 +43,7 @@ function EditCaregiverPage() {
     }
   };
 
+  // Updates local form state on input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -47,6 +52,7 @@ function EditCaregiverPage() {
     }));
   };
 
+  // Submits updated caregiver data to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -66,6 +72,7 @@ function EditCaregiverPage() {
     <div className="container py-4">
       <h1 className="h4 mb-3">Rediger ansatt: {formData.fullName}</h1>
 
+      {/* Error banner for load/update failures */}
       {error && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
@@ -73,6 +80,7 @@ function EditCaregiverPage() {
         </div>
       )}
 
+      {/* Caregiver edit form */}
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="fullName" className="form-label">Fullt navn</label>
@@ -124,6 +132,7 @@ function EditCaregiverPage() {
           />
         </div>
 
+        {/* Form actions */}
         <button type="submit" className="btn btn-primary">Lagre endringer</button>
         <button
           type="button"

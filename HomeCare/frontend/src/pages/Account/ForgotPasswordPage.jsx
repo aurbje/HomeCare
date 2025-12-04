@@ -2,22 +2,26 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { forgotPassword } from '../../api/accountApi';
 
+// Page for requesting a password reset link via email
 function ForgotPasswordPage() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  // Handles reset request submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      await forgotPassword(email);
+      await forgotPassword(email); // Triggers backend email reset process
       setSuccess(true);
     } catch (err) {
+      // Shows backend error or a fallback message
       setError(err.response?.data?.message || 'Kunne ikke sende tilbakestillingslenke');
       console.error(err);
     } finally {
@@ -25,6 +29,7 @@ function ForgotPasswordPage() {
     }
   };
 
+  // Success screen shown after email has been sent
   if (success) {
     return (
       <div className="signup-container container">
@@ -34,6 +39,8 @@ function ForgotPasswordPage() {
             <p>Vi har sendt deg en lenke for å tilbakestille passordet til {email}.</p>
             <p>Sjekk innboksen din og følg instruksjonene.</p>
           </div>
+
+          {/* Redirect back to login */}
           <button
             onClick={() => navigate('/account/login')}
             className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg"
@@ -45,9 +52,12 @@ function ForgotPasswordPage() {
     );
   }
 
+  // Default form for requesting reset link
   return (
     <div className="signup-container container">
       <div className="signup-card">
+
+        {/* Back to login button */}
         <button
           onClick={() => navigate('/account/login')}
           className="back-btn"
@@ -61,6 +71,7 @@ function ForgotPasswordPage() {
           Skriv inn din e-postadresse så sender vi deg en lenke for å tilbakestille passordet.
         </p>
 
+        {/* Error message box */}
         {error && (
           <div className="alert alert-danger alert-dismissible fade show" role="alert">
             {error}
@@ -68,6 +79,7 @@ function ForgotPasswordPage() {
           </div>
         )}
 
+        {/* Password reset request form */}
         <form onSubmit={handleSubmit} noValidate>
           <div className="mb-4">
             <label htmlFor="email" className="form-label">E-postadresse</label>
@@ -82,6 +94,7 @@ function ForgotPasswordPage() {
             />
           </div>
 
+          {/* Submit button with loading state */}
           <button
             type="submit"
             className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg"
@@ -90,6 +103,7 @@ function ForgotPasswordPage() {
             {loading ? 'Sender...' : 'Send tilbakestillingslenke'}
           </button>
         </form>
+
       </div>
     </div>
   );

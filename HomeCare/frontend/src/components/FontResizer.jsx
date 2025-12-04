@@ -1,16 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 
-/**
- * FontResizer Component
- * Provides accessibility feature to adjust font size on the page
- * Features:
- * - Increase/decrease font size buttons
- * - Reset to default size
- * - Persists preference in localStorage
- * - Applies to elements with .font-resizable-area class
- * 
- * Usage: Place this component in the navbar or header
- */
+// Component for adjusting text size for accessibility
 export default function FontResizer() {
   // Default font size in pixels
   const DEFAULT_SIZE = 16
@@ -25,9 +15,7 @@ export default function FontResizer() {
     return saved ? parseInt(saved, 10) : DEFAULT_SIZE
   })
 
-  /**
-   * Apply font size to all resizable areas
-   */
+  // Apply font size to all resizable areas
   const applyFontSize = useCallback((size) => {
     const elements = document.querySelectorAll('.font-resizable-area')
     elements.forEach(el => {
@@ -35,31 +23,23 @@ export default function FontResizer() {
     })
   }, [])
 
-  /**
-   * Apply font size on mount and when it changes
-   */
+  // Apply font size on mount and when it changes
   useEffect(() => {
     applyFontSize(fontSize)
     localStorage.setItem('fontSize', fontSize.toString())
   }, [fontSize, applyFontSize])
 
-  /**
-   * Increase font size
-   */
+  // Increase font size
   const increaseFontSize = () => {
     setFontSize(prev => Math.min(prev + STEP, MAX_SIZE))
   }
 
-  /**
-   * Decrease font size
-   */
+  //Decrease font size
   const decreaseFontSize = () => {
     setFontSize(prev => Math.max(prev - STEP, MIN_SIZE))
   }
 
-  /**
-   * Reset to default font size
-   */
+  // Reset to default font size
   const resetFontSize = () => {
     setFontSize(DEFAULT_SIZE)
   }

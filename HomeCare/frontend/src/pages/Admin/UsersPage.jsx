@@ -2,19 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUsers, deleteUser } from "../../api/adminApi";
 
+// Admin page for listing, searching, editing, and deleting users
 function UsersPage() {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
   const navigate = useNavigate();
 
+  // Fetches users from API
   const fetchUsers = async (search = "") => {
     try {
       setLoading(true);
       const data = await getUsers(search);
-      setUsers(data); // backend returns plain array
+      setUsers(data);
       setError(null);
     } catch (err) {
       setError("Kunne ikke laste brukere");
@@ -24,32 +27,33 @@ function UsersPage() {
     }
   };
 
+  // Loads users whenever searchTerm changes
   useEffect(() => {
     let ignore = false;
+
     async function load() {
-      if (ignore) return;
-      await fetchUsers(searchTerm);
+      if (!ignore) await fetchUsers(searchTerm);
     }
+
     load();
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, [searchTerm]);
 
+  // Triggers search manually
   const handleSearch = (e) => {
     e.preventDefault();
     fetchUsers(searchTerm);
   };
 
+  // Resets search and reloads all users
   const handleReset = () => {
     setSearchTerm("");
     fetchUsers("");
   };
 
+  // Deletes a user after confirmation
   const handleDelete = async (id, fullName) => {
-    if (!window.confirm(`Er du sikker på at du vil slette ${fullName}?`)) {
-      return;
-    }
+    if (!window.confirm(`Er du sikker på at du vil slette ${fullName}?`)) return;
 
     try {
       await deleteUser(id);
@@ -63,6 +67,7 @@ function UsersPage() {
     }
   };
 
+  // Redirects to edit page
   const handleEdit = (id) => {
     navigate(`/admin/users/edit/${id}`);
   };
@@ -75,6 +80,7 @@ function UsersPage() {
     <div className="container py-4">
       <h1 className="h4 mb-3">Brukere ({users.length})</h1>
 
+      {/* Success feedback */}
       {success && (
         <div className="alert alert-success alert-dismissible fade show" role="alert">
           {success}
@@ -82,6 +88,7 @@ function UsersPage() {
         </div>
       )}
 
+      {/* Error feedback */}
       {error && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
@@ -89,6 +96,7 @@ function UsersPage() {
         </div>
       )}
 
+      {/* Search bar */}
       <form onSubmit={handleSearch} className="row g-2 mb-3">
         <div className="col-auto">
           <input
@@ -99,16 +107,23 @@ function UsersPage() {
             placeholder="Søk navn / e-post"
           />
         </div>
+
         <div className="col-auto">
           <button type="submit" className="btn btn-sm btn-primary">Søk</button>
         </div>
+
         <div className="col-auto">
-          <button type="button" onClick={handleReset} className="btn btn-primary btn-sm">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="btn btn-primary btn-sm"
+          >
             Nullstill
           </button>
         </div>
       </form>
 
+      {/* Users table */}
       <table className="table table-sm table-striped align-middle">
         <thead>
           <tr>
@@ -122,6 +137,7 @@ function UsersPage() {
             <th>Slette</th>
           </tr>
         </thead>
+
         <tbody>
           {users.length === 0 ? (
             <tr>
@@ -135,11 +151,15 @@ function UsersPage() {
                 <td>{user.email}</td>
                 <td>{user.address}</td>
                 <td>{user.tlfNumber}</td>
+
+                {/* Role badge */}
                 <td>
                   <span className={`badge bg-${user.role === "admin" ? "danger" : "secondary"}`}>
                     {user.role}
                   </span>
                 </td>
+
+                {/* Edit button */}
                 <td>
                   <button
                     onClick={() => handleEdit(user.id)}
@@ -148,6 +168,8 @@ function UsersPage() {
                     Endre
                   </button>
                 </td>
+
+                {/* Delete button */}
                 <td>
                   <button
                     type="button"
@@ -163,7 +185,11 @@ function UsersPage() {
         </tbody>
       </table>
 
-      <button onClick={() => navigate("/admindashboard")} className="btn btn-primary btn-sm">
+      {/* Back navigation */}
+      <button
+        onClick={() => navigate("/admindashboard")}
+        className="btn btn-primary btn-sm"
+      >
         Tilbake
       </button>
     </div>

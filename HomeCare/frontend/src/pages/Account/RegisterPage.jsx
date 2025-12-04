@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/authApi";
 
+// Registration page for creating a new user account
 export default function RegisterPage() {
+  // Form fields for user input
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -12,20 +14,24 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
+  // Feedback messages
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const navigate = useNavigate();
 
+  // Updates form state on user input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Handles registration request
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
+    // Simple password confirmation check
     if (form.password !== form.confirmPassword) {
       setError("Passordene matcher ikke");
       return;
@@ -34,15 +40,16 @@ export default function RegisterPage() {
     try {
       await registerUser(form);
 
-      // Vis suksessmelding
+      // Display success message before redirect
       setSuccess("Konto opprettet! Du videresendes til innlogging...");
 
-      // Redirect etter 1.5 sek
+      // Redirects after a short delay
       setTimeout(() => {
         navigate("/login");
       }, 1500);
 
     } catch (err) {
+      // Shows backend or fallback error
       setError(err.message || "Registrering feilet");
     }
   };
@@ -50,16 +57,19 @@ export default function RegisterPage() {
   return (
     <div className="signup-container container">
       <div className="signup-card">
+
+        {/* Back navigation */}
         <Link to="/" className="back-btn">← Tilbake til forsiden</Link>
 
         <h2 className="text-center mb-4">Opprett konto</h2>
 
-        {/* FEILMELDING */}
+        {/* Error message */}
         {error && <div className="alert alert-danger">{error}</div>}
 
-        {/* SUKSESSMELDING */}
+        {/* Success message */}
         {success && <div className="alert alert-success">{success}</div>}
 
+        {/* Registration form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label>Fullt navn</label>
@@ -124,6 +134,7 @@ export default function RegisterPage() {
             />
           </div>
 
+          {/* Submit button */}
           <button className="btn btn-success w-100">Opprett konto</button>
         </form>
       </div>

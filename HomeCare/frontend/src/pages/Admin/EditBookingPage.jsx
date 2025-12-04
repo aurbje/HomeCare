@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getBookingById, updateBooking, getUsers, getCaregivers } from '../../api/adminApi';
 
+// Admin page for editing an existing booking
 function EditBookingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [clients, setClients] = useState([]);
   const [caregivers, setCaregivers] = useState([]);
+
+  // Booking form fields
   const [formData, setFormData] = useState({
     userId: '',
     caregiverId: '',
@@ -18,23 +22,26 @@ function EditBookingPage() {
     notes: ''
   });
 
+  // Fetch required data when page loads or booking ID changes
   useEffect(() => {
     fetchData();
   }, [id]);
 
+  // Loads booking details + user list + caregiver list
   const fetchData = async () => {
     try {
       setLoading(true);
+
       const [bookingData, usersData, caregiversData] = await Promise.all([
         getBookingById(id),
         getUsers(''),
         getCaregivers('')
       ]);
 
-      console.log("Booking data:", bookingData); // Debug log
-
-      // Extract date and time from the DateTime property
-      const dateTimeValue = bookingData.dateTime ? new Date(bookingData.dateTime).toISOString().slice(0, 16) : '';
+      // Converts dateTime to datetime-local format for inputs
+      const dateTimeValue = bookingData.dateTime
+        ? new Date(bookingData.dateTime).toISOString().slice(0, 16)
+        : '';
 
       setFormData({
         userId: bookingData.userId || '',
@@ -56,6 +63,7 @@ function EditBookingPage() {
     }
   };
 
+  // Updates form state on user input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -64,10 +72,11 @@ function EditBookingPage() {
     }));
   };
 
+  // Submits updated booking data to API
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      
       const updateData = {
         userId: parseInt(formData.userId),
         caregiverId: formData.caregiverId ? parseInt(formData.caregiverId) : null,
@@ -76,7 +85,7 @@ function EditBookingPage() {
         categoryId: parseInt(formData.categoryId),
         notes: formData.notes || null
       };
-      
+
       await updateBooking(id, updateData);
       navigate('/admin/bookings');
     } catch (err) {
@@ -93,6 +102,7 @@ function EditBookingPage() {
     <div className="container py-4">
       <h1 className="h4 mb-3">Rediger booking: {id}</h1>
 
+      {/* Error banner */}
       {error && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
@@ -100,7 +110,9 @@ function EditBookingPage() {
         </div>
       )}
 
+      {/* Booking edit form */}
       <form onSubmit={handleSubmit}>
+        {/* User selector */}
         <div className="mb-3">
           <label htmlFor="userId" className="form-label">Bruker</label>
           <select
@@ -120,6 +132,7 @@ function EditBookingPage() {
           </select>
         </div>
 
+        {/* Caregiver selector */}
         <div className="mb-3">
           <label htmlFor="caregiverId" className="form-label">Ansatt</label>
           <select
@@ -138,6 +151,7 @@ function EditBookingPage() {
           </select>
         </div>
 
+        {/* Date selector */}
         <div className="mb-3">
           <label htmlFor="dateTime" className="form-label">Dato</label>
           <input
@@ -151,6 +165,7 @@ function EditBookingPage() {
           />
         </div>
 
+        {/* Time slot selector */}
         <div className="mb-3">
           <label htmlFor="timeSlotId" className="form-label">Tid</label>
           <input
@@ -165,6 +180,7 @@ function EditBookingPage() {
           <small className="text-muted">Må matche ledig Tidspunkt i databasen</small>
         </div>
 
+        {/* Category selector */}
         <div className="mb-3">
           <label htmlFor="categoryId" className="form-label">Kategori</label>
           <input
@@ -176,9 +192,9 @@ function EditBookingPage() {
             onChange={handleChange}
             required
           />
-          
         </div>
 
+        {/* Notes */}
         <div className="mb-3">
           <label htmlFor="notes" className="form-label">Notater</label>
           <textarea
@@ -191,6 +207,7 @@ function EditBookingPage() {
           />
         </div>
 
+        {/* Action buttons */}
         <button type="submit" className="btn btn-primary">Lagre endringer</button>
         <button
           type="button"

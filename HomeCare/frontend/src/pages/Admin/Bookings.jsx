@@ -2,23 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getBookings, deleteBooking } from '../../api/adminApi';
 
+// Admin page for viewing, searching, editing, and deleting bookings
 function BookingsPage() {
   const [bookings, setBookings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
   const navigate = useNavigate();
 
+  // Load bookings on initial render
   useEffect(() => {
     fetchBookings();
   }, []);
 
+  // Fetch bookings from API with optional search filter
   const fetchBookings = async (search = '') => {
     try {
       setLoading(true);
       const data = await getBookings(search);
-      console.log("Bookings data:", data); // Debug log
       setBookings(data);
       setError(null);
     } catch (err) {
@@ -29,20 +32,21 @@ function BookingsPage() {
     }
   };
 
+  // Triggers search filter
   const handleSearch = (e) => {
     e.preventDefault();
     fetchBookings(searchTerm);
   };
 
+  // Clears search and reloads all bookings
   const handleReset = () => {
     setSearchTerm('');
     fetchBookings('');
   };
 
+  // Deletes a booking after user confirmation
   const handleDelete = async (id) => {
-    if (!window.confirm(`Slette booking ${id}?`)) {
-      return;
-    }
+    if (!window.confirm(`Slette booking ${id}?`)) return;
 
     try {
       await deleteBooking(id);
@@ -56,6 +60,7 @@ function BookingsPage() {
     }
   };
 
+  // Redirects to booking edit page
   const handleEdit = (id) => {
     navigate(`/admin/bookings/edit/${id}`);
   };
@@ -68,6 +73,7 @@ function BookingsPage() {
     <div className="container py-4">
       <h1 className="h4 mb-3">Bookinger ({bookings.length})</h1>
 
+      {/* Success feedback */}
       {success && (
         <div className="alert alert-success alert-dismissible fade show" role="alert">
           {success}
@@ -75,6 +81,7 @@ function BookingsPage() {
         </div>
       )}
 
+      {/* Error feedback */}
       {error && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
@@ -82,6 +89,7 @@ function BookingsPage() {
         </div>
       )}
 
+      {/* Search bar */}
       <form onSubmit={handleSearch} className="row g-2 mb-3">
         <div className="col-auto">
           <input
@@ -102,6 +110,7 @@ function BookingsPage() {
         </div>
       </form>
 
+      {/* Bookings table */}
       <table className="table table-sm table-striped align-middle">
         <thead>
           <tr>
@@ -128,7 +137,9 @@ function BookingsPage() {
                 <td>{new Date(booking.dateTime).toLocaleDateString('nb-NO')}</td>
                 <td>{booking.timeSlot?.slot || 'N/A'}</td>
                 <td>{booking.category?.name || 'N/A'}</td>
-                <td>{booking.caregiverId ? ` ${booking.caregiverId}` : 'Ikke tildelt'}</td>
+                <td>{booking.caregiverId ? `${booking.caregiverId}` : 'Ikke tildelt'}</td>
+
+                {/* Edit action */}
                 <td>
                   <button
                     onClick={() => handleEdit(booking.id)}
@@ -137,6 +148,8 @@ function BookingsPage() {
                     Endre
                   </button>
                 </td>
+
+                {/* Delete action */}
                 <td>
                   <button
                     type="button"
@@ -152,6 +165,7 @@ function BookingsPage() {
         </tbody>
       </table>
 
+      {/* Back navigation */}
       <button onClick={() => navigate('/admindashboard')} className="btn btn-primary btn-sm">
         Tilbake
       </button>

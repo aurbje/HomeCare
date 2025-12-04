@@ -1,15 +1,6 @@
-/**
- * LoginPage.jsx - User Login Page
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- * Backend endpoint: POST /api/account/signin (AccountController.SignIn)
- *
- * After successful login:
- * 1. Calls authApi.loginUser() to authenticate
- * 2. Calls AuthContext.loginUser() to update global state
- * 3. Navigates to dashboard
- */
-
+// Login page component for authenticating users
+// Handles login via backend API and updates global auth state.
+ 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/authApi";
@@ -21,8 +12,9 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const { loginUser } = useAuth(); // ⬅️ legger bruker i global state
+  const { loginUser } = useAuth(); // Stores authenticated user globally
 
+  // Handles login submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -30,17 +22,17 @@ export default function LoginPage() {
     try {
       const result = await login({ email, password });
 
-      // save user in React context
+      // Stores authenticated user in context
       loginUser(result.user);
 
+      // Redirects based on user role
       const role = result.user.role;
-
-      // redirect based on role
       if (role === "Admin") navigate("/admindashboard");
       else if (role === "Caregiver") navigate("/caregiver/dashboard");
       else navigate("/dashboard");
-      
+
     } catch (err) {
+      // Shows fallback error when authentication fails
       setError(err.message || "Feil ved innlogging");
     }
   };
@@ -48,12 +40,15 @@ export default function LoginPage() {
   return (
     <div className="signup-container container">
       <div className="signup-card">
+        {/* Back navigation link */}
         <Link to="/" className="back-btn">← Tilbake til forsiden</Link>
 
         <h2 className="text-center mb-4">Logg inn</h2>
 
+        {/* Error alert */}
         {error && <div className="alert alert-danger">{error}</div>}
 
+        {/* Login form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label>E-post</label>
@@ -77,8 +72,10 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* Submit button */}
           <button className="btn btn-success w-100">Logg inn</button>
 
+          {/* Registration link */}
           <p className="text-center mt-3">
             Har du ikke konto?{" "}
             <Link to="/register" className="fw-bold">Registrer deg her</Link>

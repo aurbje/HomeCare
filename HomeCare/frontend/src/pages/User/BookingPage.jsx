@@ -1,21 +1,3 @@
-/**
- * BookingPage.jsx - Advanced Booking Page with Caregiver Selection
- *
- * This is YOUR advanced implementation (kept instead of group's simpler version)
- * Features that group's version doesn't have:
- * - Caregiver selection (select specific caregiver for booking)
- * - Time slot filtering based on caregiver availability
- * - Edit existing bookings
- *
- * Backend endpoints used:
- * - GET /api/booking/init (BookingController.GetBookingPage)
- * - GET /api/booking/select-caregiver (BookingController.GetAvailableCaregivers)
- * - POST /api/booking (BookingController.CreateOrUpdateBooking)
- * - DELETE /api/booking/{id} (BookingController.CancelBooking)
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- */
-
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
@@ -25,13 +7,13 @@ export default function BookingPage() {
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
 
-  // Main data states - initialized as empty for null safety
+  // Core data states loaded from the API
   const [availableDates, setAvailableDates] = useState([])
   const [categories, setCategories] = useState([])
   const [bookings, setBookings] = useState([])
   const [clientName, setClientName] = useState('')
 
-  // Selection states
+  // Form selection states
   const [selectedDateId, setSelectedDateId] = useState(null)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTimeSlotId, setSelectedTimeSlotId] = useState(null)
@@ -40,17 +22,22 @@ export default function BookingPage() {
   const [selectedCaregiverId, setSelectedCaregiverId] = useState(null)
   const [categoryId, setCategoryId] = useState(0)
   const [notes, setNotes] = useState('')
+
+  // ID used when editing an existing booking
   const [bookingId, setBookingId] = useState(0)
   const [editingBookingId, setEditingBookingId] = useState(null)
+
+  // UI state
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
-  // Load booking data from API
+  // Fetch initial booking data (dates, categories, existing bookings)
   const loadBookingData = async () => {
     try {
       const res = await api.get('/booking/init')
       const data = res.data
+
       setAvailableDates(data?.model?.availableDates ?? [])
       setCategories(data?.model?.categories ?? [])
       setBookings(data?.bookings ?? [])
@@ -63,78 +50,104 @@ export default function BookingPage() {
     }
   }
 
+  // Redirect users without correct role and load data after authentication
   useEffect(() => {
     const role = user?.role?.toLowerCase()
     const isClient = role === 'user' || role === 'client'
+
+    // Force login if user is not a client
     if (!isAuthenticated || !isClient) {
       navigate('/login')
       return
     }
+
     loadBookingData()
   }, [isAuthenticated, user?.role, navigate])
 
+  // Load available timeslots for the chosen date and filter out those with no available caregivers
   useEffect(() => {
     if (!selectedDateId) return
+
     const availDate = availableDates.find(d => d.id === selectedDateId)
     if (!availDate) return
+
     const filterTimeSlots = async () => {
       const filtered = []
+
+      // Each timeslot is checked against API to verify caregiver availability
       for (const slot of (availDate.timeSlots ?? [])) {
         if (slot.isBooked) continue
+
         const params = new URLSearchParams({
           selectedDate: availDate.date,
           timeSlotId: slot.id.toString(),
           ...(bookingId > 0 && { bookingId: bookingId.toString() })
         })
+
         try {
           const res = await api.get(`/booking/select-caregiver?${params}`)
           const availableCaregivers = res.data
+
+          // Only include timeslots where at least one caregiver is free
           if (Array.isArray(availableCaregivers) && availableCaregivers.length > 0) {
             filtered.push(slot)
           }
-        } catch { /* skip */ }
+        } catch {
+          // Ignore API errors for individual slots
+        }
       }
+
       setAvailableTimeSlots(filtered)
       setSelectedTimeSlotId(null)
       setCaregivers([])
       setSelectedCaregiverId(null)
     }
+
     filterTimeSlots()
   }, [selectedDateId, availableDates, bookingId])
 
+  // Fetch caregivers once both date and timeslot have been selected
   useEffect(() => {
     if (!selectedDate || !selectedTimeSlotId) {
       setCaregivers([])
       setSelectedCaregiverId(null)
       return
     }
+
     const params = new URLSearchParams({
       selectedDate,
       timeSlotId: selectedTimeSlotId.toString(),
       ...(bookingId > 0 && { bookingId: bookingId.toString() })
     })
+
     api.get(`/booking/select-caregiver?${params}`)
       .then(res => setCaregivers(res.data))
       .catch(() => setCaregivers([]))
   }, [selectedDate, selectedTimeSlotId, bookingId])
 
+  // Handle date selection
   const handleDateChange = (dateId, dateStr) => {
     setSelectedDateId(dateId)
     setSelectedDate(dateStr)
   }
 
+  // Handle timeslot selection
   const handleTimeSlotChange = (slotId) => {
     setSelectedTimeSlotId(slotId)
   }
 
+  // Handle booking creation or update
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
+
+    // Basic validation
     if (!selectedDate || !selectedTimeSlotId || !selectedCaregiverId || !categoryId) {
       setError('Vennligst fyll ut alle påkrevde felt.')
       return
     }
+
     const payload = {
       selectedDate,
       timeSlotId: selectedTimeSlotId,
@@ -143,9 +156,13 @@ export default function BookingPage() {
       selectedCaregiverId,
       bookingId
     }
+
     try {
       await api.post('/booking', payload)
+
       setSuccess('Booking vellykket!')
+
+      // Reset form and reload data after success
       setTimeout(() => {
         setSelectedDateId(null)
         setSelectedDate('')
@@ -165,22 +182,28 @@ export default function BookingPage() {
     }
   }
 
+  // Populate form fields with existing booking for editing
   const handleEdit = async (booking) => {
     setEditingBookingId(booking.id)
     setBookingId(booking.id)
     setNotes(booking.notes || '')
     setCategoryId(booking.category?.id || 0)
+
+    // Convert datetime to date-only format
     const dateStr = new Date(booking.dateTime).toISOString().split('T')[0]
+
     const availDate = availableDates.find(d => d.date === dateStr)
     if (availDate) {
       setSelectedDateId(availDate.id)
       setSelectedDate(dateStr)
       setSelectedTimeSlotId(booking.timeSlotId)
+
       const params = new URLSearchParams({
         selectedDate: dateStr,
         timeSlotId: booking.timeSlotId.toString(),
         bookingId: booking.id.toString()
       })
+
       api.get(`/booking/select-caregiver?${params}`)
         .then(res => {
           setCaregivers(res.data)
@@ -188,15 +211,20 @@ export default function BookingPage() {
         })
         .catch(() => setCaregivers([]))
     }
+
+    // Scroll to top for visibility
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // Cancel a booking entirely
   const handleCancel = async (id) => {
     if (!confirm('Er du sikker på at du vil avbestille denne timen?')) return
+
     try {
       await api.delete(`/booking/${id}`)
       setSuccess('Booking avbestilt.')
       setEditingBookingId(null)
+
       setTimeout(() => {
         loadBookingData()
         setSuccess('')
@@ -206,6 +234,7 @@ export default function BookingPage() {
     }
   }
 
+  // Exit edit mode and reset the form
   const handleCancelEdit = () => {
     setEditingBookingId(null)
     setBookingId(0)
@@ -223,25 +252,36 @@ export default function BookingPage() {
     return <div className="container mt-5">Laster...</div>
   }
 
+  // Determine if notes are required for the selected category
   const selectedCategory = categories.find(c => c.id === categoryId)
   const requireNotes = selectedCategory?.name?.toUpperCase() === 'ANNET'
 
   return (
     <div className="font-resizable-area user-dashboard">
       <div className="container py-4">
+
+        {/* Page title */}
         {clientName && (
           <div className="text-center mb-4">
             <h1>Bestill time</h1>
           </div>
         )}
+
+        {/* Feedback messages */}
         {success && <div className="alert alert-success">{success}</div>}
         {error && <div className="alert alert-danger">{error}</div>}
+
         <div className="row g-4">
+
+          {/* Left column: Booking form */}
           <div className="col-12 col-lg-6">
             <section aria-labelledby="booking-heading">
               <div className="card shadow-sm">
                 <div className="card-body">
+
                   <h2 id="booking-heading" className="fs-4 mb-3">Bestill her</h2>
+
+                  {/* Edit mode indicator */}
                   {editingBookingId && (
                     <div className="alert alert-info d-flex justify-content-between align-items-center">
                       <span><i className="bi bi-pencil me-2"></i> Redigerer booking</span>
@@ -250,7 +290,11 @@ export default function BookingPage() {
                       </button>
                     </div>
                   )}
+
+                  {/* Booking form */}
                   <form onSubmit={handleSubmit}>
+
+                    {/* Date selection */}
                     <div className="form-group mb-3">
                       <label className="form-label fw-bold">Dato</label>
                       <div className="date-options">
@@ -276,9 +320,12 @@ export default function BookingPage() {
                         )}
                       </div>
                     </div>
+
+                    {/* Timeslot selection */}
                     <div className="form-group mb-3">
                       <label className="form-label fw-bold">Tidspunkt</label>
                       <div id="time-slot-wrapper" className="mt-2">
+
                         {availableTimeSlots.length > 0 ? (
                           <div className="btn-group-vertical w-100" role="group">
                             {availableTimeSlots.map(ts => (
@@ -297,10 +344,14 @@ export default function BookingPage() {
                         ) : (
                           <p className="text-muted">Velg en dato først.</p>
                         )}
+
                       </div>
                     </div>
+
+                    {/* Caregiver selection */}
                     <div className="form-group mb-3">
                       <label className="form-label fw-bold">Velg ansatt</label>
+
                       <div id="caregiverContainer">
                         {caregivers.length > 0 ? (
                           <select
@@ -321,6 +372,8 @@ export default function BookingPage() {
                         )}
                       </div>
                     </div>
+
+                    {/* Category selection */}
                     <div className="form-group mb-3">
                       <label htmlFor="categoryId" className="form-label fw-bold">Kategori</label>
                       <select
@@ -336,10 +389,13 @@ export default function BookingPage() {
                         ))}
                       </select>
                     </div>
+
+                    {/* Notes field */}
                     <div className="form-group mb-3">
                       <label htmlFor="notes" className="form-label fw-bold">
                         Notater {requireNotes ? '(påkrevd)' : '(valgfritt)'}
                       </label>
+
                       <textarea
                         id="notes"
                         className="form-control"
@@ -349,31 +405,44 @@ export default function BookingPage() {
                         required={requireNotes}
                       />
                     </div>
+
+                    {/* Submit button */}
                     <button type="submit" className="btn btn-success w-100 btn-lg">
                       {editingBookingId ? 'Oppdater booking' : 'Bestill time'}
                     </button>
+
                   </form>
                 </div>
               </div>
             </section>
           </div>
+
+          {/* Right column: User's bookings list */}
           <div className="col-12 col-lg-6">
             <section aria-labelledby="bookings-heading">
               <div className="card shadow-sm">
                 <div className="card-body">
+
                   <h2 id="bookings-heading" className="fs-4 mb-3">Dine timer</h2>
+
                   {bookings.length > 0 ? (
                     <div className="list-group">
+
+                      {/* Booking items */}
                       {bookings.map(b => (
                         <div
                           key={b.id}
                           className={`list-group-item ${editingBookingId === b.id ? 'list-group-item-warning border-warning border-2' : ''}`}
                         >
+
+                          {/* Edit badge indicator */}
                           {editingBookingId === b.id && (
                             <span className="badge bg-warning text-dark mb-2">Redigerer</span>
                           )}
+
                           <div className="d-flex justify-content-between align-items-start">
                             <div>
+                              {/* Date display */}
                               <h6 className="mb-1">
                                 {new Date(b.dateTime).toLocaleDateString('nb-NO', {
                                   weekday: 'long',
@@ -382,15 +451,23 @@ export default function BookingPage() {
                                   year: 'numeric'
                                 })}
                               </h6>
+
+                              {/* Time */}
                               <p className="mb-1">
                                 <strong>Tid:</strong> {new Date(b.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
                               </p>
+
+                              {/* Category */}
                               <p className="mb-1">
                                 <strong>Kategori:</strong> {b.category?.name || 'N/A'}
                               </p>
+
+                              {/* Caregiver */}
                               <p className="mb-1">
                                 <strong>Ansatt:</strong> {b.caregiver?.fullName || 'N/A'}
                               </p>
+
+                              {/* Notes */}
                               {b.notes && (
                                 <p className="mb-0 text-muted">
                                   <small>Notater: {b.notes}</small>
@@ -398,6 +475,8 @@ export default function BookingPage() {
                               )}
                             </div>
                           </div>
+
+                          {/* Action buttons */}
                           <div className="mt-2 d-flex gap-2">
                             <button
                               className="btn btn-sm btn-outline-warning"
@@ -406,6 +485,7 @@ export default function BookingPage() {
                             >
                               <i className="bi bi-pencil me-1"></i> Rediger
                             </button>
+
                             <button
                               className="btn btn-sm btn-outline-danger"
                               onClick={() => handleCancel(b.id)}
@@ -416,14 +496,17 @@ export default function BookingPage() {
                           </div>
                         </div>
                       ))}
+
                     </div>
                   ) : (
                     <p className="text-muted">Ingen bookinger ennå.</p>
                   )}
+
                 </div>
               </div>
             </section>
           </div>
+
         </div>
       </div>
     </div>

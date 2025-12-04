@@ -3,7 +3,7 @@ import React from "react";
 export default function About() {
   return (
     <>
-      {/* HERO */}
+      {/* Hero – Intro banner with call-to-action */}
       <section className="hero-homecare d-flex align-items-center justify-content-center text-center position-relative">
         <div className="hero-overlay"></div>
 
@@ -14,13 +14,14 @@ export default function About() {
             Trygghet, nærhet og støtte – akkurat når du trenger det.
           </p>
 
+          {/* link to full about page */}
           <a href="/about" className="btn btn-main hc-hero-cta shadow-lg animate-fade">
             Les mer om oss
           </a>
         </div>
       </section>
 
-      {/* WHAT IS HOMECARE */}
+      {/* Company introduction – What is HomeCare */}
       <section className="py-5 bg-light text-center">
         <div className="container">
           <h2 className="fw-bold mb-4 text-green">Hva er HomeCare?</h2>
@@ -32,11 +33,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* VISION / MISSION */}
+      {/* Vision & Mission cards */}
       <section className="py-5 bg-white">
         <div className="container">
           <div className="row g-4">
 
+            {/* Vision card */}
             <div className="col-md-6">
               <div className="card h-100 border-0 shadow-lg rounded-4 hover-lift">
                 <div className="card-body p-4">
@@ -51,6 +53,7 @@ export default function About() {
               </div>
             </div>
 
+            {/* Mission card */}
             <div className="col-md-6">
               <div className="card h-100 border-0 shadow-lg rounded-4 hover-lift">
                 <div className="card-body p-4">
@@ -69,13 +72,14 @@ export default function About() {
         </div>
       </section>
 
-      {/* VALUES */}
+      {/* Core Values grid */}
       <section className="py-5 bg-light text-center">
         <div className="container">
           <h2 className="fw-bold mb-5 text-green">Våre kjerneverdier</h2>
 
           <div className="row g-4">
 
+            {/* Value item: Care */}
             <div className="col-md-3 col-sm-6">
               <div className="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                 <div className="card-body">
@@ -88,6 +92,7 @@ export default function About() {
               </div>
             </div>
 
+            {/* Value item: Safety */}
             <div className="col-md-3 col-sm-6">
               <div className="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                 <div className="card-body">
@@ -100,6 +105,7 @@ export default function About() {
               </div>
             </div>
 
+            {/* Value item: Simplicity */}
             <div className="col-md-3 col-sm-6">
               <div className="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                 <div className="card-body">
@@ -112,6 +118,7 @@ export default function About() {
               </div>
             </div>
 
+            {/* Value item: Innovation */}
             <div className="col-md-3 col-sm-6">
               <div className="card shadow-sm border-0 h-100 rounded-4 hover-lift">
                 <div className="card-body">
@@ -129,12 +136,13 @@ export default function About() {
         </div>
       </section>
 
-      {/* HISTORY TIMELINE */}
+      {/* Timeline – Company history overview */}
       <section className="py-5">
         <div className="container">
           <h2 className="fw-bold text-center mb-5 text-gradient">Vår historie</h2>
 
           <div className="timeline mx-auto" style={{ maxWidth: "700px" }}>
+
             <div className="timeline-item mb-4">
               <h6 className="fw-bold text-gradient">2024 – Idéen oppstår</h6>
               <p className="text-muted small">
@@ -162,18 +170,19 @@ export default function About() {
                 HomeCare lanseres nasjonalt med fokus på kvalitet og trygghet.
               </p>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* TEAM SECTION */}
+      {/* Team section – Static team member cards */}
       <section className="py-5 bg-light text-center">
         <div className="container">
           <h2 className="fw-bold mb-5 text-green">Teamet bak HomeCare</h2>
 
           <div className="row g-5 justify-content-center">
 
-            {/* Person 1 */}
+            {/* Team member 1 */}
             <div className="col-md-3 col-sm-6">
               <div className="card border-0 shadow-lg rounded-4 hover-lift h-100">
                 <div className="card-body">
@@ -190,7 +199,7 @@ export default function About() {
               </div>
             </div>
 
-            {/* Person 2 */}
+            {/* Team member 2 */}
             <div className="col-md-3 col-sm-6">
               <div className="card border-0 shadow-lg rounded-4 hover-lift h-100">
                 <div className="card-body">
@@ -207,7 +216,7 @@ export default function About() {
               </div>
             </div>
 
-            {/* Person 3 */}
+            {/* Team member 3 */}
             <div className="col-md-3 col-sm-6">
               <div className="card border-0 shadow-lg rounded-4 hover-lift h-100">
                 <div className="card-body">
@@ -224,7 +233,7 @@ export default function About() {
               </div>
             </div>
 
-            {/* Person 4 */}
+            {/* Team member 4 */}
             <div className="col-md-3 col-sm-6">
               <div className="card border-0 shadow-lg rounded-4 hover-lift h-100">
                 <div className="card-body">
@@ -245,13 +254,14 @@ export default function About() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="cta-section text-white text-center py-5">
         <div className="container">
           <h2 className="fw-bold mb-3 text-gradient">Bli en del av HomeCare</h2>
           <p className="lead mb-4">
             Kontakt oss for samarbeid, investering eller mer informasjon.
           </p>
+
+          {/* link to contact page */}
           <a href="/contact" className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">
             Kontakt oss
           </a>

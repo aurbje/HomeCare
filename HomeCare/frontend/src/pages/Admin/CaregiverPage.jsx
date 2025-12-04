@@ -2,18 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCaregivers, deleteCaregiver } from '../../api/adminApi';
 
+// Admin page for listing, searching, editing, and deleting caregivers
 function CaregiverPage() {
   const [caregivers, setCaregivers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
   const navigate = useNavigate();
 
+  // Loads caregiver list on initial render
   useEffect(() => {
     fetchCaregivers();
   }, []);
 
+  // Fetches caregiver data 
   const fetchCaregivers = async (search = '') => {
     try {
       setLoading(true);
@@ -28,20 +32,21 @@ function CaregiverPage() {
     }
   };
 
+  // Submits search request
   const handleSearch = (e) => {
     e.preventDefault();
     fetchCaregivers(searchTerm);
   };
 
+  // Resets search and reloads all caregivers
   const handleReset = () => {
     setSearchTerm('');
     fetchCaregivers('');
   };
 
+  // Deletes a caregiver after confirmation
   const handleDelete = async (id, fullName) => {
-    if (!window.confirm(`Er du sikker på at du vil slette ${fullName}?`)) {
-      return;
-    }
+    if (!window.confirm(`Er du sikker på at du vil slette ${fullName}?`)) return;
 
     try {
       await deleteCaregiver(id);
@@ -55,6 +60,7 @@ function CaregiverPage() {
     }
   };
 
+  // Navigates to edit form
   const handleEdit = (id) => {
     navigate(`/admin/caregivers/edit/${id}`);
   };
@@ -67,6 +73,7 @@ function CaregiverPage() {
     <div className="container py-4">
       <h1 className="h4 mb-3">Ansatte ({caregivers.length})</h1>
 
+      {/* Success alert */}
       {success && (
         <div className="alert alert-success alert-dismissible fade show" role="alert">
           {success}
@@ -74,6 +81,7 @@ function CaregiverPage() {
         </div>
       )}
 
+      {/* Error alert */}
       {error && (
         <div className="alert alert-danger alert-dismissible fade show" role="alert">
           {error}
@@ -81,6 +89,7 @@ function CaregiverPage() {
         </div>
       )}
 
+      {/* Search bar */}
       <form onSubmit={handleSearch} className="row g-2 mb-3">
         <div className="col-auto">
           <input
@@ -101,6 +110,7 @@ function CaregiverPage() {
         </div>
       </form>
 
+      {/* Caregiver table */}
       <table className="table table-sm table-striped align-middle">
         <thead>
           <tr>
@@ -130,6 +140,8 @@ function CaregiverPage() {
                 <td>
                   <span className="badge bg-info">{caregiver.role}</span>
                 </td>
+
+                {/* Edit button */}
                 <td>
                   <button
                     onClick={() => handleEdit(caregiver.id)}
@@ -138,6 +150,8 @@ function CaregiverPage() {
                     Endre
                   </button>
                 </td>
+
+                {/* Delete button */}
                 <td>
                   <button
                     type="button"
@@ -153,6 +167,7 @@ function CaregiverPage() {
         </tbody>
       </table>
 
+      {/* Back button */}
       <button onClick={() => navigate('/admindashboard')} className="btn btn-primary btn-sm">
         Tilbake
       </button>

@@ -3,7 +3,7 @@ import React from "react";
 export default function Home() {
   return (
     <>
-      {/* HERO SECTION */}
+      {/* Main landing banner with headline and CTA */}
       <section className="hero-homecare d-flex align-items-center justify-content-center text-center position-relative">
         <div className="hero-overlay"></div>
 
@@ -14,13 +14,14 @@ export default function Home() {
             Trygghet, nærhet og støtte – akkurat når du trenger det.
           </p>
 
+          {/* linking to About page */}
           <a href="/about" className="btn btn-main hc-hero-cta shadow-lg animate-fade">
             Les mer om oss
           </a>
         </div>
       </section>
 
-      {/* CONTACT CARDS */}
+      {/* Contact cards – Local team listings with contact details */}
       <section className="contact-cards-section py-5">
         <div className="container">
           <h2 className="text-center fw-bold mb-4">Finn ditt lokale HomeCare-team</h2>
@@ -30,17 +31,19 @@ export default function Home() {
 
           <div className="row g-4">
 
-            {/* --- Repeat block 1 --- */}
+            {/* Contact card: West region */}
             <div className="col-md-6 col-lg-4">
               <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Vest</h5>
                 <p className="mb-3 text-muted">Ullern, Vestre Aker og Nordre Aker</p>
 
+                {/* Email link */}
                 <div className="d-flex align-items-center mb-2">
                   <i className="bi bi-envelope-open me-2"></i>
                   <a href="mailto:vest@homecare.no" className="hc-contact-link">Send e-post</a>
                 </div>
 
+                {/* Phone number */}
                 <p className="mb-1 text-muted">Vakttlf. alle dager 07.00–22.30</p>
                 <div className="d-flex align-items-center">
                   <i className="bi bi-telephone-outbound me-2"></i>
@@ -49,7 +52,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* --- Block 2 --- */}
+            {/* Contact cards (central, north, south, night shift, practical help) */}
+            {/* Each card follows the same structure: title, area, email + phone */}
+            {/* Block 2 */}
             <div className="col-md-6 col-lg-4">
               <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Sentrum</h5>
@@ -68,7 +73,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* --- Block 3 --- */}
+            {/* Block 3 */}
             <div className="col-md-6 col-lg-4">
               <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Nord</h5>
@@ -87,7 +92,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* --- Block 4 --- */}
+            {/* Block 4 */}
             <div className="col-md-6 col-lg-4">
               <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Syd</h5>
@@ -106,7 +111,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* --- Block 5 --- */}
+            {/* Block 5 – Night shift */}
             <div className="col-md-6 col-lg-4">
               <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Hjemmesykepleie Natt</h5>
@@ -125,7 +130,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* --- Block 6 --- */}
+            {/* Block 6 – Practical assistance */}
             <div className="col-md-6 col-lg-4">
               <div className="hc-contact-card">
                 <h5 className="fw-bold mb-1">Praktisk bistand</h5>
@@ -148,13 +153,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NEWS SECTION */}
+      {/* News section – Latest articles / updates */}
       <section className="news-section py-5">
         <div className="container">
           <h2 className="text-center fw-bold mb-5">Siste nytt</h2>
 
           <div className="row g-4">
 
+            {/* News card */}
             <div className="col-md-4">
               <div className="news-card shadow-sm rounded-4 overflow-hidden h-100">
                 <img src="/images/forside4.png" className="w-100" alt="Nyhet 1" />
@@ -170,6 +176,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Additional news cards */}
             <div className="col-md-4">
               <div className="news-card shadow-sm rounded-4 overflow-hidden h-100">
                 <img src="/images/forside3.png" className="w-100" alt="Nyhet 2" />
@@ -208,11 +215,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HELP FORM SECTION */}
+      {/* Help form – Contact form for service inquiries */}
       <section className="help-form-section py-5 bg-light">
         <div className="container">
           <div className="row align-items-center g-5">
 
+            {/* Image illustrating service support */}
             <div className="col-md-6">
               <img
                 src="/images/fysio3.png"
@@ -221,6 +229,7 @@ export default function Home() {
               />
             </div>
 
+            {/* Contact form */}
             <div className="col-md-6">
               <h2 className="fw-bold mb-3">Hvilke muligheter finnes for deg?</h2>
               <p className="lead text-muted mb-4">
@@ -228,26 +237,31 @@ export default function Home() {
               </p>
 
               <form className="p-4 bg-white rounded-4 shadow-sm">
+                {/* Name */}
                 <div className="mb-3">
                   <label className="form-label">Navn</label>
                   <input type="text" className="form-control form-control-lg" required />
                 </div>
 
+                {/* Phone number */}
                 <div className="mb-3">
                   <label className="form-label">Telefon</label>
                   <input type="text" className="form-control form-control-lg" required />
                 </div>
 
+                {/* Email */}
                 <div className="mb-3">
                   <label className="form-label">E-post</label>
                   <input type="email" className="form-control form-control-lg" required />
                 </div>
 
+                {/* Message */}
                 <div className="mb-3">
                   <label className="form-label">Beskjed</label>
                   <textarea className="form-control form-control-lg" rows="3"></textarea>
                 </div>
 
+                {/* Submission button */}
                 <button className="btn btn-main btn-lg w-100 py-3">
                   Send forespørsel
                 </button>
@@ -258,7 +272,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SURVEY SECTION */}
+      {/* Survey section – User satisfaction metrics */}
       <section className="survey-section py-5 bg-light">
         <div className="container">
           <h2 className="text-center fw-bold mb-3">Brukerundersøkelse</h2>
@@ -267,6 +281,7 @@ export default function Home() {
           </p>
 
           <div className="row g-4 justify-content-center">
+            {/* Survey metric 1 */}
             <div className="col-md-6">
               <div className="hc-survey-card">
                 <div className="hc-survey-gauge">
@@ -281,6 +296,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Survey metric 2 */}
             <div className="col-md-6">
               <div className="hc-survey-card">
                 <div className="hc-survey-gauge">
@@ -306,7 +322,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* STEPS SECTION */}
+      {/* Steps section – Explanation of how the service works */}
       <section className="steps-section py-5">
         <div className="container">
           <h2 className="text-center fw-bold mb-4">Slik fungerer HomeCare</h2>
@@ -315,6 +331,7 @@ export default function Home() {
           </p>
 
           <div className="row g-4">
+            {/* Step 1 */}
             <div className="col-md-4">
               <div className="hc-step-card text-center h-100">
                 <div className="hc-step-number">1</div>
@@ -325,6 +342,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Step 2 */}
             <div className="col-md-4">
               <div className="hc-step-card text-center h-100">
                 <div className="hc-step-number">2</div>
@@ -335,6 +353,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Step 3 */}
             <div className="col-md-4">
               <div className="hc-step-card text-center h-100">
                 <div className="hc-step-number">3</div>
@@ -348,7 +367,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* STATS SECTION */}
+      {/* Stats section – Key company figures */}
       <section className="stats-section py-5 bg-white">
         <div className="container">
           <div className="row g-4 justify-content-center text-center">
@@ -383,7 +402,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ABOUT SECTION */}
+      {/* About section – Highlight of team/values with link to About page */}
       <section className="about-section py-5 bg-white rounded-5">
         <div className="container d-flex flex-column flex-md-row align-items-center gap-5">
           <div className="about-text flex-fill">
@@ -394,6 +413,7 @@ export default function Home() {
             <a href="/about" className="btn btn-main px-4 py-2">Les mer om oss</a>
           </div>
 
+          {/* Right-side illustration */}
           <div className="about-img flex-fill text-center">
             <img
               src="/images/forside4.png"
@@ -405,7 +425,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
+      {/* Testimonials section – User feedback boxes */}
       <section className="testimonials-section py-5 bg-light">
         <div className="container">
           <h2 className="text-center fw-bold mb-4">Hva sier brukerne våre?</h2>
@@ -438,15 +458,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Final CTA section – Encourages further navigation */}
       <section className="cta-section text-center text-white py-5">
         <div className="container">
           <h2 className="fw-bold mb-3">Vil du vite mer?</h2>
           <p className="lead mb-4">Les om våre verdier eller ta kontakt – vi er her for deg.</p>
 
           <div className="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="/about" className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Om oss</a>
-            <a href="/contact" className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">Kontakt oss</a>
+            <a href="/about" className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">
+              Om oss
+            </a>
+            <a href="/contact" className="btn btn-main btn-lg px-4 py-2 bg-green shadow-lg">
+              Kontakt oss
+            </a>
           </div>
         </div>
       </section>
