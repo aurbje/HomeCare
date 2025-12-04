@@ -10,16 +10,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace HomeCare.Api.Controllers
 {
-    /// <summary>
-    /// Handles user authentication operations including login, logout, and registration.
-    /// This controller manages cookie-based authentication for the HomeCare application.
-    /// 
-    /// Frontend files that use this controller:
-    /// - frontend/src/api/authApi.js (API calls)
-    /// - frontend/src/context/AuthContext.jsx (authentication state management)
-    /// - frontend/src/pages/Account/LoginPage.jsx (login form)
-    /// - frontend/src/pages/Account/RegisterPage.jsx (registration form)
-    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -33,13 +23,6 @@ namespace HomeCare.Api.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Authenticates a user and creates a session cookie.
-        /// Used by: frontend/src/api/authApi.js -> loginUser()
-        /// Called from: frontend/src/pages/Account/LoginPage.jsx
-        /// </summary>
-        /// <param name="model">Login credentials (email and password)</param>
-        /// <returns>User data on success, error message on failure</returns>
         // POST: /api/account/signin
         [HttpPost("signin")]
         public async Task<ActionResult<AuthResponseDto>> SignIn([FromBody] LoginDto model)
@@ -112,7 +95,8 @@ namespace HomeCare.Api.Controllers
             if (!User.Identity?.IsAuthenticated ?? false)
                 return Unauthorized(new { message = "Not logged in" });
 
-            return Ok(new {
+            return Ok(new
+            {
                 id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                 fullName = User.FindFirst(ClaimTypes.Name)?.Value,
                 email = User.FindFirst(ClaimTypes.Email)?.Value,
@@ -120,40 +104,6 @@ namespace HomeCare.Api.Controllers
             });
         }
 
-        
-        
-        /// <summary>
-        /// Returns the currently authenticated user's information from claims.
-        /// This endpoint is used by AuthContext to check if a user is logged in on app load.
-        /// Used by: frontend/src/api/authApi.js -> getCurrentUser()
-        /// Called from: frontend/src/context/AuthContext.jsx (on app initialization)
-        /// </summary>
-        /// <returns>User info (id, fullName, email, role) or 401 if not logged in</returns>
-        // GET: /api/account/me
-        // Added from group's Final_Alexander branch for AuthContext integration
-        // [HttpGet("me")]
-        // public IActionResult GetCurrentUser()
-        // {
-        //     if (!(User.Identity?.IsAuthenticated ?? false))
-        //     {
-        //         return Unauthorized(new { message = "Not logged in" });
-        //     }
-
-        //     return Ok(new
-        //     {
-        //         id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-        //         fullName = User.FindFirst(ClaimTypes.Name)?.Value,
-        //         email = User.FindFirst(ClaimTypes.Email)?.Value,
-        //         role = User.FindFirst(ClaimTypes.Role)?.Value
-        //     });
-        // }
-
-        /// <summary>
-        /// Signs out the current user by removing the authentication cookie.
-        /// Used by: frontend/src/api/authApi.js -> logoutUser()
-        /// Called from: frontend/src/context/AuthContext.jsx -> logoutUser()
-        /// </summary>
-        /// <returns>Success message</returns>
         // POST: /api/account/logout
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
@@ -163,14 +113,6 @@ namespace HomeCare.Api.Controllers
             return Ok(new { message = "User logged out successfully" });
         }
 
-        /// <summary>
-        /// Registers a new user account with the provided information.
-        /// Creates a new User with hashed password and default "User" role.
-        /// Used by: frontend/src/api/authApi.js -> registerUser()
-        /// Called from: frontend/src/pages/Account/RegisterPage.jsx
-        /// </summary>
-        /// <param name="model">Registration data (name, email, password, phone, address)</param>
-        /// <returns>Created user data on success, error message on failure</returns>
         // POST: /api/account/signup
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] RegisterDto model)
@@ -229,11 +171,6 @@ namespace HomeCare.Api.Controllers
         }
     }
 
-    /// <summary>
-    /// Data transfer object for authentication responses.
-    /// Contains basic user information returned after login/registration.
-    /// Used in: AccountController.SignIn(), AccountController.SignUp()
-    /// </summary>
     public class AuthResponseDto
     {
         public int UserId { get; set; }

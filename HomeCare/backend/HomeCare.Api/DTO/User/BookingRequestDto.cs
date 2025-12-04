@@ -1,7 +1,6 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeCare.Api.DTO.User
+namespace HomeCare.Api.DTO
 {
     public class BookingRequestDto
     {
@@ -17,8 +16,6 @@ namespace HomeCare.Api.DTO.User
 
         [Required(ErrorMessage = "Vennligst velg en ansatt.")]
         public int? SelectedCaregiverId { get; set; }
-
-        // 0 for new booking, >0 for editing existing
         public int BookingId { get; set; }
     }
 }

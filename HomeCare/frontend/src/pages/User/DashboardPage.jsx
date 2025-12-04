@@ -1,29 +1,7 @@
-/**
- * DashboardPage.jsx - User/Client Dashboard
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- * Backend endpoint: GET /api/user/dashboard (UserController.GetDashboard)
- */
-
 import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../api/api'
 
-/**
- * DashboardPage Component (User/Client Dashboard)
- * Compatible with group's UserController API
- * Displays client dashboard with reminders, bookings, and calendar
- * Features:
- * - Welcome message with user name
- * - List of reminders with time and message
- * - List of upcoming bookings
- * - Interactive calendar showing booked dates
- * - Quick link to book new bookings
- * - Font resizable area for accessibility
- *
- * Group's API endpoint:
- * - GET /api/user/dashboard - Get user dashboard data
- */
 export default function DashboardPage() {
   const { user } = useAuth()
   // State for dashboard data: userName, reminders, and bookings
@@ -33,20 +11,13 @@ export default function DashboardPage() {
   const [calendarYear, setCalendarYear] = useState(new Date().getFullYear())
   const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth()) // 0-indexed
 
-  /**
-   * Fetch dashboard data from backend on component mount
-   * Uses cookie-based authentication
-   * Data includes: userName, reminders[], bookings[]
-   */
+
   useEffect(() => {
     api.get('/user/dashboard')
       .then(res => setData(res.data))
       .catch(err => console.error('Failed to load dashboard:', err))
   }, [])
 
-  /**
-   * Convert date to YYYY-MM-DD string format (local timezone)
-   */
   const toDateString = (date) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -54,22 +25,18 @@ export default function DashboardPage() {
     return `${year}-${month}-${day}`
   }
 
-  /**
-   * Set of booked date strings for calendar highlighting
-   */
   const bookedDateSet = useMemo(() => {
-    const dates = data?.bookings ?? []
-    return new Set(dates.map(b => {
+    const bookings = data?.calendarBookings ?? []
+    return new Set(bookings.map(b => {
       const d = new Date(b.dateTime)
       return toDateString(d)
     }))
-  }, [data?.bookings])
+  }, [data?.calendarBookings])
 
-  /**
-   * Map of bookings by date for calendar display
-   */
+  // Map of bookings by date for calendar display
+
   const bookingsByDate = useMemo(() => {
-    const bookings = data?.bookings ?? []
+    const bookings = data?.calendarBookings ?? []
     const map = new Map()
     bookings.forEach(booking => {
       const d = new Date(booking.dateTime)
@@ -80,19 +47,10 @@ export default function DashboardPage() {
       map.get(dateStr).push(booking)
     })
     return map
-  }, [data?.bookings])
+  }, [data?.calendarBookings])
 
-  /**
-   * Get today's bookings for "Dine timer" section
-   */
-  const todayBookings = useMemo(() => {
-    const todayStr = toDateString(new Date())
-    return bookingsByDate.get(todayStr) || []
-  }, [bookingsByDate])
+  // Navigate to previous month
 
-  /**
-   * Navigate to previous month
-   */
   const goToPrevMonth = () => {
     if (calendarMonth === 0) {
       setCalendarMonth(11)
@@ -102,9 +60,8 @@ export default function DashboardPage() {
     }
   }
 
-  /**
-   * Navigate to next month
-   */
+  // Navigate to next month
+
   const goToNextMonth = () => {
     if (calendarMonth === 11) {
       setCalendarMonth(0)
@@ -114,9 +71,8 @@ export default function DashboardPage() {
     }
   }
 
-  /**
-   * Generate calendar days for current month
-   */
+  // Generate calendar days for current month
+
   const generateCalendarDays = () => {
     const firstDay = new Date(calendarYear, calendarMonth, 1)
     const lastDay = new Date(calendarYear, calendarMonth + 1, 0)
@@ -136,8 +92,17 @@ export default function DashboardPage() {
     return days
   }
 
-  // Show loading message while data is being fetched
-  if (!data) return <div className="container mt-5">Laster...</div>
+  // Show loading spinner while data is being fetched
+  if (!data) {
+    return (
+      <div className="container mt-5">
+        <div className="loading-spinner-container">
+          <div className="loading-spinner" role="status" aria-label="Laster inn data"></div>
+          <p className="text-muted mt-3">Laster inn dine data...</p>
+        </div>
+      </div>
+    )
+  }
 
   const calendarDays = generateCalendarDays()
   const today = new Date()
@@ -165,29 +130,34 @@ export default function DashboardPage() {
             <div className="d-flex flex-column w-100" style={{ gap: '0.5rem' }}>
 
               {/* Today's Bookings Section (Dine timer i dag) */}
-              <div className="card shadow-sm">
+              <div className="card shadow-sm" role="region" aria-labelledby="today-bookings-heading">
                 <div className="card-body">
-                  <h2 className="card-title fs-4 mb-3">
-                    <i className="bi bi-calendar-day me-2"></i>Dine timer i dag
+                  <h2 id="today-bookings-heading" className="card-title fs-4 mb-3">
+                    <i className="bi bi-calendar-day me-2" aria-hidden="true"></i>Dine timer i dag
                   </h2>
-                  {todayBookings.length > 0 ? (
+                  {(data?.todayBookings?.length > 0) ? (
                     <ul className="list-group" style={{ maxHeight: '280px', overflowY: 'auto' }}>
-                      {todayBookings.map(booking => (
-                        <li key={booking.id} className="list-group-item">
-                          <div className="fw-bold">
-                            <i className="bi bi-clock me-1"></i>
+                      {data.todayBookings.map(booking => (
+                        <li key={booking.id} className="list-group-item text-center py-3">
+                          <div className="fw-bold fs-5 text-primary mb-1">
+                            <i className="bi bi-clock me-2" aria-hidden="true"></i>
                             {new Date(booking.dateTime).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}
+                            {/* <div className="small text-secondary"> */}
+                            &ensp;{booking.categoryName || 'N/A'}
+                            {/* </div> */}
                           </div>
-                          <div className="small">
-                            <i className="bi bi-person me-1"></i>
-                            {booking.caregiver?.fullName || 'Ikke tildelt'} ({booking.category?.name || 'N/A'})
+
+                          <div className="text-muted">
+                            <i className="bi bi-person me-1" aria-hidden="true"></i>
+                            {booking.caregiverName || 'Ikke tildelt'}
                           </div>
+
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-muted mb-0">
-                      <i className="bi bi-check-circle me-2"></i>Ingen timer i dag.
+                    <p className="text-muted mb-0 text-center">
+                      <i className="bi bi-check-circle me-2" aria-hidden="true"></i>Ingen timer i dag.
                     </p>
                   )}
                   <div className="mt-3">
@@ -196,17 +166,17 @@ export default function DashboardPage() {
                       className="btn btn-primary w-100"
                       aria-label="Bestill ny time"
                     >
-                      <i className="bi bi-calendar-plus me-2"></i>Book ny time
+                      <i className="bi bi-calendar-plus me-2" aria-hidden="true"></i>Book ny time
                     </a>
                   </div>
                 </div>
               </div>
 
               {/* Reminders Section (Påminnelser) */}
-              <div className="card shadow-sm">
+              <div className="card shadow-sm" role="region" aria-labelledby="reminders-heading">
                 <div className="card-body">
-                  <h2 className="card-title fs-4 mb-3">
-                    <i className="bi bi-bell me-2"></i>Påminnelser
+                  <h2 id="reminders-heading" className="card-title fs-4 mb-3">
+                    <i className="bi bi-bell me-2" aria-hidden="true"></i>Påminnelser
                   </h2>
                   {data.reminders && data.reminders.length > 0 ? (
                     <ul className="list-group" style={{ maxHeight: '280px', overflowY: 'auto' }}>
@@ -219,7 +189,7 @@ export default function DashboardPage() {
                     </ul>
                   ) : (
                     <p className="text-muted mb-0">
-                      <i className="bi bi-check-circle me-2"></i>Ingen påminnelser.
+                      <i className="bi bi-check-circle me-2" aria-hidden="true"></i>Ingen påminnelser.
                     </p>
                   )}
                 </div>
@@ -229,10 +199,10 @@ export default function DashboardPage() {
 
           {/* Right column - Calendar */}
           <div className="col-12 col-lg-8">
-            <div className="card shadow-sm">
+            <div className="card shadow-sm" role="region" aria-labelledby="calendar-section-heading">
               <div className="card-body">
-                <h2 className="card-title fs-4 mb-3">
-                  <i className="bi bi-calendar3 me-2"></i>Kalender
+                <h2 id="calendar-section-heading" className="card-title fs-4 mb-3">
+                  <i className="bi bi-calendar3 me-2" aria-hidden="true"></i>Kalender
                 </h2>
                 <p className="text-muted small mb-3">
                   Dager med bestillinger er markert med grønn farge.
@@ -240,22 +210,33 @@ export default function DashboardPage() {
 
                 {/* Calendar navigation */}
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <button className="btn btn-outline-secondary" onClick={goToPrevMonth}>
-                    <i className="bi bi-chevron-left"></i> Forrige
+                  <button
+                    className="btn btn-outline-secondary calendar-nav-btn"
+                    onClick={goToPrevMonth}
+                    aria-label={`Gå til forrige måned, ${monthNames[calendarMonth === 0 ? 11 : calendarMonth - 1]}`}
+                  >
+                    <i className="bi bi-chevron-left" aria-hidden="true"></i> <span className="d-none d-sm-inline">Forrige</span>
                   </button>
-                  <h3 className="mb-0">{monthNames[calendarMonth]} {calendarYear}</h3>
-                  <button className="btn btn-outline-secondary" onClick={goToNextMonth}>
-                    Neste <i className="bi bi-chevron-right"></i>
+                  <h3 id="calendar-heading" className="mb-0 fs-5 fs-sm-4" aria-live="polite">{monthNames[calendarMonth]} {calendarYear}</h3>
+                  <button
+                    className="btn btn-outline-secondary calendar-nav-btn"
+                    onClick={goToNextMonth}
+                    aria-label={`Gå til neste måned, ${monthNames[calendarMonth === 11 ? 0 : calendarMonth + 1]}`}
+                  >
+                    <span className="d-none d-sm-inline">Neste</span> <i className="bi bi-chevron-right" aria-hidden="true"></i>
                   </button>
                 </div>
 
                 {/* Calendar grid */}
-                <div className="table-responsive">
-                  <table className="table table-bordered text-center">
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="table table-bordered text-center mb-0" style={{ tableLayout: 'fixed', width: '100%' }} aria-labelledby="calendar-heading">
+                    <caption className="visually-hidden">
+                      Kalender for {monthNames[calendarMonth]} {calendarYear}. Dager med bestillinger er markert.
+                    </caption>
                     <thead>
                       <tr>
                         {dayNames.map(day => (
-                          <th key={day} className="bg-light">{day}</th>
+                          <th key={day} className="bg-light p-1 p-sm-2" scope="col" style={{ width: '14.28%' }}>{day}</th>
                         ))}
                       </tr>
                     </thead>
@@ -264,7 +245,7 @@ export default function DashboardPage() {
                         <tr key={weekIdx}>
                           {calendarDays.slice(weekIdx * 7, (weekIdx + 1) * 7).map((date, dayIdx) => {
                             if (!date) {
-                              return <td key={dayIdx} className="bg-light" style={{ minHeight: '60px' }}></td>
+                              return <td key={dayIdx} className="bg-light p-1 p-sm-2"></td>
                             }
 
                             const dateStr = toDateString(date)
@@ -277,13 +258,14 @@ export default function DashboardPage() {
                               <td
                                 key={dayIdx}
                                 className={`
+                                  p-1 p-sm-2
                                   ${isPast ? 'bg-light text-muted' : ''}
                                   ${hasBooking ? 'bg-success-subtle' : ''}
                                   ${isToday ? 'border-primary border-2' : ''}
                                 `}
-                                style={{ minWidth: '80px', minHeight: '60px', verticalAlign: 'top', padding: '8px' }}
+                                style={{ verticalAlign: 'top' }}
                               >
-                                <div className="fw-bold mb-1">{date.getDate()}</div>
+                                <div className="fw-bold mb-1" style={{ fontSize: '0.9rem' }}>{date.getDate()}</div>
                                 {dayBookings.length > 0 && (
                                   <div>
                                     {dayBookings.map((booking, idx) => (

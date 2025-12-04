@@ -1,8 +1,6 @@
 namespace HomeCare.Api.Models
 {
-    /// <summary>
     /// A reminder for a user (e.g., medication, meal times).
-    /// </summary>
     public class Reminder
     {
         public int Id { get; set; }

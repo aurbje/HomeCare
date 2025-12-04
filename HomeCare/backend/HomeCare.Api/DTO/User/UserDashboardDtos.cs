@@ -1,4 +1,4 @@
-namespace HomeCare.Api.DTO.User
+namespace HomeCare.Api.DTO
 {
     // Admin Dashboard
     public class AdminDashboardDto
@@ -53,7 +53,4 @@ namespace HomeCare.Api.DTO.User
         public List<CategoryDto> Categories { get; set; } = new();
         public List<UserSummaryDto> AvailableCaregiver { get; set; } = new();
     }
-
-    // BookingRequestDto belongs in DTO/User/BookingRequestDto.cs and BookingResult in DTO/User/BookingResult.cs
-    // Removed duplicates to avoid CS0101.
 }

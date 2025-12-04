@@ -1,27 +1,10 @@
-/**
- * DashboardPage.jsx - Caregiver Dashboard
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- * Backend endpoint: GET /api/caregiver/dashboard (CaregiverController.GetDashboard)
- */
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../api/api'
 
 /**
- * CaregiverDashboardPage Component
  * Dashboard for caregivers to manage availability and view bookings
- * Compatible with group's cookie-based authentication
- * Features:
- * - View today's visits with client details
- * - View all registered available days
- * - Interactive calendar to select/register available days
- * - Batch registration of multiple available days
- * - Delete individual available days
- * - View upcoming bookings
- * - Font resizable area for accessibility
  */
 export default function CaregiverDashboardPage() {
   const navigate = useNavigate()
@@ -42,9 +25,8 @@ export default function CaregiverDashboardPage() {
   const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth()) // 0-indexed
   const [selectedDates, setSelectedDates] = useState(new Set())
 
-  /**
-   * Convert date to YYYY-MM-DD string format (local timezone)
-   */
+  // Convert date to YYYY-MM-DD string format (local timezone)
+
   const toDateString = (date) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -52,9 +34,8 @@ export default function CaregiverDashboardPage() {
     return `${year}-${month}-${day}`
   }
 
-  /**
-   * Fetch dashboard data from backend using cookie-based auth
-   */
+  // Fetch dashboard data from backend using cookie-based auth
+
   const fetchDashboard = useCallback(async (year, month) => {
     try {
       setLoading(true)
@@ -84,9 +65,7 @@ export default function CaregiverDashboardPage() {
     }
   }, [navigate])
 
-  /**
-   * Check authentication and fetch data on mount
-   */
+  // Check authentication and fetch data on mount
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login', { replace: true })
@@ -109,26 +88,23 @@ export default function CaregiverDashboardPage() {
     fetchDashboard(calendarYear, calendarMonth)
   }, [calendarYear, calendarMonth, fetchDashboard, isAuthenticated, user?.role, navigate])
 
-  /**
-   * Set of available date strings for quick lookup
-   */
+  // Set of available date strings for quick lookup
+
   const availableDateSet = useMemo(() => {
     const dates = data?.availableDates ?? []
     return new Set(dates.map(d => toDateString(new Date(d))))
   }, [data?.availableDates])
 
-  /**
-   * Sorted list of available dates for display
-   */
+  //  Sorted list of available dates for display
+
   const availableDates = useMemo(() => {
     return (data?.availableDates ?? [])
       .map(d => new Date(d))
       .sort((a, b) => a.getTime() - b.getTime())
   }, [data?.availableDates])
 
-  /**
-   * Map of calendar events by date for quick lookup
-   */
+  // Map of calendar events by date for quick lookup
+
   const eventsByDate = useMemo(() => {
     const events = data?.model?.calendarEvents ?? []
     const map = new Map()
@@ -142,9 +118,8 @@ export default function CaregiverDashboardPage() {
     return map
   }, [data?.model?.calendarEvents])
 
-  /**
-   * Navigate to previous month
-   */
+  // Navigate to previous month
+
   const goToPrevMonth = () => {
     if (calendarMonth === 0) {
       setCalendarMonth(11)
@@ -154,9 +129,8 @@ export default function CaregiverDashboardPage() {
     }
   }
 
-  /**
-   * Navigate to next month
-   */
+  // Navigate to next month
+
   const goToNextMonth = () => {
     if (calendarMonth === 11) {
       setCalendarMonth(0)
@@ -166,9 +140,8 @@ export default function CaregiverDashboardPage() {
     }
   }
 
-  /**
-   * Handle checkbox change for selecting dates
-   */
+  // Handle checkbox change for selecting dates
+
   const handleCheckboxChange = (dateStr, checked) => {
     setSelectedDates(prev => {
       const next = new Set(prev)
@@ -181,9 +154,8 @@ export default function CaregiverDashboardPage() {
     })
   }
 
-  /**
-   * Register multiple selected dates as available
-   */
+  // Register multiple selected dates as available
+
   const handleRegisterMultiple = async () => {
     if (selectedDates.size === 0) return
 
@@ -214,11 +186,21 @@ export default function CaregiverDashboardPage() {
     }
   }
 
-  /**
-   * Delete a single available day
-   */
+  // Delete a single available day with enhanced confirmation
+
   const handleDeleteAvailability = async (date) => {
-    if (!confirm('Er du sikker på at du vil slette denne dagen?')) return
+    // Format date for user-friendly display
+    const formattedDate = date.toLocaleDateString('nb-NO', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+
+    // Enhanced confirmation dialog
+    if (!confirm(`Er du sikker på at du vil slette tilgjengelighet for ${formattedDate}?\n\nDenne handlingen kan ikke angres.`)) {
+      return
+    }
 
     setError(null)
     setSuccess(null)
@@ -226,33 +208,26 @@ export default function CaregiverDashboardPage() {
     const dateStr = toDateString(date)
 
     try {
-      const response = await fetch(
-        `/api/caregiver/availability/request-deletion?caregiverId=${data?.caregiverId}&date=${dateStr}`,
-        {
-          method: 'POST',
-          credentials: 'include'
-        }
-      )
-
-      if (response.status === 409) {
-        const errorData = await response.json().catch(() => ({}))
-        setError(errorData.message || 'Kan ikke slette dag med bookinger.')
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      } else if (!response.ok) {
-        throw new Error('Kunne ikke slette dagen.')
-      } else {
-        setSuccess('Dag slettet.')
-        await fetchDashboard(calendarYear, calendarMonth)
-      }
+      await api.post(`/caregiver/availability/request-deletion?caregiverId=${data?.caregiverId}&date=${dateStr}`)
+      setSuccess(`Tilgjengelighet for ${formattedDate} er slettet.`)
+      await fetchDashboard(calendarYear, calendarMonth)
     } catch (e) {
-      setError(e.message || 'En feil oppstod.')
+      // User-friendly error messages
+      if (e.response?.status === 409) {
+        setError('Denne dagen har allerede en bestilling. Kontakt administrator for å gjøre endringer.')
+      } else if (e.response?.status === 404) {
+        setError('Kunne ikke finne tilgjengeligheten. Prøv å oppdatere siden.')
+      } else if (e.response?.status === 401) {
+        setError('Du er ikke logget inn. Vennligst logg inn på nytt.')
+      } else {
+        setError('Noe gikk galt. Prøv igjen senere eller kontakt support.')
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
-  /**
-   * Generate calendar days for current month
-   */
+  // Generate calendar days for current month
+
   const generateCalendarDays = () => {
     const firstDay = new Date(calendarYear, calendarMonth, 1)
     const lastDay = new Date(calendarYear, calendarMonth + 1, 0)
@@ -272,8 +247,17 @@ export default function CaregiverDashboardPage() {
     return days
   }
 
-  // Loading state
-  if (loading) return <div className="container mt-5">Laster...</div>
+  // Loading state with spinner
+  if (loading) {
+    return (
+      <div className="container mt-5">
+        <div className="loading-spinner-container">
+          <div className="loading-spinner" role="status" aria-label="Laster inn data"></div>
+          <p className="text-muted mt-3">Laster inn arbeidsplanen...</p>
+        </div>
+      </div>
+    )
+  }
 
   const model = data?.model
   const calendarDays = generateCalendarDays()
@@ -296,9 +280,19 @@ export default function CaregiverDashboardPage() {
           <p className="lead text-muted mb-0">Du er logget inn som {model?.caregiverName || ''}.</p>
         </div>
 
-        {/* Alert messages */}
-        {error && <div className="alert alert-danger">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
+        {/* Alert messages with accessibility */}
+        {error && (
+          <div className="alert alert-danger" role="alert" aria-live="assertive">
+            <i className="bi bi-exclamation-triangle-fill me-2 alert-icon" aria-hidden="true"></i>
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="alert alert-success" role="status" aria-live="polite">
+            <i className="bi bi-check-circle-fill me-2 alert-icon" aria-hidden="true"></i>
+            {success}
+          </div>
+        )}
 
         <div className="row g-4">
           {/* Left column - Info cards */}
@@ -306,10 +300,10 @@ export default function CaregiverDashboardPage() {
             <div className="d-flex flex-column w-100" style={{ gap: '0.5rem' }}>
 
               {/* Today's visits */}
-              <div className="card shadow-sm">
+              <div className="card shadow-sm" role="region" aria-labelledby="today-visits-heading">
                 <div className="card-body">
-                  <h2 className="card-title fs-4 mb-3">
-                    <i className="bi bi-calendar-day me-2"></i>Dagens besøk
+                  <h2 id="today-visits-heading" className="card-title fs-4 mb-3">
+                    <i className="bi bi-calendar-day me-2" aria-hidden="true"></i>Dagens besøk
                   </h2>
                   {model?.todayVisits && model.todayVisits.length > 0 ? (
                     <ul className="list-group">
@@ -336,17 +330,17 @@ export default function CaregiverDashboardPage() {
                     </ul>
                   ) : (
                     <p className="text-muted mb-0">
-                      <i className="bi bi-check-circle me-2"></i>Ingen besøk i dag.
+                      <i className="bi bi-check-circle me-2" aria-hidden="true"></i>Ingen besøk i dag.
                     </p>
                   )}
                 </div>
               </div>
 
               {/* Available dates section */}
-              <div className="card shadow-sm">
+              <div className="card shadow-sm" role="region" aria-labelledby="available-dates-heading">
                 <div className="card-body">
-                  <h2 className="card-title fs-4 mb-3">
-                    <i className="bi bi-calendar-check me-2"></i>Tilgjengelige dager
+                  <h2 id="available-dates-heading" className="card-title fs-4 mb-3">
+                    <i className="bi bi-calendar-check me-2" aria-hidden="true"></i>Tilgjengelige dager
                   </h2>
                   {availableDates.length > 0 ? (
                     <ul className="list-group" style={{ maxHeight: '280px', overflowY: 'auto' }}>
@@ -379,10 +373,10 @@ export default function CaregiverDashboardPage() {
 
           {/* Right column - Calendar */}
           <div className="col-12 col-lg-8">
-            <div className="card shadow-sm">
+            <div className="card shadow-sm" role="region" aria-labelledby="calendar-section-heading">
               <div className="card-body">
-                <h2 className="card-title fs-4 mb-3">
-                  <i className="bi bi-calendar3 me-2"></i>Kalender
+                <h2 id="calendar-section-heading" className="card-title fs-4 mb-3">
+                  <i className="bi bi-calendar3 me-2" aria-hidden="true"></i>Kalender
                 </h2>
                 <p className="text-muted small mb-3">
                   Kryss av dager du er tilgjengelig og trykk på knappen for å registrere.
@@ -390,22 +384,33 @@ export default function CaregiverDashboardPage() {
 
                 {/* Calendar navigation */}
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <button className="btn btn-outline-secondary" onClick={goToPrevMonth}>
-                    <i className="bi bi-chevron-left"></i> Forrige
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={goToPrevMonth}
+                    aria-label={`Gå til forrige måned, ${monthNames[calendarMonth === 0 ? 11 : calendarMonth - 1]}`}
+                  >
+                    <i className="bi bi-chevron-left" aria-hidden="true"></i> Forrige
                   </button>
-                  <h3 className="mb-0">{monthNames[calendarMonth]} {calendarYear}</h3>
-                  <button className="btn btn-outline-secondary" onClick={goToNextMonth}>
-                    Neste <i className="bi bi-chevron-right"></i>
+                  <h3 className="mb-0" id="calendar-heading" aria-live="polite">{monthNames[calendarMonth]} {calendarYear}</h3>
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={goToNextMonth}
+                    aria-label={`Gå til neste måned, ${monthNames[calendarMonth === 11 ? 0 : calendarMonth + 1]}`}
+                  >
+                    Neste <i className="bi bi-chevron-right" aria-hidden="true"></i>
                   </button>
                 </div>
 
                 {/* Calendar grid */}
-                <div className="table-responsive">
-                  <table className="table table-bordered text-center">
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="table table-bordered text-center mb-0" style={{ tableLayout: 'fixed', width: '100%' }} aria-labelledby="calendar-heading">
+                    <caption className="visually-hidden">
+                      Kalender for {monthNames[calendarMonth]} {calendarYear}. Kryss av dager du er tilgjengelig.
+                    </caption>
                     <thead>
                       <tr>
                         {dayNames.map(day => (
-                          <th key={day} className="bg-light">{day}</th>
+                          <th key={day} className="bg-light p-1 p-sm-2" scope="col" style={{ width: '14.28%' }}>{day}</th>
                         ))}
                       </tr>
                     </thead>
@@ -414,7 +419,7 @@ export default function CaregiverDashboardPage() {
                         <tr key={weekIdx}>
                           {calendarDays.slice(weekIdx * 7, (weekIdx + 1) * 7).map((date, dayIdx) => {
                             if (!date) {
-                              return <td key={dayIdx} className="bg-light"></td>
+                              return <td key={dayIdx} className="bg-light p-1 p-sm-2"></td>
                             }
 
                             const dateStr = toDateString(date)
@@ -428,13 +433,14 @@ export default function CaregiverDashboardPage() {
                               <td
                                 key={dayIdx}
                                 className={`
+                                  p-1 p-sm-2
                                   ${isPast ? 'bg-light text-muted' : ''}
                                   ${isAvailable ? 'bg-success-subtle' : ''}
                                   ${isToday ? 'border-primary border-2' : ''}
                                 `}
-                                style={{ minWidth: '100px', verticalAlign: 'top', padding: '8px' }}
+                                style={{ verticalAlign: 'top' }}
                               >
-                                <div className="fw-bold mb-1">{date.getDate()}</div>
+                                <div className="fw-bold mb-1" style={{ fontSize: '0.9rem' }}>{date.getDate()}</div>
 
                                 {/* Display bookings for this day */}
                                 {dayEvents.length > 0 && (
@@ -460,20 +466,23 @@ export default function CaregiverDashboardPage() {
                                       <button
                                         type="button"
                                         className="btn btn-sm btn-warning"
-                                        title="Slett tilgjengelig dag"
+                                        aria-label={`Slett tilgjengelighet for ${date.toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' })}`}
                                         onClick={() => handleDeleteAvailability(date)}
                                       >
-                                        Slett
+                                        <span aria-hidden="true">Slett</span>
+                                        <span className="visually-hidden">Slett tilgjengelighet</span>
                                       </button>
                                     ) : (
-                                      <label title="Registrer som tilgjengelig">
+                                      <label className="visually-hidden-focusable">
                                         <input
                                           type="checkbox"
                                           checked={isSelected}
                                           onChange={e => handleCheckboxChange(dateStr, e.target.checked)}
                                           className="form-check-input"
                                           style={{ width: '18px', height: '18px' }}
+                                          aria-label={`Velg ${date.toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' })} som tilgjengelig`}
                                         />
+                                        <span className="visually-hidden">Velg {date.getDate()}. {monthNames[calendarMonth]}</span>
                                       </label>
                                     )}
                                   </div>
@@ -488,17 +497,30 @@ export default function CaregiverDashboardPage() {
                 </div>
 
                 {/* Submit selected dates */}
-                <button
-                  type="button"
-                  className="btn btn-success btn-lg mt-3"
-                  onClick={handleRegisterMultiple}
-                  disabled={selectedDates.size === 0 || submitting}
-                >
-                  <i className="bi bi-check-circle me-2"></i>
-                  {submitting
-                    ? 'Registrerer...'
-                    : `Registrer ${selectedDates.size} valgte dag(er)`}
-                </button>
+                <div className="d-flex gap-2 mt-3 align-items-stretch">
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}
+                    onClick={handleRegisterMultiple}
+                    disabled={selectedDates.size === 0 || submitting}
+                  >
+                    <i className="bi bi-check-circle me-2"></i>
+                    {submitting
+                      ? 'Registrerer...'
+                      : `Registrer ${selectedDates.size} valgte dag(er)`}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}
+                    onClick={() => setSelectedDates(new Set())}
+                    disabled={selectedDates.size === 0 || submitting}
+                  >
+                    <i className="bi bi-x-circle me-2"></i>
+                    Fjern valg
+                  </button>
+                </div>
               </div>
             </div>
           </div>
