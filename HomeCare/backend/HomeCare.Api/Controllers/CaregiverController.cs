@@ -10,6 +10,7 @@ using HomeCare.Api.Services.Interfaces;
 
 namespace HomeCare.Api.Controllers
 {
+    // controller for caregiver-related actions
     [Authorize(Roles = $"{UserRoleExtensions.Roles.Caregiver},{UserRoleExtensions.Roles.Admin}")]
     [ApiController]
     [Route("api/[controller]")]
@@ -77,7 +78,7 @@ namespace HomeCare.Api.Controllers
             await _service.RegisterAvailabilityAsync(userId, AvailableDate);
             return NoContent();
         }
-
+// register multiple working days
         [HttpPost("availability/batch")]
         public async Task<IActionResult> RegisterMultipleAvailability([FromBody] List<DateTime> SelectedDates)
         {
@@ -85,7 +86,7 @@ namespace HomeCare.Api.Controllers
             await _service.RegisterMultipleAvailabilityAsync(userId, SelectedDates);
             return NoContent();
         }
-
+// delete working day
         [HttpDelete("availability")]
         public async Task<IActionResult> DeleteAvailability([FromQuery] DateTime dateToDelete)
         {
@@ -101,7 +102,7 @@ namespace HomeCare.Api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
+// request deletion of working day
         [HttpPost("availability/request-deletion")]
         public async Task<IActionResult> RequestAvailabilityDeletion([FromQuery] int CaregiverId, [FromQuery] DateTime date)
         {

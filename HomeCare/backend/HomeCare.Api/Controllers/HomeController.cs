@@ -59,7 +59,7 @@ namespace HomeCare.Api.Controllers
             });
         }
 
-        // Optional: GET /api
+        // Optional: GET /api/ to provide a simple API root message
         [HttpGet("/api")]
         public IActionResult ApiRoot()
         {
