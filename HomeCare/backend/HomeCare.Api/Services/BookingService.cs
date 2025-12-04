@@ -20,6 +20,7 @@ namespace HomeCare.Api.Services
             _logger = logger;
         }
 
+        // Client
         public async Task<List<Booking>> GetBookingsForUserAsync(int userId)
         {
             var all = await _repo.GetUpcomingBookingsAsync();
@@ -61,6 +62,7 @@ namespace HomeCare.Api.Services
             return time >= start && time < end;
         }
 
+        // get initial data for booking form
         public async Task<BookingInitDto> GetBookingInitAsync(int userId)
         {
             _logger.LogInformation("Loading booking init for user {UserId}", userId);
@@ -87,6 +89,7 @@ namespace HomeCare.Api.Services
                 }).ToList()
             }).ToList();
 
+            // map to DTO
             var categoriesDto = categories.Select(c => new CategoryDto { Id = c.Id, Name = c.Name }).ToList();
 
             var apptsDto = bookings.Select(a => new BookingDto
@@ -116,6 +119,7 @@ namespace HomeCare.Api.Services
             };
         }
 
+        // create or update booking
         public async Task<BookingResultDto> CreateOrUpdateBookingAsync(BookingRequestDto model, int UserId)
         {
             _logger.LogInformation("Booking attempt for categoryId {CategoryId} on {Date}", model.CategoryId, model.SelectedDate);

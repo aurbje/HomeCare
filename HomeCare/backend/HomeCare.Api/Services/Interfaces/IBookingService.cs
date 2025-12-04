@@ -7,44 +7,33 @@ using System.Threading.Tasks;
 
 namespace HomeCare.Api.Services.Interfaces
 {
-    /// <summary>
-    /// Service interface for booking operations.
-    /// </summary>
+    // Service interface for booking operations.
     public interface IBookingService
     {
-        /// <summary>
-        /// Gets initial booking page data (available dates, time slots, categories, etc.)
-        /// </summary>
+        // Gets initial booking page data (available dates, time slots, categories, etc.)
         Task<BookingInitDto> GetBookingInitAsync(int userId);
 
-        /// <summary>
-        /// Creates or updates a booking.
-        /// </summary>
+        // Creates or updates a booking.
+        
         Task<BookingResultDto> CreateOrUpdateBookingAsync(BookingRequestDto model, int userId);
 
-        /// <summary>
-        /// Cancels a booking.
-        /// </summary>
+        // Cancels a booking.
+
         Task<BookingResultDto> CancelBookingAsync(int bookingId, int userId, bool isAdmin);
 
-        /// <summary>
-        /// Gets a specific booking.
-        /// </summary>
+        // Gets a specific booking.
         Task<BookingDto?> GetBookingAsync(int bookingId, int userId, bool isAdmin);
 
-        /// <summary>
-        /// Gets bookings for a specific user.
-        /// </summary>
+        // Gets bookings for a specific user.
+        
         Task<List<Booking>> GetBookingsForUserAsync(int userId);
 
-        /// <summary>
-        /// Gets available caregivers for a specific date and time slot.
-        /// </summary>
+        // Gets available caregivers for a specific date and time slot.
+        
         Task<List<UserSummaryDto>> GetAvailableCaregiverForSlotAsync(DateTime date, int? timeSlotId, int? bookingId);
 
-        /// <summary>
-        /// Checks if a caregiver is already booked.
-        /// </summary>
+        // Checks if a caregiver is already booked.
+        
         Task<bool> IsCaregiverBookedAsync(DateTime date, int timeSlotId, int caregiverId, int? excludeBookingId = null);
     }
 }

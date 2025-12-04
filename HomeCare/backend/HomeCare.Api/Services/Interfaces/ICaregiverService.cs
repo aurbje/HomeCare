@@ -3,44 +3,32 @@ using HomeCare.Api.Models;
 
 namespace HomeCare.Api.Services.Interfaces
 {
-    /// <summary>
-    /// Service interface for caregiver operations.
-    /// </summary>
+    // Service interface for caregiver operations.
     public interface ICaregiverService
     {
-        /// <summary>
-        /// Gets dashboard data for a caregiver including today's visits and available dates.
-        /// </summary>
+        // Gets dashboard data for a caregiver including today's visits and available dates.
         Task<CaregiverDashboardDto> GetDashboardAsync(int caregiverId, int? year, int? month);
 
-        /// <summary>
-        /// Registers an available day for a caregiver.
-        /// </summary>
+        
+        // Registers an available day for a caregiver.
         Task RegisterAvailabilityAsync(int caregiverId, DateTime date);
 
-        /// <summary>
-        /// Registers multiple available days for a caregiver.
-        /// </summary>
+        // Registers multiple available days for a caregiver.
         Task RegisterMultipleAvailabilityAsync(int caregiverId, List<DateTime> dates);
 
-        /// <summary>
-        /// Deletes an available day for a caregiver.
-        /// </summary>
+        // Deletes an available day for a caregiver.
+        
         Task DeleteAvailabilityAsync(int caregiverId, DateTime date);
 
-        /// <summary>
-        /// Requests deletion of availability (admin workflow).
-        /// </summary>
+        // Requests deletion of availability (admin workflow).
         Task<bool> RequestAvailabilityDeletionAsync(int caregiverId, DateTime date);
 
-        /// <summary>
-        /// Gets today's visits for a caregiver.
-        /// </summary>
+        // Gets today's visits for a caregiver.
+        
         Task<List<Booking>> GetTodayVisitsAsync(int caregiverId);
 
-        /// <summary>
-        /// Gets upcoming bookings for a caregiver.
-        /// </summary>
+        // Gets upcoming bookings for a caregiver.
+        
         Task<List<Booking>> GetUpcomingBookingsAsync(int caregiverId);
     }
 }

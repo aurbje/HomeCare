@@ -4,6 +4,7 @@ using HomeCare.Api.Services.Interfaces;
 
 namespace HomeCare.Api.Services
 {
+    // service for user-related operations
     public class UserService : IUserService
     {
         private readonly IUserRepository _repo;
@@ -13,6 +14,7 @@ namespace HomeCare.Api.Services
             _repo = repo;
         }
 
+        // implements IUserService
         public async Task<UserDashboardDto?> GetDashboardAsync(int UserId)
         {
             var user = await _repo.GetByIdAsync(UserId);
@@ -32,6 +34,7 @@ namespace HomeCare.Api.Services
                 })
                 .ToList();
 
+            // get upcoming bookings
             var upcomingBookings = (await _repo.GetUpcomingBookingsAsync(UserId))
                 .Select(a => new BookingSummaryDto
                 {
@@ -43,6 +46,7 @@ namespace HomeCare.Api.Services
                 })
                 .ToList();
 
+            // get calendar bookings
             var calendarBookings = (await _repo.GetCalendarBookingsAsync(UserId))
                 .Select(a => new CalendarBookingDto
                 {
@@ -95,25 +99,24 @@ namespace HomeCare.Api.Services
             };
         }
 
-        /// <summary>
-        /// Gets reminders for a specific user (implements IUserService).
-        /// </summary>
+        // Get reminders for a specific user (implements IUserService).
+        
         public async Task<List<Models.Reminder>> GetRemindersAsync(int userId)
         {
             return await _repo.GetRemindersAsync(userId);
         }
 
-        /// <summary>
-        /// Gets today's bookings for a user (implements IUserService).
-        /// </summary>
+        
+        // Gets today's bookings for a user (implements IUserService).
+        
         public async Task<List<Models.Booking>> GetTodayBookingsAsync(int userId)
         {
             return await _repo.GetTodayBookingsAsync(userId);
         }
 
-        /// <summary>
-        /// Gets upcoming bookings for a user (implements IUserService).
-        /// </summary>
+        
+        // Gets upcoming bookings for a user (implements IUserService).
+        
         public async Task<List<Models.Booking>> GetUpcomingBookingsAsync(int userId, int limit = 5)
         {
             return await _repo.GetUpcomingBookingsAsync(userId, limit);

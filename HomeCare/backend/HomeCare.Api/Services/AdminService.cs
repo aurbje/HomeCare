@@ -32,6 +32,7 @@ namespace HomeCare.Api.Services
             }
         }
 
+        // delete user
         public async Task<ServiceResponse<string>> DeleteUserAsync(int id)
         {
             try
@@ -59,6 +60,8 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved sletting av bruker");
             }
         }
+
+        // get user by id
         public async Task<ServiceResponse<User>> GetUserByIdAsync(int id)
         {
             try
@@ -76,6 +79,8 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<User>.FailResponse("Feil ved henting av bruker");
             }
         }
+
+        // update user
         public async Task<ServiceResponse<string>> UpdateUserAsync(int id, UpdateUserDto userDto)
         {
             try
@@ -123,6 +128,7 @@ namespace HomeCare.Api.Services
             }
         }
 
+        // get caregiver by id
         public async Task<ServiceResponse<User>> GetCaregiverByIdAsync(int id)
         {
             try
@@ -141,6 +147,8 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<User>.FailResponse("Feil ved henting av ansatt");
             }
         }
+
+        // update caregiver
 
         public async Task<ServiceResponse<string>> UpdateCaregiverAsync(int id, UpdateCaregiverDto caregiverDto)
         {
@@ -173,6 +181,7 @@ namespace HomeCare.Api.Services
             }
         }
 
+        // delete caregiver
         public async Task<ServiceResponse<string>> DeleteCaregiverAsync(int id)
         {
             try
@@ -214,6 +223,7 @@ namespace HomeCare.Api.Services
             }
         }
 
+        // delete booking
         public async Task<ServiceResponse<string>> DeleteBookingAsync(int id)
         {
             try
@@ -235,6 +245,8 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved sletting av booking");
             }
         }
+
+        // get booking by id
         public async Task<ServiceResponse<Booking>> GetBookingByIdAsync(int id)
         {
             try
@@ -252,6 +264,8 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<Booking>.FailResponse("Feil ved henting av booking");
             }
         }
+
+        // update booking
         public async Task<ServiceResponse<string>> UpdateBookingAsync(int id, UpdateBookingDto bookingDto)
         {
             try
