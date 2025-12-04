@@ -16,7 +16,7 @@ function AdminDashboardPage() {
             onClick={() => navigate('/admin/users')}
           >
             <div className="card-body text-center py-4">
-              <div className="display-6 mb-3">👥</div>
+              <div className="display-6 mb-3">{'\u{1F465}'}</div>
               <h2 className="h5">Brukere</h2>
               <p className="text-muted small mb-0">Administrer brukere</p>
             </div>
@@ -29,7 +29,7 @@ function AdminDashboardPage() {
             onClick={() => navigate('/admin/bookings')}
           >
             <div className="card-body text-center py-4">
-              <div className="display-6 mb-3">📅</div>
+              <div className="display-6 mb-3">{'\u{1F4C5}'}</div>
               <h2 className="h5">Bookinger</h2>
               <p className="text-muted small mb-0">Administrer bookinger</p>
             </div>
@@ -42,7 +42,7 @@ function AdminDashboardPage() {
             onClick={() => navigate('/admin/caregivers')}
           >
             <div className="card-body text-center py-4">
-              <div className="display-6 mb-3">🧑‍⚕️</div>
+              <div className="display-6 mb-3">{'\u{1F9D1}\u{200D}\u{2695}\u{FE0F}'}</div>
               <h2 className="h5">Ansatte</h2>
               <p className="text-muted small mb-0">Administrer ansatte</p>
             </div>
