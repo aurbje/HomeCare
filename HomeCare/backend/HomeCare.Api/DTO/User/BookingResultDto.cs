@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using HomeCare.Api.Enums;
 
-namespace HomeCare.Api.DTO.User
+namespace HomeCare.Api.DTO.User 
 {
-    public class BookingResultDto
+    public class BookingResultDto // Result class for booking operations.
     {
         public bool Success { get; set; }
         public int? BookingId { get; set; }

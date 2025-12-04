@@ -4,7 +4,7 @@ namespace HomeCare.Api.DAL.Interfaces
 {
     public interface IUserRepository
     {
-        // Basic user operations
+        // basic user operations
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByEmailAsync(string email);
         Task<bool> EmailExistsAsync(string email);
@@ -13,7 +13,7 @@ namespace HomeCare.Api.DAL.Interfaces
         Task DeleteAsync(User user);
         Task SaveChangesAsync();
 
-        // Client-specific dashboard operations
+        // client-specific dashboard operations
         Task<List<Reminder>> GetRemindersAsync(int UserId);
         Task<List<Booking>> GetTodayBookingsAsync(int UserId);
         Task<List<Booking>> GetUpcomingBookingsAsync(int UserId, int limit = 5);
