@@ -4,13 +4,17 @@ export default function About() {
   return (
     <>
       {/* HERO */}
-      <section className="hero-homecare d-flex align-items-center justify-content-center text-center text-white position-relative">
-        <div className="container position-relative z-2">
-          <h1 className="display-3 fw-bold mb-3 animate-fade">Om HomeCare</h1>
-          <p className="lead mb-4 animate-fade-delay text-white">
+      <section className="hero-homecare d-flex align-items-center justify-content-center text-center position-relative">
+        <div className="hero-overlay"></div>
+
+        <div className="hc-hero-panel container position-relative">
+          <h1 className="hc-hero-title animate-fade">Omsorg der du er</h1>
+
+          <p className="hc-hero-subtitle animate-fade-delay">
             Trygghet, nærhet og støtte – akkurat når du trenger det.
           </p>
-          <a href="/about" className="btn btn-main btn-lg px-4 py-2 shadow-lg">
+
+          <a href="/about" className="btn btn-main hc-hero-cta shadow-lg animate-fade">
             Les mer om oss
           </a>
         </div>
