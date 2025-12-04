@@ -21,9 +21,7 @@ namespace HomeCare.Api.Models
         // Roller og tilgang (lagres som string i DB for kompatibilitet med ASP.NET Authorization)
         public string Role { get; set; } = UserRoleExtensions.Roles.User;
 
-        /// <summary>
         /// Henter rollen som enum for enklere logikk
-        /// </summary>
         public UserRole? RoleEnum => Role.ToUserRole();
     }
 }

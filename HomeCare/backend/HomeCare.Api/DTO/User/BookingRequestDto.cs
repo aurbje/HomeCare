@@ -16,10 +16,6 @@ namespace HomeCare.Api.DTO
 
         [Required(ErrorMessage = "Vennligst velg en ansatt.")]
         public int? SelectedCaregiverId { get; set; }
-
-        /// <summary>
-        /// 0 for new booking, >0 for editing existing
-        /// </summary>
         public int BookingId { get; set; }
     }
 }

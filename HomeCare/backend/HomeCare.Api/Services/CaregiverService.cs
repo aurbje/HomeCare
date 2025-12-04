@@ -62,18 +62,14 @@ namespace HomeCare.Api.Services
             return deleted;
         }
 
-        /// <summary>
         /// Gets today's visits for a caregiver (implements ICaregiverService).
-        /// </summary>
         public async Task<List<Booking>> GetTodayVisitsAsync(int caregiverId)
         {
             var allBookings = await _repo.GetBookingsForCaregiverAsync(caregiverId);
             return allBookings.Where(b => b.DateTime.Date == DateTime.Today).ToList();
         }
 
-        /// <summary>
-        /// Gets upcoming bookings for a caregiver (implements ICaregiverService).
-        /// </summary>
+        /// Gets upcoming bookings for a caregiver (implements ICaregiverService)
         public async Task<List<Booking>> GetUpcomingBookingsAsync(int caregiverId)
         {
             var allBookings = await _repo.GetBookingsForCaregiverAsync(caregiverId);

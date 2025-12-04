@@ -2,9 +2,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeCare.Api.Models
 {
-    /// <summary>
-    /// Service category (e.g., Vask, Omsorg, Kjøkkenarbeid).
-    /// </summary>
+
+    ///  category (e.g., Vask, Omsorg, Kjøkkenarbeid).
     [Index(nameof(Name), IsUnique = true)]
     public class Category
     {

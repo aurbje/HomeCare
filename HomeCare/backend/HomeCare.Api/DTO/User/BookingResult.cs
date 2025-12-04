@@ -2,9 +2,7 @@ using HomeCare.Api.Enums;
 
 namespace HomeCare.Api.DTO
 {
-    /// <summary>
     /// Result class for booking operations.
-    /// </summary>
     public class BookingResult
     {
         public bool Success { get; set; }

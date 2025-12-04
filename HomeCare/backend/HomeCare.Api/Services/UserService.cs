@@ -95,25 +95,19 @@ namespace HomeCare.Api.Services
             };
         }
 
-        /// <summary>
-        /// Gets reminders for a specific user (implements IUserService).
-        /// </summary>
+        /// Gets reminders for a specific user ( IUserService).
         public async Task<List<Models.Reminder>> GetRemindersAsync(int userId)
         {
             return await _repo.GetRemindersAsync(userId);
         }
 
-        /// <summary>
-        /// Gets today's bookings for a user (implements IUserService).
-        /// </summary>
+        /// Gets today's bookings for a user ( IUserService).
         public async Task<List<Models.Booking>> GetTodayBookingsAsync(int userId)
         {
             return await _repo.GetTodayBookingsAsync(userId);
         }
 
-        /// <summary>
-        /// Gets upcoming bookings for a user (implements IUserService).
-        /// </summary>
+        /// Gets upcoming bookings for a user ( IUserService).
         public async Task<List<Models.Booking>> GetUpcomingBookingsAsync(int userId, int limit = 5)
         {
             return await _repo.GetUpcomingBookingsAsync(userId, limit);
