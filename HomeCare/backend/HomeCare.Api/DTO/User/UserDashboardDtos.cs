@@ -1,6 +1,6 @@
 namespace HomeCare.Api.DTO.User
 {
-    // Admin Dashboard
+    // admin Dashboard
     public class AdminDashboardDto
     {
         public List<BookingDto> Bookings { get; set; } = new();
@@ -9,7 +9,7 @@ namespace HomeCare.Api.DTO.User
         public List<UserSummaryDto> Caregiver { get; set; } = new();
     }
 
-    // User Dashboard
+    // user Dashboard
     public class UserDashboardDto
     {
         public string UserName { get; set; } = string.Empty;
@@ -18,7 +18,7 @@ namespace HomeCare.Api.DTO.User
         public List<BookingSummaryDto> UpcomingBookings { get; set; } = new();
         public List<CalendarBookingDto> CalendarBookings { get; set; } = new();
     }
-
+    // reminder DTO
     public class ReminderDto
     {
         public int Id { get; set; }
@@ -26,7 +26,7 @@ namespace HomeCare.Api.DTO.User
         public string Message { get; set; } = string.Empty;
         public bool IsCompleted { get; set; }
     }
-
+    // booking summary DTO
     public class CalendarBookingDto
     {
         public int Id { get; set; }
@@ -36,14 +36,14 @@ namespace HomeCare.Api.DTO.User
         public string? Notes { get; set; }
     }
 
-    // Booking Init Response (for booking page)
+    // booking Init Response (for booking page)
     public class BookingInitDto
     {
         public BookingFormDataDto Model { get; set; } = new();
         public string ClientName { get; set; } = string.Empty;
         public List<BookingDto> Bookings { get; set; } = new();
     }
-
+    // booking form data DTO
     public class BookingFormDataDto
     {
         public DateTime SelectedDate { get; set; }
@@ -54,6 +54,5 @@ namespace HomeCare.Api.DTO.User
         public List<UserSummaryDto> AvailableCaregiver { get; set; } = new();
     }
 
-    // BookingRequestDto belongs in DTO/User/BookingRequestDto.cs and BookingResult in DTO/User/BookingResult.cs
-    // Removed duplicates to avoid CS0101.
+
 }

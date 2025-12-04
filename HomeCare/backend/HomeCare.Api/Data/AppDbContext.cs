@@ -7,28 +7,28 @@ namespace HomeCare.Api.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        // === USERS ===
+        // USERS
         public DbSet<User> Users { get; set; }
 
-        // === APPOINTMENTS ===
+        // APPOINTMENTS
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<AvailableDate> AvailableDates { get; set; }
         public DbSet<TimeSlot> TimeSlots { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<BookingOption> BookingOptions { get; set; }
 
-        // === Caregiver ===
+        // CAREGIVER
         public DbSet<CaregiverAvailability> CaregiverAvailabilities { get; set; }
 
-        // === CLIENT ===
+        // CLIENT
         public DbSet<Reminder> Reminders { get; set; }
 
-        // === ADMIN ===
+        // ADMIN
         public DbSet<AdminNotification> AdminNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // === INDEXES ===
+            // INDEXES
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
@@ -53,7 +53,7 @@ namespace HomeCare.Api.Data
                 .HasIndex(ad => ad.Date)
                 .IsUnique();
 
-            // === RELATIONSHIPS ===
+            // RELATIONSHIPS
             modelBuilder.Entity<Booking>()
                 .HasOne(a => a.User)
                 .WithMany()
@@ -72,8 +72,7 @@ namespace HomeCare.Api.Data
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // === SEED DATA ===
-            // seed user data
+            // SEED USER DATA
             modelBuilder.Entity<User>().HasData(
                 new User 
                     {
@@ -108,7 +107,7 @@ namespace HomeCare.Api.Data
                         Role = "User"
                     }
                     );
-
+            // SEED CATEGORY DATA
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Vask" },
                 new Category { Id = 2, Name = "Omsorg" },

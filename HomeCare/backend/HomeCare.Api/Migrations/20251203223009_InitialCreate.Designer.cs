@@ -20,7 +20,7 @@ namespace HomeCare.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("HomeCare.Api.Models.AdminNotification", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.AdminNotification", b => // AdminNotification entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace HomeCare.Api.Migrations
                     b.ToTable("AdminNotifications");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.AvailableDate", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.AvailableDate", b => // AvailableDate entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +61,7 @@ namespace HomeCare.Api.Migrations
                     b.ToTable("AvailableDates");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.Booking", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.Booking", b => // Booking entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -103,7 +103,7 @@ namespace HomeCare.Api.Migrations
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.BookingOption", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.BookingOption", b => //    BookingOption entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,7 +125,7 @@ namespace HomeCare.Api.Migrations
                     b.ToTable("BookingOptions");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.CaregiverAvailability", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.CaregiverAvailability", b => //        CaregiverAvailability entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -153,7 +153,7 @@ namespace HomeCare.Api.Migrations
                     b.ToTable("CaregiverAvailabilities");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.Category", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.Category", b => // Category entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -203,7 +203,7 @@ namespace HomeCare.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.Reminder", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.Reminder", b => // Reminder entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -229,7 +229,7 @@ namespace HomeCare.Api.Migrations
                     b.ToTable("Reminders");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.TimeSlot", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.TimeSlot", b => // TimeSlot entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -252,7 +252,7 @@ namespace HomeCare.Api.Migrations
                     b.ToTable("TimeSlots");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.User", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.User", b => // User entity
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -293,7 +293,7 @@ namespace HomeCare.Api.Migrations
 
                     b.ToTable("Users");
 
-                    b.HasData(
+                    b.HasData( // seed initial users
                         new
                         {
                             Id = 1,
@@ -329,7 +329,7 @@ namespace HomeCare.Api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.Booking", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.Booking", b => // define relationships for Booking entity
                 {
                     b.HasOne("HomeCare.Api.Models.User", "Caregiver")
                         .WithMany()
@@ -363,7 +363,7 @@ namespace HomeCare.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.CaregiverAvailability", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.CaregiverAvailability", b => // define relationships for CaregiverAvailability entity
                 {
                     b.HasOne("HomeCare.Api.Models.User", "Caregiver")
                         .WithMany()
@@ -385,7 +385,7 @@ namespace HomeCare.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.TimeSlot", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.TimeSlot", b => // define relationships for TimeSlot entity
                 {
                     b.HasOne("HomeCare.Api.Models.AvailableDate", "AvailableDate")
                         .WithMany("TimeSlots")
@@ -396,7 +396,7 @@ namespace HomeCare.Api.Migrations
                     b.Navigation("AvailableDate");
                 });
 
-            modelBuilder.Entity("HomeCare.Api.Models.AvailableDate", b =>
+            modelBuilder.Entity("HomeCare.Api.Models.AvailableDate", b => //    define relationships for AvailableDate entity
                 {
                     b.Navigation("TimeSlots");
                 });

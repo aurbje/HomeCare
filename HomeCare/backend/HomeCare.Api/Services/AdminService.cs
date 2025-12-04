@@ -16,7 +16,7 @@ namespace HomeCare.Api.Services
             _logger = logger;
         }
 
-        //Users 
+        // users
         public async Task<ServiceResponse<IEnumerable<User>>> GetUsersAsync(string? searchTerm)
         {
             try
@@ -31,7 +31,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<IEnumerable<User>>.FailResponse("Failed to load users");
             }
         }
-
+// delete user with checks
         public async Task<ServiceResponse<string>> DeleteUserAsync(int id)
         {
             try
@@ -59,6 +59,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved sletting av bruker");
             }
         }
+        // Get user by ID
         public async Task<ServiceResponse<User>> GetUserByIdAsync(int id)
         {
             try
@@ -76,6 +77,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<User>.FailResponse("Feil ved henting av bruker");
             }
         }
+        // Update user
         public async Task<ServiceResponse<string>> UpdateUserAsync(int id, UpdateUserDto userDto)
         {
             try
@@ -86,7 +88,7 @@ namespace HomeCare.Api.Services
                     return ServiceResponse<string>.FailResponse("Bruker ikke funnet");
                 }
 
-                // Map properties from your DTO to the existing user entity
+                // map properties from your DTO to the existing user entity
                 existingUser.FullName = userDto.FullName;
                 existingUser.Email = userDto.Email;
                 existingUser.TlfNumber = userDto.TlfNumber;
@@ -107,7 +109,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved oppdatering av bruker");
             }
         }
-        //Caregivers
+        // caregivers
         public async Task<ServiceResponse<IEnumerable<User>>> GetCaregiversAsync(string? searchTerm)
         {
             try
@@ -122,7 +124,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<IEnumerable<User>>.FailResponse("Failed to load caregivers");
             }
         }
-
+// Get caregiver by ID with role check
         public async Task<ServiceResponse<User>> GetCaregiverByIdAsync(int id)
         {
             try
@@ -141,7 +143,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<User>.FailResponse("Feil ved henting av ansatt");
             }
         }
-
+// Update caregiver with role check
         public async Task<ServiceResponse<string>> UpdateCaregiverAsync(int id, UpdateCaregiverDto caregiverDto)
         {
             try
@@ -172,7 +174,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved oppdatering av ansatt");
             }
         }
-
+// delete caregiver with checks
         public async Task<ServiceResponse<string>> DeleteCaregiverAsync(int id)
         {
             try
@@ -198,7 +200,7 @@ namespace HomeCare.Api.Services
             }
         }
 
-        //Bookings
+        //bookings
         public async Task<ServiceResponse<IEnumerable<Booking>>> GetBookingsAsync(string? searchTerm)
         {
             try
@@ -213,7 +215,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<IEnumerable<Booking>>.FailResponse("Failed to load bookings");
             }
         }
-
+// delete booking
         public async Task<ServiceResponse<string>> DeleteBookingAsync(int id)
         {
             try
@@ -235,6 +237,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<string>.FailResponse("Feil ved sletting av booking");
             }
         }
+        // Get booking by ID
         public async Task<ServiceResponse<Booking>> GetBookingByIdAsync(int id)
         {
             try
@@ -252,6 +255,7 @@ namespace HomeCare.Api.Services
                 return ServiceResponse<Booking>.FailResponse("Feil ved henting av booking");
             }
         }
+        // Update booking
         public async Task<ServiceResponse<string>> UpdateBookingAsync(int id, UpdateBookingDto bookingDto)
         {
             try
@@ -282,7 +286,7 @@ namespace HomeCare.Api.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating booking {BookingId}", id);
-                return ServiceResponse<string>.FailResponse("Feil ved oppdatering av booking");
+                return ServiceResponse<string>.FailResponse("Feil ved oppdatering av booking"); // error message
             }
         }
     }

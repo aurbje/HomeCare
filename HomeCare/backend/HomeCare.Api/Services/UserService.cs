@@ -4,6 +4,7 @@ using HomeCare.Api.Services.Interfaces;
 
 namespace HomeCare.Api.Services
 {
+    // Service for user-related operations
     public class UserService : IUserService
     {
         private readonly IUserRepository _repo;
@@ -13,7 +14,7 @@ namespace HomeCare.Api.Services
             _repo = repo;
         }
 
-        public async Task<UserDashboardDto?> GetDashboardAsync(int UserId)
+        public async Task<UserDashboardDto?> GetDashboardAsync(int UserId) // implements IUserService
         {
             var user = await _repo.GetByIdAsync(UserId);
             if (user == null)
@@ -32,7 +33,7 @@ namespace HomeCare.Api.Services
                 })
                 .ToList();
 
-            var upcomingBookings = (await _repo.GetUpcomingBookingsAsync(UserId))
+            var upcomingBookings = (await _repo.GetUpcomingBookingsAsync(UserId)) // get upcoming bookings
                 .Select(a => new BookingSummaryDto
                 {
                     Id = a.Id,
@@ -43,7 +44,7 @@ namespace HomeCare.Api.Services
                 })
                 .ToList();
 
-            var calendarBookings = (await _repo.GetCalendarBookingsAsync(UserId))
+            var calendarBookings = (await _repo.GetCalendarBookingsAsync(UserId)) // get calendar bookings
                 .Select(a => new CalendarBookingDto
                 {
                     Id = a.Id,
@@ -64,7 +65,7 @@ namespace HomeCare.Api.Services
             };
         }
 
-        private async Task<List<ReminderDto>> GetRemindersForUserAsync(int UserId)
+        private async Task<List<ReminderDto>> GetRemindersForUserAsync(int UserId) // helper method to get reminders
         {
             try
             {
@@ -83,10 +84,10 @@ namespace HomeCare.Api.Services
             }
             catch
             {
-                // Reminders table may not exist yet
+                // reminders table may not exist yet
             }
 
-            // Return sample reminders if no real data exists
+            // return sample reminders if no real data exists
             return new List<ReminderDto>
             {
                 new ReminderDto { Id = 0, Time = "08:00", Message = "Ta medisin", IsCompleted = false },
@@ -95,25 +96,19 @@ namespace HomeCare.Api.Services
             };
         }
 
-        /// <summary>
-        /// Gets reminders for a specific user (implements IUserService).
-        /// </summary>
+        // get reminders for a user (implements IUserService) 
         public async Task<List<Models.Reminder>> GetRemindersAsync(int userId)
         {
             return await _repo.GetRemindersAsync(userId);
         }
 
-        /// <summary>
-        /// Gets today's bookings for a user (implements IUserService).
-        /// </summary>
+        // get today's bookings for a user (implements IUserService)
         public async Task<List<Models.Booking>> GetTodayBookingsAsync(int userId)
         {
             return await _repo.GetTodayBookingsAsync(userId);
         }
 
-        /// <summary>
-        /// Gets upcoming bookings for a user (implements IUserService).
-        /// </summary>
+        // get upcoming bookings for a user (implements IUserService)
         public async Task<List<Models.Booking>> GetUpcomingBookingsAsync(int userId, int limit = 5)
         {
             return await _repo.GetUpcomingBookingsAsync(userId, limit);

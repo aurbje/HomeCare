@@ -1,5 +1,6 @@
 namespace HomeCare.Api.Models
 {
+    // represents a booking option combining available date, time slot, and category
     public class BookingOption
     {
         public int Id { get; set; }

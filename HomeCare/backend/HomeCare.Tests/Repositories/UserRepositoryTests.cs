@@ -8,7 +8,7 @@ using Xunit;
 
 namespace HomeCare.Tests.Repositories
 {
-    public class UserRepositoryTests
+    public class UserRepositoryTests // user repository unit tests
     {
         private AppDbContext GetDbContext()
         {
@@ -20,7 +20,7 @@ namespace HomeCare.Tests.Repositories
         }
 
         [Fact]
-        public async Task AddUserAndRetrieveByEmail_Works()
+        public async Task AddUserAndRetrieveByEmail_Works() // test adding and retrieving user by email
         {
             using var db = GetDbContext();
             var repo = new UserRepository(db);
@@ -35,7 +35,7 @@ namespace HomeCare.Tests.Repositories
         }
 
         [Fact]
-        public async Task EmailExists_ReturnsTrueForExistingEmail()
+        public async Task EmailExists_ReturnsTrueForExistingEmail() // test email existence check
         {
             using var db = GetDbContext();
             db.Users.Add(new User { FullName = "A", Email = "exists@test.com", PasswordHash = "x" });

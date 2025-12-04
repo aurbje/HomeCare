@@ -1,8 +1,6 @@
 namespace HomeCare.Api.Enums
 {
-    /// <summary>
-    /// Status for en booking/avtale
-    /// </summary>
+  // enum representing the status of a booking
     public enum BookingStatus
     {
         Pending,

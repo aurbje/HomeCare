@@ -14,7 +14,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             _context = context;
         }
-
+// get caregiver dashboard data
         public async Task<CaregiverDashboardDto> GetDashboardAsync(int CaregiverId)
         {
             var user = await _context.Users.FindAsync(CaregiverId);
@@ -28,7 +28,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .Select(a => a.Date)
                 .ToListAsync();
 
-            // Use date range comparison for SQLite compatibility
+            // use date range comparison for SQLite compatibility
             var todayStart = DateTime.Today;
             var todayEnd = DateTime.Today.AddDays(1);
 
@@ -47,7 +47,7 @@ namespace HomeCare.Api.DAL.Repositories
                 })
                 .ToListAsync();
 
-            // Get calendar events for the Caregiver (upcoming bookings)
+            // get calendar events for the Caregiver (upcoming bookings)
             var calendarEvents = await _context.Bookings
                 .Include(a => a.User)
                 .Include(a => a.Category)
@@ -71,7 +71,7 @@ namespace HomeCare.Api.DAL.Repositories
                 CalendarEvents = calendarEvents
             };
         }
-
+// add caregiver availability
         public async Task AddAvailabilityAsync(int CaregiverId, DateTime date)
         {
             bool alreadyExists = await _context.CaregiverAvailabilities
@@ -87,7 +87,7 @@ namespace HomeCare.Api.DAL.Repositories
                 CaregiverId = CaregiverId,
                 Date = date
             });
-
+// ensure AvailableDate and TimeSlots exist
             var existingDate = await _context.AvailableDates
                 .FirstOrDefaultAsync(d => d.Date.Date == date.Date);
 
@@ -116,7 +116,7 @@ namespace HomeCare.Api.DAL.Repositories
 
             await _context.SaveChangesAsync();
         }
-
+// delete caregiver availability with booking check
         public async Task DeleteAvailabilityAsync(int CaregiverId, DateTime date)
         {
             bool hasBooking = await _context.Bookings
@@ -126,7 +126,7 @@ namespace HomeCare.Api.DAL.Repositories
             {
                 throw new InvalidOperationException("Denne datoen kan ikke slettes siden den allerede er booket. Ta kontakt med administratoren.");
             }
-
+// remove caregiver availability
             var availability = await _context.CaregiverAvailabilities
                 .FirstOrDefaultAsync(a => a.CaregiverId == CaregiverId && a.Date.Date == date.Date);
 
@@ -138,7 +138,7 @@ namespace HomeCare.Api.DAL.Repositories
 
             bool isDateStillUsed = await _context.CaregiverAvailabilities
                 .AnyAsync(a => a.Date.Date == date.Date && a.CaregiverId != CaregiverId);
-
+// if no other caregivers use the date, remove it and its timeslots
             if (!isDateStillUsed)
             {
                 var availableDate = await _context.AvailableDates
@@ -155,7 +155,7 @@ namespace HomeCare.Api.DAL.Repositories
 
             await _context.SaveChangesAsync();
         }
-
+// check if caregiver has booking on a specific date
         public async Task<bool> HasBookingOnDateAsync(int CaregiverId, DateTime date)
         {
             return await _context.Bookings
@@ -172,7 +172,7 @@ namespace HomeCare.Api.DAL.Repositories
                 .OrderBy(a => a.DateTime)
                 .ToListAsync();
         }
-
+// try delete caregiver availability with booking check
         public async Task<bool> TryDeleteAvailabilityWithCheckAsync(int CaregiverId, DateTime date)
         {
             bool hasBooking = await _context.Bookings
@@ -190,7 +190,7 @@ namespace HomeCare.Api.DAL.Repositories
             {
                 _context.CaregiverAvailabilities.Remove(availability);
             }
-
+// check if other caregivers use the same date
             bool isDateStillUsed = await _context.CaregiverAvailabilities
                 .AnyAsync(a => a.Date.Date == date.Date && a.CaregiverId != CaregiverId);
 
@@ -206,7 +206,7 @@ namespace HomeCare.Api.DAL.Repositories
                     _context.AvailableDates.Remove(availableDate);
                 }
             }
-
+// save changes
             await _context.SaveChangesAsync();
             return true;
         }
@@ -215,7 +215,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             return await _context.Users.FindAsync(CaregiverId);
         }
-
+// add admin notification
         public async Task AddAdminNotificationAsync(string message)
         {
             _context.AdminNotifications.Add(new AdminNotification

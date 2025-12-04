@@ -1,8 +1,6 @@
 namespace HomeCare.Api.Enums
 {
-    /// <summary>
-    /// Resultattype for booking-operasjoner
-    /// </summary>
+  // enum representing the result types of a booking operation
     public enum BookingResultType
     {
         Success,

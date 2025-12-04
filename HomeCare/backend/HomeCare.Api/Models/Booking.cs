@@ -5,6 +5,7 @@ using HomeCare.Api.Enums;
 
 namespace HomeCare.Api.Models
 {
+    // represents a booking for home care services
     public class Booking
     {
         public int Id { get; set; }

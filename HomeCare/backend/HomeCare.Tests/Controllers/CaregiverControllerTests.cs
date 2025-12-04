@@ -13,13 +13,14 @@ using HomeCare.Api.DTO.User;
 
 namespace HomeCare.Tests.Controllers
 {
+    // Unit tests for CaregiverController
     public class CaregiverControllerTests
     {
         private readonly Mock<ICaregiverService> _mockService;
         private readonly Mock<ILogger<CaregiverController>> _mockLogger;
         private readonly CaregiverController _controller;
 
-        public CaregiverControllerTests()
+        public CaregiverControllerTests() // Constructor
         {
             _mockService = new Mock<ICaregiverService>();
             _mockLogger = new Mock<ILogger<CaregiverController>>();
@@ -27,7 +28,7 @@ namespace HomeCare.Tests.Controllers
             SetupCaregiverContext(10);
         }
 
-        private void SetupCaregiverContext(int caregiverId)
+        private void SetupCaregiverContext(int caregiverId) // Helper method to setup user context
         {
             var claims = new List<Claim>
             {
@@ -44,7 +45,7 @@ namespace HomeCare.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetDashboard_WithYearMonth_ReturnsOk()
+        public async Task GetDashboard_WithYearMonth_ReturnsOk() // Test for GetDashboard method
         {
             int caregiverId = 10;
             int year = DateTime.Today.Year;
@@ -65,7 +66,7 @@ namespace HomeCare.Tests.Controllers
         }
 
         [Fact]
-        public async Task RegisterAvailability_FutureDate_ReturnsNoContent()
+        public async Task RegisterAvailability_FutureDate_ReturnsNoContent() // Test for RegisterAvailability method
         {
             var futureDate = DateTime.Today.AddDays(7);
             _mockService.Setup(s => s.RegisterAvailabilityAsync(10, futureDate))
@@ -78,7 +79,7 @@ namespace HomeCare.Tests.Controllers
         }
 
         [Fact]
-        public async Task RegisterAvailability_PastDate_ReturnsBadRequest()
+        public async Task RegisterAvailability_PastDate_ReturnsBadRequest() // Test for RegisterAvailability with past date
         {
             var pastDate = DateTime.Today.AddDays(-1);
 

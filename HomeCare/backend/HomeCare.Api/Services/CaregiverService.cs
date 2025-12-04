@@ -18,7 +18,7 @@ namespace HomeCare.Api.Services
         {
             var model = await _repo.GetDashboardAsync(CaregiverId);
 
-            // Add upcoming bookings
+            // add upcoming bookings
             var bookings = await _repo.GetBookingsForCaregiverAsync(CaregiverId);
             model.UpcomingBookings = bookings.Select(a => new BookingSummaryDto
             {
@@ -46,7 +46,7 @@ namespace HomeCare.Api.Services
             }
         }
 
-        public Task DeleteAvailabilityAsync(int CaregiverId, DateTime date)
+        public Task DeleteAvailabilityAsync(int CaregiverId, DateTime date) // hard delete
             => _repo.DeleteAvailabilityAsync(CaregiverId, date);
 
         public async Task<bool> RequestAvailabilityDeletionAsync(int CaregiverId, DateTime date)
@@ -62,18 +62,14 @@ namespace HomeCare.Api.Services
             return deleted;
         }
 
-        /// <summary>
-        /// Gets today's visits for a caregiver (implements ICaregiverService).
-        /// </summary>
+        // get today's visits for a caregiver
         public async Task<List<Booking>> GetTodayVisitsAsync(int caregiverId)
         {
             var allBookings = await _repo.GetBookingsForCaregiverAsync(caregiverId);
             return allBookings.Where(b => b.DateTime.Date == DateTime.Today).ToList();
         }
 
-        /// <summary>
-        /// Gets upcoming bookings for a caregiver (implements ICaregiverService).
-        /// </summary>
+        // get upcoming bookings for a caregiver
         public async Task<List<Booking>> GetUpcomingBookingsAsync(int caregiverId)
         {
             var allBookings = await _repo.GetBookingsForCaregiverAsync(caregiverId);

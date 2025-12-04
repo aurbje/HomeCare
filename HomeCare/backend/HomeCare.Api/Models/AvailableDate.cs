@@ -1,8 +1,6 @@
 namespace HomeCare.Api.Models
 {
-    /// <summary>
-    /// Represents a date that is available for booking bookings.
-    /// </summary>
+    // represents an available date for booking home care services
     public class AvailableDate
     {
         public int Id { get; set; }

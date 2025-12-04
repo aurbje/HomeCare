@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+#pragma warning disable CA1814 // prefer jagged arrays over multidimensional
 
 namespace HomeCare.Api.Migrations
 {
@@ -70,7 +70,7 @@ namespace HomeCare.Api.Migrations
                     table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable( // Users table
                 name: "Users",
                 columns: table => new
                 {
@@ -89,7 +89,7 @@ namespace HomeCare.Api.Migrations
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable( // Users table
                 name: "TimeSlots",
                 columns: table => new
                 {
@@ -110,7 +110,7 @@ namespace HomeCare.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable( // CaregiverAvailabilities table
                 name: "CaregiverAvailabilities",
                 columns: table => new
                 {
@@ -132,7 +132,7 @@ namespace HomeCare.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable( // Reminders table
                 name: "Reminders",
                 columns: table => new
                 {
@@ -154,7 +154,7 @@ namespace HomeCare.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable( // Bookings table
                 name: "Bookings",
                 columns: table => new
                 {
@@ -197,7 +197,7 @@ namespace HomeCare.Api.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.InsertData(
+            migrationBuilder.InsertData( // Categories table
                 table: "Categories",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
@@ -210,7 +210,7 @@ namespace HomeCare.Api.Migrations
                     { 6, "Annet" }
                 });
 
-            migrationBuilder.InsertData(
+            migrationBuilder.InsertData( // Users table
                 table: "Users",
                 columns: new[] { "Id", "Address", "Email", "FullName", "PasswordHash", "Role", "TlfNumber", "UserName" },
                 values: new object[,]
@@ -220,7 +220,7 @@ namespace HomeCare.Api.Migrations
                     { 3, "Usergata 1", "user@oslomet.no", "User", "$2a$11$f73yjHkIJFhi05E.7lFjgOk7d2nlmDYKw3b7DIfKThnaBV3BSp3SK", "User", "12348765", "" }
                 });
 
-            migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex( // AvailableDates table
                 name: "IX_AvailableDates_Date",
                 table: "AvailableDates",
                 column: "Date",
@@ -231,7 +231,7 @@ namespace HomeCare.Api.Migrations
                 table: "Bookings",
                 column: "CaregiverId");
 
-            migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex( // Categories table
                 name: "IX_Bookings_CategoryId",
                 table: "Bookings",
                 column: "CategoryId");
@@ -241,7 +241,7 @@ namespace HomeCare.Api.Migrations
                 table: "Bookings",
                 column: "DateTime");
 
-            migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex( // TimeSlots table
                 name: "IX_Bookings_TimeSlotId",
                 table: "Bookings",
                 column: "TimeSlotId");
@@ -251,7 +251,7 @@ namespace HomeCare.Api.Migrations
                 table: "Bookings",
                 column: "UserId");
 
-            migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex( // CaregiverAvailabilities table
                 name: "IX_CaregiverAvailabilities_CaregiverId_Date",
                 table: "CaregiverAvailabilities",
                 columns: new[] { "CaregiverId", "Date" },
@@ -262,7 +262,7 @@ namespace HomeCare.Api.Migrations
                 table: "CaregiverAvailabilities",
                 column: "Date");
 
-            migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex( // Categories table
                 name: "IX_Categories_Name",
                 table: "Categories",
                 column: "Name",
@@ -286,7 +286,7 @@ namespace HomeCare.Api.Migrations
         }
 
         /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
+        protected override void Down(MigrationBuilder migrationBuilder) // Drop all tables
         {
             migrationBuilder.DropTable(
                 name: "AdminNotifications");

@@ -180,7 +180,7 @@ namespace HomeCare.Api.Controllers
             {
                 return NotFound(new { message = response.Message });
             }
-            // Return the full booking object with related data
+            // return the full booking object with related data
             return Ok(response.Data);
         }
 

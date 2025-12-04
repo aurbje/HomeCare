@@ -11,6 +11,7 @@ using HomeCare.Api.DTO.User;
 
 namespace HomeCare.Tests.Controllers
 {
+    // Unit tests for BookingController
     public class BookingControllerTests
     {
         [Fact]
@@ -42,7 +43,7 @@ namespace HomeCare.Tests.Controllers
             var ok = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(initDto, ok.Value);
         }
-
+// create unit test for CreateOrUpdateBooking method
         [Fact]
         public async Task CreateOrUpdateBooking_Success_ReturnsOk()
         {
@@ -80,7 +81,7 @@ namespace HomeCare.Tests.Controllers
         }
 
         [Fact]
-        public async Task CancelBooking_NotFound_ReturnsNotFound()
+        public async Task CancelBooking_NotFound_ReturnsNotFound() // unit test for CancelBooking method when booking not found
         {
             var serviceMock = new Mock<IBookingService>();
             var loggerMock = new Mock<ILogger<BookingController>>();
@@ -93,7 +94,7 @@ namespace HomeCare.Tests.Controllers
                 Success = false
             };
 
-            serviceMock.Setup(s => s.CancelBookingAsync(123, It.IsAny<int>(), It.IsAny<bool>()))
+            serviceMock.Setup(s => s.CancelBookingAsync(123, It.IsAny<int>(), It.IsAny<bool>())) // use booking id 123
                        .ReturnsAsync(svcResult);
 
             var result = await controller.CancelBooking(123);
@@ -104,7 +105,7 @@ namespace HomeCare.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetBooking_Found_ReturnsOk()
+        public async Task GetBooking_Found_ReturnsOk() // unit test for GetBooking method when booking is found
         {
             var serviceMock = new Mock<IBookingService>();
             var loggerMock = new Mock<ILogger<BookingController>>();
@@ -127,7 +128,7 @@ namespace HomeCare.Tests.Controllers
         }
 
         [Fact]
-        public async Task SelectCaregiver_ValidDate_ReturnsOkList()
+        public async Task SelectCaregiver_ValidDate_ReturnsOkList() // unit test for SelectCaregiver method with valid date
         {
             var serviceMock = new Mock<IBookingService>();
             var loggerMock = new Mock<ILogger<BookingController>>();
@@ -141,7 +142,7 @@ namespace HomeCare.Tests.Controllers
                 new UserSummaryDto { Id = 2, FullName = "B" }
             };
 
-            serviceMock.Setup(s => s.GetAvailableCaregiverForSlotAsync(It.IsAny<DateTime>(), 1, null))
+            serviceMock.Setup(s => s.GetAvailableCaregiverForSlotAsync(It.IsAny<DateTime>(), 1, null)) // timeSlotId 1
                        .ReturnsAsync(caregivers);
 
             var result = await controller.SelectCaregiver(dateStr, 1, null);

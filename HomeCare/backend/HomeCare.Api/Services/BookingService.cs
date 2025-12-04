@@ -14,13 +14,13 @@ namespace HomeCare.Api.Services
         private readonly IBookingRepository _repo;
         private readonly ILogger<BookingService> _logger;
 
-        public BookingService(IBookingRepository repo, ILogger<BookingService> logger)
+        public BookingService(IBookingRepository repo, ILogger<BookingService> logger) // Dependency Injection
         {
             _repo = repo;
             _logger = logger;
         }
 
-        public async Task<List<Booking>> GetBookingsForUserAsync(int userId)
+        public async Task<List<Booking>> GetBookingsForUserAsync(int userId) // Client
         {
             var all = await _repo.GetUpcomingBookingsAsync();
             return all.Where(a => a.UserId == userId && a.DateTime >= DateTime.Today)
@@ -28,14 +28,14 @@ namespace HomeCare.Api.Services
                       .ToList();
         }
 
-        public async Task<List<UserSummaryDto>> GetAvailableCaregiverForSlotAsync(DateTime date, int? timeSlotId, int? bookingId)
+        public async Task<List<UserSummaryDto>> GetAvailableCaregiverForSlotAsync(DateTime date, int? timeSlotId, int? bookingId) // Admin
         {
             if (!timeSlotId.HasValue) return new();
 
             var allCaregiver = await _repo.GetAvailableCaregiverByDateAsync(date);
             var bookings = await _repo.GetUpcomingBookingsAsync();
             var bookedIds = bookings
-                .Where(a => a.DateTime.Date == date.Date && a.TimeSlotId == timeSlotId.Value && (!bookingId.HasValue || a.Id != bookingId.Value))
+                .Where(a => a.DateTime.Date == date.Date && a.TimeSlotId == timeSlotId.Value && (!bookingId.HasValue || a.Id != bookingId.Value)) // Exclude current booking if editing
                 .Select(a => a.CaregiverId)
                 .Where(pid => pid.HasValue)
                 .Select(pid => pid!.Value)
@@ -47,13 +47,13 @@ namespace HomeCare.Api.Services
                 .ToList();
         }
 
-        public async Task<bool> IsCaregiverBookedAsync(DateTime date, int timeSlotId, int CaregiverId, int? excludeBookingId = null)
+        public async Task<bool> IsCaregiverBookedAsync(DateTime date, int timeSlotId, int CaregiverId, int? excludeBookingId = null) // Admin
         {
             var bookings = await _repo.GetUpcomingBookingsAsync();
             return bookings.Any(a => a.DateTime.Date == date.Date && a.TimeSlotId == timeSlotId && a.CaregiverId == CaregiverId && (!excludeBookingId.HasValue || a.Id != excludeBookingId.Value));
         }
 
-        public bool IsBookingTimeAvailable(DateTime date, string timeString)
+        public bool IsBookingTimeAvailable(DateTime date, string timeString) 
         {
             if (!TimeSpan.TryParse(timeString, out var time)) return false;
             var start = new TimeSpan(8, 0, 0);
@@ -61,7 +61,7 @@ namespace HomeCare.Api.Services
             return time >= start && time < end;
         }
 
-        public async Task<BookingInitDto> GetBookingInitAsync(int userId)
+        public async Task<BookingInitDto> GetBookingInitAsync(int userId) // get initial data for booking form
         {
             _logger.LogInformation("Loading booking init for user {UserId}", userId);
 
@@ -89,7 +89,7 @@ namespace HomeCare.Api.Services
 
             var categoriesDto = categories.Select(c => new CategoryDto { Id = c.Id, Name = c.Name }).ToList();
 
-            var apptsDto = bookings.Select(a => new BookingDto
+            var apptsDto = bookings.Select(a => new BookingDto // map to DTO
             {
                 Id = a.Id,
                 DateTime = a.DateTime,
@@ -116,21 +116,21 @@ namespace HomeCare.Api.Services
             };
         }
 
-        public async Task<BookingResultDto> CreateOrUpdateBookingAsync(BookingRequestDto model, int UserId)
+        public async Task<BookingResultDto> CreateOrUpdateBookingAsync(BookingRequestDto model, int UserId) // create or update booking
         {
             _logger.LogInformation("Booking attempt for categoryId {CategoryId} on {Date}", model.CategoryId, model.SelectedDate);
 
             var errors = new Dictionary<string, string>();
             var selectedCategory = await _repo.GetCategoryByIdAsync(model.CategoryId);
 
-            // Validate: Require notes if category is "Annet"
+            // require notes if category is "Annet"
             if (selectedCategory?.Name.ToUpper() == "Annet" && string.IsNullOrWhiteSpace(model.Notes))
             {
                 _logger.LogWarning("Booking validation failed: 'Other' category requires notes.");
                 errors["Notes"] = "Please provide details for 'Other' category.";
             }
 
-            // Validate time slot
+            // validate time slot
             TimeSlot? selectedSlot = null;
             if (!model.TimeSlotId.HasValue)
             {
@@ -151,7 +151,7 @@ namespace HomeCare.Api.Services
                 }
             }
 
-            // Parse start time from slot string
+            // parse start time from slot string
             TimeSpan startTime = default;
             bool validTime = false;
             if (selectedSlot != null)
@@ -168,7 +168,7 @@ namespace HomeCare.Api.Services
                 }
             }
 
-            // Validate Caregiver availability
+            // validate Caregiver availability
             if (errors.Count == 0 && validTime && model.SelectedCaregiverId.HasValue && selectedSlot?.AvailableDate != null)
             {
                 var date = selectedSlot.AvailableDate.Date.Date;
@@ -185,7 +185,7 @@ namespace HomeCare.Api.Services
                 return new BookingResultDto { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
             }
 
-            // Validate Caregiver exists
+            // validate Caregiver exists
             if (!model.SelectedCaregiverId.HasValue)
             {
                 errors["SelectedCaregiverId"] = "Please select a Caregiver.";
@@ -200,7 +200,7 @@ namespace HomeCare.Api.Services
                 return new BookingResultDto { Success = false, ValidationErrors = errors, ResultType = BookingResultType.ValidationError };
             }
 
-            // Update existing booking
+            // update existing booking
             if (model.BookingId > 0)
             {
                 var existing = await _repo.GetBookingByIdAsync(model.BookingId);
@@ -230,7 +230,7 @@ namespace HomeCare.Api.Services
                 }
             }
 
-            // Create new booking
+            // create new booking
             if (selectedSlot?.AvailableDate == null || selectedCategory == null)
             {
                 errors["TimeSlotId"] = "Valgt tidspunkt er ikke lenger tilgjengelig.";
@@ -252,7 +252,7 @@ namespace HomeCare.Api.Services
 
             return new BookingResultDto { Success = true, BookingId = booking.Id, Message = "Booking booked.", ResultType = BookingResultType.Success };
         }
-
+// cancel booking
         public async Task<BookingResultDto> CancelBookingAsync(int bookingId, int userId, bool isAdmin)
         {
             _logger.LogInformation("Cancel request for booking {BookingId} by user {UserId}.", bookingId, userId);
@@ -275,7 +275,7 @@ namespace HomeCare.Api.Services
 
             return new BookingResultDto { Success = true, ResultType = BookingResultType.Success, Message = "Booking cancelled." };
         }
-
+// get booking details
         public async Task<BookingDto?> GetBookingAsync(int bookingId, int userId, bool isAdmin)
         {
             var booking = await _repo.GetBookingByIdAsync(bookingId);

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace HomeCare.Tests.Repositories
 {
-    public class BookingRepositoryTests
+    public class BookingRepositoryTests // booking repository tests
     {
         private AppDbContext GetDb()
         {
@@ -21,7 +21,7 @@ namespace HomeCare.Tests.Repositories
         }
 
         [Fact]
-        public async Task GetAvailableDates_ReturnsOnlyFutureDatesWithFreeSlots()
+        public async Task GetAvailableDates_ReturnsOnlyFutureDatesWithFreeSlots() // test for getting available dates
         {
             using var db = GetDb();
 
@@ -41,7 +41,7 @@ namespace HomeCare.Tests.Repositories
         }
 
         [Fact]
-        public async Task GetAvailableTimeSlot_ReturnsCorrectSlot()
+        public async Task GetAvailableTimeSlot_ReturnsCorrectSlot() // test for getting available time slot
         {
             using var db = GetDb();
             var date = new AvailableDate { Id = 1, Date = DateTime.Today };
@@ -60,7 +60,7 @@ namespace HomeCare.Tests.Repositories
         }
 
         [Fact]
-        public async Task UpdateTimeSlot_SetsIsBookedAndSaves()
+        public async Task UpdateTimeSlot_SetsIsBookedAndSaves() // test for updating time slot booking status
         {
             using var db = GetDb();
             var slot = new TimeSlot { Id = 3, Slot = "09-10", IsBooked = false };

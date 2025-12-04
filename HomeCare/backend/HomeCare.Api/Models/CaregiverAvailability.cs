@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using HomeCare.Api.Models;
 
+// represents the availability of a caregiver on a specific date
 namespace HomeCare.Api.Models
 {
     public class CaregiverAvailability

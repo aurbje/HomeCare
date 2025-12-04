@@ -1,8 +1,6 @@
 namespace HomeCare.Api.Enums
 {
-    /// <summary>
-    /// Brukerroller i systemet
-    /// </summary>
+    // userroles in the system
     public enum UserRole
     {
         User,
@@ -10,28 +8,20 @@ namespace HomeCare.Api.Enums
         Admin
     }
 
-    /// <summary>
-    /// Hjelpemetoder for UserRole enum
-    /// </summary>
+    // extension methods for UserRole enum
     public static class UserRoleExtensions
     {
-        /// <summary>
-        /// Konverterer enum til string for database/authorization
-        /// </summary>
+  // converts enum to string
         public static string ToRoleString(this UserRole role) => role.ToString();
 
-        /// <summary>
-        /// Konverterer string til enum
-        /// </summary>
+       // converts string to enum, returns null if invalid
         public static UserRole? ToUserRole(this string? roleString)
         {
             if (string.IsNullOrEmpty(roleString)) return null;
             return Enum.TryParse<UserRole>(roleString, ignoreCase: true, out var role) ? role : null;
         }
 
-        /// <summary>
-        /// String-konstanter for bruk med [Authorize(Roles = "...")]
-        /// </summary>
+        // constants for role strings
         public static class Roles
         {
             public const string User = nameof(UserRole.User);

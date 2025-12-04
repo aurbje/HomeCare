@@ -13,7 +13,7 @@ namespace HomeCare.Api.DAL.Repositories
     {
         private readonly AppDbContext _context;
 
-        // --- ILogger has been removed from the constructor ---
+        // logger has been removed from the constructor
         public AdminRepository(AppDbContext context)
         {
             _context = context;
@@ -23,14 +23,14 @@ namespace HomeCare.Api.DAL.Repositories
 
         public async Task<IEnumerable<User>> GetUsersAsync(string? searchTerm)
         {
-            // Base query excludes admins and caregivers. Handles cases where Role might be null.
+            // base query excludes admins and caregivers. handles cases where Role might be null.
             IQueryable<User> query = _context.Users
                 .Where(u => u.Role != null && u.Role.ToLower() != "caregiver" && u.Role.ToLower() != "admin");
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var term = searchTerm.Trim().ToLower();
-                // This search is now null-safe.
+                // this search is now null-safe.
                 query = query.Where(u =>
                     (u.FullName != null && u.FullName.ToLower().Contains(term)) ||
                     (u.Email != null && u.Email.ToLower().Contains(term)) ||
@@ -55,10 +55,10 @@ namespace HomeCare.Api.DAL.Repositories
 
         public async Task<bool> UpdateUserAsync(User user)
         {
-            // This correctly marks the entity for update.
+            // this correctly marks the entity for update.
             _context.Users.Update(user);
-            // SaveChangesAsync returns the number of rows affected.
-            // We return true only if one or more rows were changed.
+            // saveChangesAsync returns the number of rows affected.
+            // we return true only if one or more rows were changed.
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -69,12 +69,12 @@ namespace HomeCare.Api.DAL.Repositories
 
             if (user.Role != null && user.Role.ToLower() == "admin" && await CountAdminsAsync() <= 1)
             {
-                return false; // Block deleting last admin
+                return false; // block deleting last admin
             }
 
             if (await HasClientBookingsAsync(id) || await HasCaregiverBookingsAsync(id))
             {
-                return false; // Block deleting user with bookings
+                return false; // block deleting user with bookings
             }
 
             _context.Users.Remove(user);
@@ -99,7 +99,7 @@ namespace HomeCare.Api.DAL.Repositories
             }
             return await query.OrderBy(u => u.Id).ToListAsync();
         }
-
+// caregiver methods are similar to user methods but specifically filter by Role.
         public async Task<bool> DeleteCaregiverAsync(int id)
         {
             var caregiver = await _context.Users.FirstOrDefaultAsync(u => u.Id == id && u.Role != null && u.Role == "Caregiver");
@@ -112,7 +112,7 @@ namespace HomeCare.Api.DAL.Repositories
         #endregion
 
         #region Bookings
-
+// booking methods include related entities and handle nulls in search.
         public async Task<IEnumerable<Booking>> GetBookingsAsync(string? searchTerm)
         {
             IQueryable<Booking> query = _context.Bookings
@@ -134,7 +134,7 @@ namespace HomeCare.Api.DAL.Repositories
 
             return await query.OrderByDescending(b => b.DateTime).ToListAsync();
         }
-
+// get booking by id includes related entities.
         public async Task<Booking?> GetBookingByIdAsync(int id)
         {
             return await _context.Bookings
@@ -143,20 +143,20 @@ namespace HomeCare.Api.DAL.Repositories
                 .Include(b => b.Category)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
-
+// booking add, update, delete methods.
         public async Task<Booking> AddBookingAsync(Booking booking)
         {
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
             return booking;
         }
-
+// update method marks entity for update and checks affected rows.
         public async Task<bool> UpdateBookingAsync(Booking booking)
         {
             _context.Bookings.Update(booking);
             return await _context.SaveChangesAsync() > 0;
         }
-
+// delete method finds by id and removes if exists.
         public async Task<bool> DeleteBookingAsync(int id)
         {
             var booking = await _context.Bookings.FindAsync(id);
@@ -168,7 +168,7 @@ namespace HomeCare.Api.DAL.Repositories
         #endregion
 
         #region Helpers
-
+// helper methods for counting admins and checking bookings.
         public async Task<int> CountAdminsAsync()
         {
             return await _context.Users.CountAsync(u => u.Role != null && u.Role.ToLower() == "admin");
@@ -178,7 +178,7 @@ namespace HomeCare.Api.DAL.Repositories
         {
             return await _context.Bookings.AnyAsync(b => b.UserId == userId);
         }
-
+// checks if a caregiver has any bookings.
         public async Task<bool> HasCaregiverBookingsAsync(int caregiverId)
         {
             return await _context.Bookings.AnyAsync(b => b.CaregiverId == caregiverId);

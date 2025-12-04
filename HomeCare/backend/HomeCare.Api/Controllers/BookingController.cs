@@ -11,6 +11,7 @@ using HomeCare.Api.Services.Interfaces;
 
 namespace HomeCare.Api.Controllers
 {
+    // controller for managing bookings
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
@@ -25,6 +26,7 @@ namespace HomeCare.Api.Controllers
             _logger = logger;
         }
 
+// GET: api/Booking/init
         [HttpGet("init")]
         public async Task<IActionResult> GetBookingInit()
         {
@@ -33,6 +35,7 @@ namespace HomeCare.Api.Controllers
             return Ok(result);
         }
 
+// POST: api/Booking
         [HttpPost]
         public async Task<IActionResult> CreateOrUpdateBooking([FromBody] BookingRequestDto model)
         {
@@ -49,6 +52,7 @@ namespace HomeCare.Api.Controllers
             };
         }
 
+// DELETE: api/Booking/id
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelBooking(int id)
         {
@@ -64,7 +68,7 @@ namespace HomeCare.Api.Controllers
                 _ => BadRequest(new { message = result.Message })
             };
         }
-
+// GET: api/Booking/id
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBooking(int id)
         {
@@ -76,6 +80,7 @@ namespace HomeCare.Api.Controllers
             return Ok(booking);
         }
 
+// GET: api/Booking/select-Caregiver
         [HttpGet("select-Caregiver")]
         public async Task<IActionResult> SelectCaregiver([FromQuery] string selectedDate, [FromQuery] int? timeSlotId, [FromQuery] int? bookingId)
         {
@@ -91,12 +96,12 @@ namespace HomeCare.Api.Controllers
                     return Ok(Array.Empty<object>());
                 }
             }
-
+// if timeSlotId is not provided, return empty list 
             var Caregiver = await _bookingService.GetAvailableCaregiverForSlotAsync(date, timeSlotId, bookingId);
             var CaregiverDto = Caregiver.Select(p => new { p.Id, p.FullName }).ToList();
             return Ok(CaregiverDto);
         }
-
+// helper method to create ModelStateDictionary from validation errors
         private Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary CreateModelState(Dictionary<string, string>? errors)
         {
             var modelState = new Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary();

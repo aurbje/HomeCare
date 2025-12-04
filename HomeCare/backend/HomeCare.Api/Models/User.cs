@@ -2,28 +2,27 @@ using HomeCare.Api.Enums;
 
 namespace HomeCare.Api.Models
 {
+    // representing a user in the system
     public class User
     {
         public int Id { get; set; }
 
-        // Personopplysninger
+        // personal information
         public string FullName { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
-        // Autentisering
+        // authentication
         public string PasswordHash { get; set; } = string.Empty;
 
-        // Kontaktinformasjon
+        // contact information
         public string TlfNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
 
-        // Roller og tilgang (lagres som string i DB for kompatibilitet med ASP.NET Authorization)
+        // user role with default as 'User'
         public string Role { get; set; } = UserRoleExtensions.Roles.User;
 
-        /// <summary>
-        /// Henter rollen som enum for enklere logikk
-        /// </summary>
+        //  computed property to get the UserRole enum from the Role string
         public UserRole? RoleEnum => Role.ToUserRole();
     }
 }

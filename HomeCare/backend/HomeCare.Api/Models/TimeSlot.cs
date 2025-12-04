@@ -1,8 +1,6 @@
 namespace HomeCare.Api.Models
 {
-    /// <summary>
-    /// Represents a time slot within an available date (e.g., "09:00-10:00").
-    /// </summary>
+    // represents a time slot for booking appointments
     public class TimeSlot
     {
         public int Id { get; set; }

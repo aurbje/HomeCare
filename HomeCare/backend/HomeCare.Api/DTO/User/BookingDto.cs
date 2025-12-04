@@ -2,6 +2,7 @@ using HomeCare.Api.Enums;
 
 namespace HomeCare.Api.DTO.User
 {
+    // represents a booking with detailed information
     public class BookingDto
     {
         public int Id { get; set; }
@@ -13,14 +14,14 @@ namespace HomeCare.Api.DTO.User
         public string? Notes { get; set; }
         public BookingStatus Status { get; set; }
 
-        // Alias property for backward compatibility with code using "Client" instead of "User"
+        // alias property for backward compatibility with code using "Client" instead of "User"
         public UserSummaryDto? Client
         {
             get => User;
             set => User = value;
         }
     }
-
+// represents a summary of a booking with essential information
     public class BookingSummaryDto
     {
         public int Id { get; set; }
@@ -29,7 +30,7 @@ namespace HomeCare.Api.DTO.User
         public string? CaregiverName { get; set; }
         public string? Notes { get; set; }
     }
-
+// DTO for updating user information
     public class UpdateUserDto
     {
         public string FullName { get; set; } = string.Empty;
@@ -38,7 +39,7 @@ namespace HomeCare.Api.DTO.User
         public string? TlfNumber { get; set; }
         public string? Address { get; set; }
     }
-
+// DTO for updating booking information
     public class UpdateBookingDto
     {
         public DateTime? DateTime { get; set; }
