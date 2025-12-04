@@ -96,7 +96,7 @@ function BookingsPage() {
           <button type="submit" className="btn btn-sm btn-primary">Søk</button>
         </div>
         <div className="col-auto">
-          <button type="button" onClick={handleReset} className="btn btn-sm btn-outline-secondary">
+          <button type="button" onClick={handleReset} className="btn btn-primary btn-sm">
             Nullstill
           </button>
         </div>
@@ -132,7 +132,7 @@ function BookingsPage() {
                 <td>
                   <button
                     onClick={() => handleEdit(booking.id)}
-                    className="btn btn-sm btn-warning"
+                    className="btn btn-sm btn-primary"
                   >
                     Endre
                   </button>
@@ -152,7 +152,7 @@ function BookingsPage() {
         </tbody>
       </table>
 
-      <button onClick={() => navigate('/admindashboard')} className="btn btn-outline-secondary btn-sm">
+      <button onClick={() => navigate('/admindashboard')} className="btn btn-primary btn-sm">
         Tilbake
       </button>
     </div>
