@@ -1,19 +1,26 @@
 # HomeCareApp
 
-Teknologier brukt:
+Technologies used:
+
 - .NET 8.0 (ASP.NET Core MVC)
-- Bootstrap 5 til design og layout
+- Bootstrap 5 for design and layout
 
-Slik kjører du prosjektet:
-1. Installer .NET 8.0 SDK.
-2. Åpne terminalen i prosjektmappen og kjør "dotnet ef database update" for å opprette databasen.
-3. Start deretter applikasjonen ved å kjøre kommandoen "dotnet run".
-4. Når applikasjonen starter, åpne nettleseren og gå til adressen som vises i terminalen (for eksempel http://localhost:5000).
+How to run the project:
 
-Testbrukere:
-Admin - Brukernavn: admin@oslomet.no - Passord: Admin123!
-Ansatt - Brukernavn: caregiver@oslomet.no - Passord: Caregiver123!
-Bruker - Brukernavn: user@oslomet.no - Passord: User123!
+1. Install the .NET 8.0 SDK.
+2. Open the backend in the terminal in the project folder 'cd HomeCare/backend/HomeCare.Api'.
+3. Run 'dotnet run' to start the backend.
+4. Open the frontend in a new terminal with 'cd HomeCare/frontend'.
+5. Run 'npm start' to start the terminal. 
+6. When the application starts, open your browser and go to the address shown in the terminal 
+(for example, <http://localhost:5000>).
 
-Node.js-versjon:
-- Prosjektet bruker Node.js v20.12.0 for håndtering av Bootstrap og tilhørende avhengigheter.
+Test users:
+
+- Admin – Username: <admin@oslomet.no> – Password: Admin123!
+- Employee – Username: <caregiver@oslomet.no> – Password: Caregiver123!
+- User – Username: <user@oslomet.no> – Password: User123!
+
+Node.js version:
+
+- The project uses Node.js v20.12.0 for handling Bootstrap and related dependencies.
