@@ -1,27 +1,10 @@
-/**
- * DashboardPage.jsx - Caregiver Dashboard
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- * Backend endpoint: GET /api/caregiver/dashboard (CaregiverController.GetDashboard)
- */
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../api/api'
 
 /**
- * CaregiverDashboardPage Component
  * Dashboard for caregivers to manage availability and view bookings
- * Compatible with group's cookie-based authentication
- * Features:
- * - View today's visits with client details
- * - View all registered available days
- * - Interactive calendar to select/register available days
- * - Batch registration of multiple available days
- * - Delete individual available days
- * - View upcoming bookings
- * - Font resizable area for accessibility
  */
 export default function CaregiverDashboardPage() {
   const navigate = useNavigate()
@@ -42,9 +25,8 @@ export default function CaregiverDashboardPage() {
   const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth()) // 0-indexed
   const [selectedDates, setSelectedDates] = useState(new Set())
 
-  /**
-   * Convert date to YYYY-MM-DD string format (local timezone)
-   */
+  // Convert date to YYYY-MM-DD string format (local timezone)
+
   const toDateString = (date) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -52,9 +34,8 @@ export default function CaregiverDashboardPage() {
     return `${year}-${month}-${day}`
   }
 
-  /**
-   * Fetch dashboard data from backend using cookie-based auth
-   */
+  // Fetch dashboard data from backend using cookie-based auth
+
   const fetchDashboard = useCallback(async (year, month) => {
     try {
       setLoading(true)
@@ -84,9 +65,7 @@ export default function CaregiverDashboardPage() {
     }
   }, [navigate])
 
-  /**
-   * Check authentication and fetch data on mount
-   */
+  // Check authentication and fetch data on mount
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login', { replace: true })
@@ -109,26 +88,23 @@ export default function CaregiverDashboardPage() {
     fetchDashboard(calendarYear, calendarMonth)
   }, [calendarYear, calendarMonth, fetchDashboard, isAuthenticated, user?.role, navigate])
 
-  /**
-   * Set of available date strings for quick lookup
-   */
+  // Set of available date strings for quick lookup
+
   const availableDateSet = useMemo(() => {
     const dates = data?.availableDates ?? []
     return new Set(dates.map(d => toDateString(new Date(d))))
   }, [data?.availableDates])
 
-  /**
-   * Sorted list of available dates for display
-   */
+  //  Sorted list of available dates for display
+
   const availableDates = useMemo(() => {
     return (data?.availableDates ?? [])
       .map(d => new Date(d))
       .sort((a, b) => a.getTime() - b.getTime())
   }, [data?.availableDates])
 
-  /**
-   * Map of calendar events by date for quick lookup
-   */
+  // Map of calendar events by date for quick lookup
+
   const eventsByDate = useMemo(() => {
     const events = data?.model?.calendarEvents ?? []
     const map = new Map()
@@ -142,9 +118,8 @@ export default function CaregiverDashboardPage() {
     return map
   }, [data?.model?.calendarEvents])
 
-  /**
-   * Navigate to previous month
-   */
+  // Navigate to previous month
+
   const goToPrevMonth = () => {
     if (calendarMonth === 0) {
       setCalendarMonth(11)
@@ -154,9 +129,8 @@ export default function CaregiverDashboardPage() {
     }
   }
 
-  /**
-   * Navigate to next month
-   */
+  // Navigate to next month
+
   const goToNextMonth = () => {
     if (calendarMonth === 11) {
       setCalendarMonth(0)
@@ -166,9 +140,8 @@ export default function CaregiverDashboardPage() {
     }
   }
 
-  /**
-   * Handle checkbox change for selecting dates
-   */
+  // Handle checkbox change for selecting dates
+
   const handleCheckboxChange = (dateStr, checked) => {
     setSelectedDates(prev => {
       const next = new Set(prev)
@@ -181,9 +154,8 @@ export default function CaregiverDashboardPage() {
     })
   }
 
-  /**
-   * Register multiple selected dates as available
-   */
+  // Register multiple selected dates as available
+
   const handleRegisterMultiple = async () => {
     if (selectedDates.size === 0) return
 
@@ -214,9 +186,8 @@ export default function CaregiverDashboardPage() {
     }
   }
 
-  /**
-   * Delete a single available day with enhanced confirmation
-   */
+  // Delete a single available day with enhanced confirmation
+
   const handleDeleteAvailability = async (date) => {
     // Format date for user-friendly display
     const formattedDate = date.toLocaleDateString('nb-NO', {
@@ -255,9 +226,8 @@ export default function CaregiverDashboardPage() {
     }
   }
 
-  /**
-   * Generate calendar days for current month
-   */
+  // Generate calendar days for current month
+
   const generateCalendarDays = () => {
     const firstDay = new Date(calendarYear, calendarMonth, 1)
     const lastDay = new Date(calendarYear, calendarMonth + 1, 0)

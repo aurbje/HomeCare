@@ -1,29 +1,7 @@
-/**
- * DashboardPage.jsx - User/Client Dashboard
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- * Backend endpoint: GET /api/user/dashboard (UserController.GetDashboard)
- */
-
 import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../api/api'
 
-/**
- * DashboardPage Component (User/Client Dashboard)
- * Compatible with group's UserController API
- * Displays client dashboard with reminders, bookings, and calendar
- * Features:
- * - Welcome message with user name
- * - List of reminders with time and message
- * - List of upcoming bookings
- * - Interactive calendar showing booked dates
- * - Quick link to book new bookings
- * - Font resizable area for accessibility
- *
- * Group's API endpoint:
- * - GET /api/user/dashboard - Get user dashboard data
- */
 export default function DashboardPage() {
   const { user } = useAuth()
   // State for dashboard data: userName, reminders, and bookings
@@ -33,20 +11,13 @@ export default function DashboardPage() {
   const [calendarYear, setCalendarYear] = useState(new Date().getFullYear())
   const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth()) // 0-indexed
 
-  /**
-   * Fetch dashboard data from backend on component mount
-   * Uses cookie-based authentication
-   * Data includes: userName, reminders[], bookings[]
-   */
+
   useEffect(() => {
     api.get('/user/dashboard')
       .then(res => setData(res.data))
       .catch(err => console.error('Failed to load dashboard:', err))
   }, [])
 
-  /**
-   * Convert date to YYYY-MM-DD string format (local timezone)
-   */
   const toDateString = (date) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -54,9 +25,6 @@ export default function DashboardPage() {
     return `${year}-${month}-${day}`
   }
 
-  /**
-   * Set of booked date strings for calendar highlighting
-   */
   const bookedDateSet = useMemo(() => {
     const bookings = data?.calendarBookings ?? []
     return new Set(bookings.map(b => {
@@ -65,9 +33,8 @@ export default function DashboardPage() {
     }))
   }, [data?.calendarBookings])
 
-  /**
-   * Map of bookings by date for calendar display
-   */
+  // Map of bookings by date for calendar display
+
   const bookingsByDate = useMemo(() => {
     const bookings = data?.calendarBookings ?? []
     const map = new Map()
@@ -82,9 +49,8 @@ export default function DashboardPage() {
     return map
   }, [data?.calendarBookings])
 
-  /**
-   * Navigate to previous month
-   */
+  // Navigate to previous month
+
   const goToPrevMonth = () => {
     if (calendarMonth === 0) {
       setCalendarMonth(11)
@@ -94,9 +60,8 @@ export default function DashboardPage() {
     }
   }
 
-  /**
-   * Navigate to next month
-   */
+  // Navigate to next month
+
   const goToNextMonth = () => {
     if (calendarMonth === 11) {
       setCalendarMonth(0)
@@ -106,9 +71,8 @@ export default function DashboardPage() {
     }
   }
 
-  /**
-   * Generate calendar days for current month
-   */
+  // Generate calendar days for current month
+
   const generateCalendarDays = () => {
     const firstDay = new Date(calendarYear, calendarMonth, 1)
     const lastDay = new Date(calendarYear, calendarMonth + 1, 0)

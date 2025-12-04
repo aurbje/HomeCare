@@ -1,21 +1,3 @@
-/**
- * BookingPage.jsx - Advanced Booking Page with Caregiver Selection
- *
- * This is YOUR advanced implementation (kept instead of group's simpler version)
- * Features that group's version doesn't have:
- * - Caregiver selection (select specific caregiver for booking)
- * - Time slot filtering based on caregiver availability
- * - Edit existing bookings
- *
- * Backend endpoints used:
- * - GET /api/booking/init (BookingController.GetBookingPage)
- * - GET /api/booking/select-caregiver (BookingController.GetAvailableCaregivers)
- * - POST /api/booking (BookingController.CreateOrUpdateBooking)
- * - DELETE /api/booking/{id} (BookingController.CancelBooking)
- *
- * Auth: Uses context/AuthContext.jsx (group's pattern)
- */
-
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'

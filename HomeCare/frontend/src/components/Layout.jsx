@@ -1,4 +1,3 @@
-// src/components/Layout.jsx
 import React, { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import "../styles/global.css";
@@ -30,6 +29,7 @@ export default function Layout() {
     }
   };
 
+  // new: font size
   const changeFontSize = (delta) => {
     const newSize = Math.max(12, Math.min(24, fontSize + delta * 2));
     setFontSize(newSize);
